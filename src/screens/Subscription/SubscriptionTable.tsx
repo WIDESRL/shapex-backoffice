@@ -55,6 +55,12 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
     { field: 'duration', headerName: t('subscriptions.duration'), width: 150 },
     { field: 'monthlyChecks', headerName: t('subscriptions.monthlyChecks'), width: 150 },
     {
+      field: 'price',
+      headerName: t('subscriptions.price'),
+      width: 100,
+      renderCell: (params) => `€ ${params.value}`,
+    },
+    {
       field: 'chat',
       headerName: t('subscriptions.chat'),
       width: 120,
@@ -73,14 +79,14 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
       renderCell: (params) => (params.value ? t('subscriptions.yes') : t('subscriptions.no')),
     },
     {
-      field: 'supplementPlan',
-      headerName: t('subscriptions.supplementPlan'),
+      field: 'integrationPlan',
+      headerName: t('subscriptions.integrationPlan'),
       width: 180,
       renderCell: (params) => (params.value ? t('subscriptions.yes') : t('subscriptions.no')),
     },
     {
-      field: 'workoutPlan',
-      headerName: t('subscriptions.workoutPlan'),
+      field: 'trainingCard',
+      headerName: t('subscriptions.trainingCard'),
       width: 150,
       renderCell: (params) => (params.value ? t('subscriptions.yes') : t('subscriptions.no')),
     },

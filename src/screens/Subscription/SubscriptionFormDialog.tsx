@@ -10,6 +10,10 @@ import {
   Box,
   Checkbox,
   IconButton,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
 } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +31,7 @@ interface SubscriptionFormDialogProps {
   onClose: () => void;
   onSubmit: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  editMode: boolean; // New prop
 }
 
 const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
@@ -36,13 +41,14 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
   onClose,
   onSubmit,
   onInputChange,
+  editMode,
 }) => {
   const { t } = useTranslation();
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {t('subscriptions.addSubscription')}
+        {editMode ? t('subscriptions.editSubscription') : t('subscriptions.addSubscription')}
         <IconButton onClick={onClose} color="secondary" size="small">
           <Close />
         </IconButton>
@@ -78,17 +84,18 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
             style={{ border: 'none', background: 'none', cursor: 'pointer' }}
           />
         </Box>
-        <TextField
-          label={t('subscriptions.duration')}
-          name="duration"
-          type="number"
-          value={formData.duration}
-          onChange={onInputChange}
-          fullWidth
-          margin="normal"
-          error={!!errors.duration}
-          helperText={errors.duration}
-        />
+        <FormControl variant="outlined" fullWidth margin="normal">
+          <InputLabel htmlFor="duration">{t('subscriptions.duration')}</InputLabel>
+          <OutlinedInput
+            id="duration"
+            name="duration"
+            type="number"
+            label={t('subscriptions.duration')}
+            value={formData.duration}
+            onChange={onInputChange}
+            endAdornment={<InputAdornment position="end">{t('subscriptions.days')}</InputAdornment>}
+          />
+        </FormControl>
         <TextField
           label={t('subscriptions.monthlyChecks')}
           name="monthlyChecks"
@@ -109,6 +116,18 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
           error={!!errors.order}
           helperText={errors.order}
         />
+        <FormControl variant="outlined" fullWidth margin="normal">
+          <InputLabel htmlFor="price">{t('subscriptions.price')}</InputLabel>
+          <OutlinedInput
+            id="price"
+            name="price"
+            type="number"
+            label={t('subscriptions.price')}
+            value={formData.price}
+            onChange={onInputChange}
+            startAdornment={<InputAdornment position="start">€</InputAdornment>}
+          />
+        </FormControl>
         <Box sx={{ mt: 2 }}>
           <Box
             sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, cursor: 'pointer' }}
@@ -153,23 +172,23 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
             sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, cursor: 'pointer' }}
             onClick={() =>
               onInputChange({
-                target: { name: 'supplementPlan', type: 'checkbox', checked: !formData.supplementPlan },
+                target: { name: 'integrationPlan', type: 'checkbox', checked: !formData.integrationPlan },
               } as React.ChangeEvent<HTMLInputElement>)
             }
           >
-            <Checkbox checked={formData.supplementPlan} />
-            <Typography>{t('subscriptions.supplementPlan')}</Typography>
+            <Checkbox checked={formData.integrationPlan} />
+            <Typography>{t('subscriptions.integrationPlan')}</Typography>
           </Box>
           <Box
             sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, cursor: 'pointer' }}
             onClick={() =>
               onInputChange({
-                target: { name: 'workoutPlan', type: 'checkbox', checked: !formData.workoutPlan },
+                target: { name: 'trainingCard', type: 'checkbox', checked: !formData.trainingCard },
               } as React.ChangeEvent<HTMLInputElement>)
             }
           >
-            <Checkbox checked={formData.workoutPlan} />
-            <Typography>{t('subscriptions.workoutPlan')}</Typography>
+            <Checkbox checked={formData.trainingCard} />
+            <Typography>{t('subscriptions.trainingCard')}</Typography>
           </Box>
           <Box
             sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, cursor: 'pointer' }}
@@ -189,7 +208,7 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
           {t('subscriptions.cancel')}
         </Button>
         <Button onClick={onSubmit} color="primary">
-          {t('subscriptions.add')}
+          {editMode ? t('subscriptions.update') : t('subscriptions.add')}
         </Button>
       </DialogActions>
     </Dialog>

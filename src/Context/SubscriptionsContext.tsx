@@ -15,9 +15,10 @@ export interface Subscription {
     chat: boolean;
     freeIntroductoryCall: boolean;
     mealPlan: boolean;
-    supplementPlan: boolean;
-    workoutPlan: boolean;
+    integrationPlan: boolean;
+    trainingCard: boolean;
     vip: boolean;
+    price: number
   }
 
 // Define the context type

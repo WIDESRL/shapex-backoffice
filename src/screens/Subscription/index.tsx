@@ -25,9 +25,10 @@ const SubscriptionsScreen: React.FC = () => {
     chat: false,
     freeIntroductoryCall: false,
     mealPlan: false,
-    supplementPlan: false,
-    workoutPlan: false,
+    integrationPlan: false,
+    trainingCard: false,
     vip: false,
+    price: 0,
   });
   const [editMode, setEditMode] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -63,9 +64,10 @@ const SubscriptionsScreen: React.FC = () => {
         chat: false,
         freeIntroductoryCall: false,
         mealPlan: false,
-        supplementPlan: false,
-        workoutPlan: false,
+        integrationPlan: false,
+        trainingCard: false,
         vip: false,
+        price: 0,
       });
       setEditMode(false);
       setSelectedId(null);
@@ -154,6 +156,7 @@ const SubscriptionsScreen: React.FC = () => {
         onClose={handleCloseForm}
         onSubmit={handleFormSubmit}
         onInputChange={handleInputChange}
+        editMode={editMode}
       />
       <DeleteConfirmationDialog
         open={openDeleteConfirm}
