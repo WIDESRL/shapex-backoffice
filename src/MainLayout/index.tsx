@@ -42,6 +42,7 @@ const MainLayout: React.FC = () => {
 
       {/* Topbar */}
       {isAuth && (
+        <>
         <TopBar
             isSmallScreen={isSmallScreen}
             drawerOpen={drawerOpen}
@@ -53,16 +54,13 @@ const MainLayout: React.FC = () => {
             drawerWidth={drawerWidth}
             theme={theme}
         />
-      )}
-
-      {/* Left Drawer */}
-      {isAuth && (
-       <SideDrawer
+        <SideDrawer
           isSmallScreen={isSmallScreen}
           drawerOpen={drawerOpen}
           toggleDrawer={toggleDrawer}
           drawerWidth={drawerWidth}
         />
+      </>
       )}
 
       {/* Main Content */}
