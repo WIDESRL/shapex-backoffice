@@ -46,6 +46,18 @@ export const api = {
     const response = await axiosInstance.post(url, data);
     return response.data;
   },
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  put: async (url: string, data?: Record<string, any>) => {
+    const response = await axiosInstance.put(url, data);
+    return response.data;
+  },
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  delete: async (url: string, data?: Record<string, any>) => {
+    const response = await axiosInstance.delete(url, data);
+    return response.data;
+  },
 };
 
 export default axiosInstance;
