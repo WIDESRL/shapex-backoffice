@@ -25,7 +25,7 @@ interface LoginCredentials {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(localStorage.getItem('token') !== null);
   const [token, setToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
@@ -53,8 +53,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsAuth(true);
         setToken(storedToken);
       }
-      else if (storedRefreshToken) refreshMutation.mutate({ refreshToken: storedRefreshToken || '' });
+      else if (storedRefreshToken) refreshMutation.mutate({ refreshToken: storedRefreshToken || '' })
+      else setIsAuth(false); // Set to false if no valid token exists 
     }
+    else setIsAuth(false);
+
     if (storedRefreshToken) {
       const decoded = decodeToken(storedRefreshToken);
       if (decoded && decoded.exp * 1000 > currentTimestamp) {
