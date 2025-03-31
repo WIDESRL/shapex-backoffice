@@ -1,7 +1,42 @@
 {
-    "menu": {
-      "profile": "Profilo",
-      "logout": "Disconnettersi"
-    },
-    "language": "Lingua"
+  "menu": {
+    "profile": "Profilo",
+    "logout": "Disconnettersi"
+  },
+  "language": "Lingua",
+  "subscriptions": {
+    "manageSubscriptions": "Gestisci Abbonamenti",
+    "addSubscription": "Aggiungi Abbonamento",
+    "editSubscription": "Modifica Abbonamento",
+    "title": "Titolo",
+    "description": "Descrizione",
+    "color": "Colore",
+    "duration": "Durata in giorni",
+    "monthlyChecks": "Controlli Mensili",
+    "order": "Ordine",
+    "chat": "Chat",
+    "freeIntroCall": "Chiamata Introduttiva Gratuita",
+    "mealPlan": "Piano Alimentare",
+    "supplementPlan": "Piano Integratori",
+    "workoutPlan": "Piano Allenamento",
+    "vip": "VIP",
+    "actions": "Azioni",
+    "days": "giorni",
+    "yes": "Sì",
+    "no": "No",
+    "cancel": "Annulla",
+    "add": "Aggiungi",
+    "update": "Aggiorna",
+    "delete": "Elimina",
+    "confirmDeletion": "Conferma Eliminazione",
+    "confirmDeletionMessage": "Sei sicuro di voler eliminare questo abbonamento?",
+    "createdAt": "Creato il",
+    "updatedAt": "Aggiornato il",
+    "validation": {
+      "titleRequired": "Il titolo è obbligatorio.",
+      "descriptionRequired": "La descrizione è obbligatoria.",
+      "durationPositive": "La durata deve essere un numero positivo maggiore di 0.",
+      "orderPositive": "L'ordine deve essere un numero positivo maggiore di 0."
+    }
   }
+}
