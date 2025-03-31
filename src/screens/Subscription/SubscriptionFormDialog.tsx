@@ -9,7 +9,9 @@ import {
   Typography,
   Box,
   Checkbox,
+  IconButton,
 } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { Subscription } from '../../Context/SubscriptionsContext';
 
@@ -39,7 +41,12 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>{t('subscriptions.addSubscription')}</DialogTitle>
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        {t('subscriptions.addSubscription')}
+        <IconButton onClick={onClose} color="secondary" size="small">
+          <Close />
+        </IconButton>
+      </DialogTitle>
       <DialogContent>
         <TextField
           label={t('subscriptions.title')}
