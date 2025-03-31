@@ -1,9 +1,10 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '../utils/axiosInstance'; // Reuse the axios instance
+import { omit } from 'lodash';
 
 // Define the structure of a subscription
-interface Subscription {
+export interface Subscription {
     id: number;
     title: string;
     description: string;
@@ -17,8 +18,6 @@ interface Subscription {
     supplementPlan: boolean;
     workoutPlan: boolean;
     vip: boolean;
-    createdAt: string;
-    updatedAt: string;
   }
 
 // Define the context type
@@ -27,6 +26,7 @@ interface SubscriptionsContextType {
   isLoading: boolean;
   fetchSubscriptions: () => void;
   addSubscription: (subscription: Omit<Subscription, 'id'>) => Promise<void>;
+  updateSubscription: (subscription: Subscription) => Promise<void>; // Added updateSubscription
   removeSubscription: (id: string) => Promise<void>;
 }
 
@@ -62,10 +62,26 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
     },
   });
 
+  // Mutation to update a subscription
+  const updateSubscriptionMutation = useMutation<Subscription, Error, Subscription>({
+    mutationFn: async (updatedSubscription: Subscription) => {
+      const payload = omit(updatedSubscription, ['id', 'createdAt', 'updatedAt']);
+      return api.put(`/subscriptions/${updatedSubscription.id}`, payload); // Replace with your API endpoint
+    },
+    onSuccess: (data) => {
+      setSubscriptions((prev) =>
+        prev.map((sub) => (sub.id === data.id ? data : sub)) // Update the subscription in the state
+      );
+    },
+    onError: (error) => {
+      console.error('Failed to update subscription:', error);
+    },
+  });
+
   // Mutation to remove a subscription
   const removeSubscriptionMutation = useMutation<void, Error, string>({
     mutationFn: async (id: string) => {
-      await api.post(`/subscriptions/${id}/delete`); // Replace with your API endpoint
+      await api.delete(`/subscriptions/${id}`); // Replace with your API endpoint
     },
     onSuccess: (_, id) => {
       setSubscriptions((prev) => prev.filter((sub) => String(sub.id) !== id));
@@ -83,6 +99,10 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
     await addSubscriptionMutation.mutateAsync(subscription);
   };
 
+  const updateSubscription = async (subscription: Subscription) => {
+    await updateSubscriptionMutation.mutateAsync(subscription);
+  };
+
   const removeSubscription = async (id: string) => {
     await removeSubscriptionMutation.mutateAsync(id);
   };
@@ -94,6 +114,7 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
         isLoading,
         fetchSubscriptions,
         addSubscription,
+        updateSubscription, // Added updateSubscription to the context
         removeSubscription,
       }}
     >
