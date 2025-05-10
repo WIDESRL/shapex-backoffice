@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './Context/AuthContext';
 import LoginScreen from './screens/LoginScreen';
-import SubscriptionScreen from './screens/SubscriptionScreen';
+import SubscriptionScreen from './screens/Subscription';
 
 const AppRoutes: React.FC = () => {
   const { isAuth } = useAuth();
@@ -13,8 +13,9 @@ const AppRoutes: React.FC = () => {
         <Route path="/login" element={<LoginScreen />} />
       ) : (
         <>
+          <Route path="/" element={<SubscriptionScreen />} />
           <Route path="/subscriptions" element={<SubscriptionScreen />} />
-          <Route path="*" element={<Navigate to="/subscriptions" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </>
       )}
       <Route path="*" element={<Navigate to={isAuth ? '/subscriptions' : '/login'} />} />
