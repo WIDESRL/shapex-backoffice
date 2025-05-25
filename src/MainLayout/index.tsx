@@ -57,16 +57,10 @@ const MainLayout: React.FC = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          ml: isAuth
-            ? isSmallScreen
-              ? `${miniDrawer ? miniDrawerWidth : drawerWidth}px`
-              : `${drawerWidth}px`
-            : 0,
+          p: 3, 
           transition: 'margin-left 0.3s cubic-bezier(.4,0,.2,1)',
         }}
       >
-        {/* <Toolbar /> */}
         <AppRoutes />
       </Box>
     </Box>
