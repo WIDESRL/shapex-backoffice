@@ -1,0 +1,9 @@
+body, html, #root {
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif !important;
+  font-weight: 400;
+}
+
+/* Ensure all elements inherit the font */
+*, *::before, *::after {
+  font-family: inherit !important;
+}

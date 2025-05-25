@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography } from '@mui/material';
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  InputAdornment,
+} from '@mui/material';
+
 import { useAuth } from '../Context/AuthContext';
 
 const LoginScreen: React.FC = () => {
@@ -16,41 +23,164 @@ const LoginScreen: React.FC = () => {
       await login({ username, password });
       // Redirect to a protected route or dashboard
     } catch (error) {
-      console.log(error)
       setError('Invalid username or password');
     }
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 5 }}>
-      <Typography variant="h4" gutterBottom>
-        Login
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Username"
-          fullWidth
-          margin="normal"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          type="password"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {error && (
-          <Typography color="error" sx={{ mt: 1 }}>
-            {error}
-          </Typography>
-        )}
-        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-          Login
-        </Button>
-      </form>
+    <Box
+      sx={{
+        position: 'fixed',
+        inset: 0,
+        minHeight: '100vh',
+        minWidth: '100vw',
+        background: 'linear-gradient(180deg, #F5B52A 0%, #E8A723 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        m: 0,
+        p: 0,
+      }}
+    >
+      <Box
+        sx={{
+          maxWidth: 400,
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Logo */}
+        <Box sx={{ mb: 4, mt: { xs: 2, md: 0 } }}>
+          <img
+            src="/icons/shapex.svg"
+            alt="SHAPEX"
+            style={{ width: 180, display: 'block', margin: '0 auto' }}
+          />
+        </Box>
+        {/* Title */}
+        <Typography variant="h4" sx={{ fontWeight: 500, mb: 1, textAlign: 'center', marginTop: 10 }}>
+          Log in
+        </Typography>
+        {/* Subtitle */}
+        <Typography
+          sx={{
+            color: '#333',
+            opacity: 0.7,
+            fontSize: 15,
+            mb: 3,
+            textAlign: 'center',
+            maxWidth: 320,
+          }}
+        >
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+        </Typography>
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ width: '100%', marginTop: 20 }}>
+          <TextField
+            placeholder="E-Mail"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <img src="/icons/user.svg" alt="user" style={{ width: 22, height: 22 }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              background: 'transparent',
+              borderRadius: 8,
+              mb: 2,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 3,
+                backgroundColor: 'transparent !important', // force transparent
+              },
+              '& .MuiInputBase-input': {
+                backgroundColor: 'transparent !important', // force transparent
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#5C460F',
+              },
+            }}
+          />
+          <TextField
+            placeholder="Password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <img src="/icons/lock.svg" alt="lock" style={{ width: 22, height: 22 }} />
+                </InputAdornment>
+              ),
+            }}
+            sx={{
+              background: 'transparent',
+              borderRadius: 8,
+              mb: 2,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 4,
+                backgroundColor: 'transparent !important', // force transparent
+              },
+              '& .MuiInputBase-input': {
+                backgroundColor: 'transparent !important', // force transparent
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#5C460F',
+              },
+            }}
+          />
+          {error && (
+            <Typography color="error" sx={{ mt: 1, textAlign: 'center' }}>
+              {error}
+            </Typography>
+          )}
+          <Button
+            type="submit"
+            variant="contained"
+            color="inherit"
+            fullWidth
+            sx={{
+              mt: 2,
+              borderRadius: 2,
+              fontWeight: 500,
+              fontSize: 18,
+              background: '#fff',
+              color: '#222',
+              boxShadow: 'none',
+              '&:hover': {
+                background: '#f5f5f5',
+                boxShadow: 'none',
+              },
+              height: 48,
+            }}
+          >
+            Log in
+          </Button>
+        </form>
+        {/* Bottom link */}
+        <Typography
+          sx={{
+            mt: 6,
+            fontSize: 13,
+            color: '#222',
+            opacity: 0.7,
+            textAlign: 'center',
+          }}
+        >
+        
+        </Typography>
+      </Box>
     </Box>
   );
 };

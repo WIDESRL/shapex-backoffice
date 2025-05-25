@@ -1,29 +1,20 @@
 import React, { useEffect } from 'react';
-import { Box, Toolbar, CssBaseline, useMediaQuery } from '@mui/material';
+import { Box, CssBaseline, useMediaQuery } from '@mui/material';
 
 import { useAuth } from '../Context/AuthContext';
 import AppRoutes from '../Routes';
 import { useTheme } from '@mui/material/styles';
-import TopBar from './TopBar';
 import SideDrawer
  from './SideDrawer';
 const drawerWidth = 240;
+const miniDrawerWidth = 65;
 
 const MainLayout: React.FC = () => {
   const { isAuth, logout } = useAuth();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [_, setDrawerOpen] = React.useState(false);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm')); // Detect screen width below 'sm' breakpoint
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
 
   const toggleDrawer = (open: boolean) => {
     setDrawerOpen(open);
@@ -36,44 +27,46 @@ const MainLayout: React.FC = () => {
     }
   }, [isSmallScreen]);
 
+
+  // Drawer state for mini/expanded on small screens
+  const [miniDrawer, setMiniDrawer] = React.useState(isSmallScreen);
+
+  useEffect(() => {
+    setMiniDrawer(isSmallScreen); // Mini by default on small screens
+  }, [isSmallScreen]);
+
+
+  // Remove hover handlers from the main content area to prevent rapid toggling
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <CssBaseline />
 
-      {/* Topbar */}
       {isAuth && (
-        <>
-        <TopBar
-            isSmallScreen={isSmallScreen}
-            drawerOpen={drawerOpen}
-            toggleDrawer={toggleDrawer}
-            handleMenuOpen={handleMenuOpen}
-            handleMenuClose={handleMenuClose}
-            anchorEl={anchorEl}
-            logout={logout}
-            drawerWidth={drawerWidth}
-            theme={theme}
-        />
         <SideDrawer
           isSmallScreen={isSmallScreen}
-          drawerOpen={drawerOpen}
+          drawerOpen={!miniDrawer}
+          miniDrawer={miniDrawer}
           toggleDrawer={toggleDrawer}
+          toggleMiniDrawer={setMiniDrawer}
           drawerWidth={drawerWidth}
+          miniDrawerWidth={miniDrawerWidth}
         />
-      </>
       )}
 
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          ml: isSmallScreen ? 0 : drawerOpen ? `${drawerWidth}px` : 0,
-          transition: 'margin-left 0.3s ease',
+          ml: isAuth
+            ? isSmallScreen
+              ? `${miniDrawer ? miniDrawerWidth : drawerWidth}px`
+              : `${drawerWidth}px`
+            : 0,
+          transition: 'margin-left 0.3s cubic-bezier(.4,0,.2,1)',
         }}
       >
-        <Toolbar />
+        {/* <Toolbar /> */}
         <AppRoutes />
       </Box>
     </Box>

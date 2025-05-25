@@ -128,7 +128,14 @@ const SubscriptionsScreen: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3, maxWidth: '95vw' }}>
+    <Box
+      sx={{
+        p: 3,
+        width: '80%',
+        maxWidth: 'none',
+        boxSizing: 'border-box',
+      }}
+    >
       <Typography variant="h4" gutterBottom>
         {t('subscriptions.manageSubscriptions')}
       </Typography>

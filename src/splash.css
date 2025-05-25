@@ -1,0 +1,9 @@
+#splash-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: url('/Intro.png') center center no-repeat;
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+}
