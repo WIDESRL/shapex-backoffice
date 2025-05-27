@@ -5,7 +5,7 @@
   },
   "language": "Lingua",
   "subscriptions": {
-    "manageSubscriptions": "Gestisci Abbonamenti",
+    "manageSubscriptions": "Abbonamenti",
     "addSubscription": "Aggiungi Abbonamento",
     "editSubscription": "Modifica Abbonamento",
     "title": "Titolo",
@@ -28,16 +28,20 @@
     "add": "Aggiungi",
     "update": "Aggiorna",
     "delete": "Elimina",
-    "confirmDeletion": "Conferma Eliminazione",
-    "confirmDeletionMessage": "Sei sicuro di voler eliminare questo abbonamento?",
+    "confirmDeletion": "Sei sicuro di voler eliminare questo abbonamento?",
+    "confirmDeletionMessage": "Questa operazione non può essere annullata.",
+    "confirm": "Conferma",
     "createdAt": "Creato il",
     "updatedAt": "Aggiornato il",
     "price": "Prezzo",
+    "save": "Salva",
+    "chooseCustomColor": "Scegli altro colore...",
     "validation": {
       "titleRequired": "Il titolo è obbligatorio.",
       "descriptionRequired": "La descrizione è obbligatoria.",
       "durationPositive": "La durata deve essere un numero positivo maggiore di 0.",
       "orderPositive": "L'ordine deve essere un numero positivo maggiore di 0."
-    }
+    },
+    "deletionIrreversible": "Questa operazione non può essere annullata."
   }
 }

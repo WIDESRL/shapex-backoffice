@@ -2,17 +2,14 @@ import React, { useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import { useSubscriptions, Subscription } from '../../Context/SubscriptionsContext';
-import SubscriptionTable from './SubscriptionTable';
+import SubscriptionCardsGrid from './SubscriptionCardsGrid';
 import SubscriptionFormDialog from './SubscriptionFormDialog';
 import DeleteConfirmationDialog from './DeleteConfirmationDialog';
 import { useTranslation } from 'react-i18next';
-import { GridSortModel } from '@mui/x-data-grid';
-
-const SORT_LOCAL_STORAGE_KEY = 'subscriptionsSortModel';
 
 const SubscriptionsScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { subscriptions, isLoading, addSubscription, updateSubscription, removeSubscription } = useSubscriptions();
+  const { subscriptions, addSubscription, updateSubscription, removeSubscription } = useSubscriptions();
   const [openForm, setOpenForm] = useState(false);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState<Omit<Subscription, 'id'>>({
@@ -38,15 +35,6 @@ const SubscriptionsScreen: React.FC = () => {
     duration: '',
     order: '',
   });
-  const [sortModel, setSortModel] = useState(() => {
-    const savedSortModel = localStorage.getItem(SORT_LOCAL_STORAGE_KEY);
-    return savedSortModel ? JSON.parse(savedSortModel) : [];
-  });
-
-  const handleSortModelChange = (newSortModel: GridSortModel) => {
-    setSortModel(newSortModel);
-    localStorage.setItem(SORT_LOCAL_STORAGE_KEY, JSON.stringify(newSortModel));
-  };
 
   const handleOpenForm = (subscription?: Subscription) => {
     if (subscription) {
@@ -131,28 +119,46 @@ const SubscriptionsScreen: React.FC = () => {
     <Box
       sx={{
         p: 3,
-        width: '80%',
+        width: '100%',
         maxWidth: 'none',
         boxSizing: 'border-box',
       }}
     >
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        sx={{
+          fontSize: 38,
+          fontWeight: 400,
+          color: '#616160',
+          fontFamily: 'Montserrat, sans-serif',
+          mb: 2,
+        }}
+      >
         {t('subscriptions.manageSubscriptions')}
       </Typography>
       <Button
         variant="contained"
-        color="primary"
-        startIcon={<Add />}
+        startIcon={<Add sx={{ fontSize: 28 }} />}
         onClick={() => handleOpenForm()}
-        sx={{ mb: 2 }}
+        sx={{
+          background: '#E6BB4A',
+          color: '#fff',
+          borderRadius: 2,
+          fontWeight: 500,
+          fontSize: 20,
+          px: 3.5,
+          py: 1.2,
+          minWidth: 180,
+          boxShadow: 0,
+          textTransform: 'none',
+          fontFamily: 'Montserrat, sans-serif',
+          mb: 4,
+          '&:hover': { background: '#d1a53d' },
+        }}
       >
         {t('subscriptions.addSubscription')}
       </Button>
-      <SubscriptionTable
+      <SubscriptionCardsGrid
         subscriptions={subscriptions}
-        isLoading={isLoading}
-        sortModel={sortModel}
-        onSortModelChange={handleSortModelChange}
         onEdit={handleOpenForm}
         onDelete={handleOpenDeleteConfirm}
       />
