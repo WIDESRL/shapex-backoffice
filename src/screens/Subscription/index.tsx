@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import { useSubscriptions, Subscription } from '../../Context/SubscriptionsContext';
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 const SubscriptionsScreen: React.FC = () => {
   const { t } = useTranslation();
-  const { subscriptions, addSubscription, updateSubscription, removeSubscription } = useSubscriptions();
+  const { subscriptions, addSubscription, updateSubscription, removeSubscription, fetchSubscriptions } = useSubscriptions();
   const [openForm, setOpenForm] = useState(false);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState<Omit<Subscription, 'id'>>({
@@ -35,6 +35,11 @@ const SubscriptionsScreen: React.FC = () => {
     duration: '',
     order: '',
   });
+
+  useEffect(() => {
+    fetchSubscriptions();
+  }
+, [fetchSubscriptions]);
 
   const handleOpenForm = (subscription?: Subscription) => {
     if (subscription) {
@@ -175,6 +180,8 @@ const SubscriptionsScreen: React.FC = () => {
         open={openDeleteConfirm}
         onClose={handleCloseDeleteConfirm}
         onConfirm={handleDelete}
+        title={t('subscriptions.confirmDeletion')}
+        description={t('subscriptions.deletionIrreversible') || 'This action cannot be undone.'}
       />
     </Box>
   );

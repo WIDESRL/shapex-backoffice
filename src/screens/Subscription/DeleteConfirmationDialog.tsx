@@ -6,9 +6,11 @@ interface DeleteConfirmationDialogProps {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  title: string;
+  description?: string;
 }
 
-const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ open, onClose, onConfirm }) => {
+const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ open, onClose, onConfirm, title, description }) => {
   const { t } = useTranslation();
 
   return (
@@ -51,7 +53,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ ope
           fontFamily: 'Montserrat, sans-serif',
         }}
       >
-        {t('subscriptions.confirmDeletion')}
+        {title}
       </DialogTitle>
       <DialogContent
         sx={{
@@ -63,7 +65,7 @@ const DeleteConfirmationDialog: React.FC<DeleteConfirmationDialogProps> = ({ ope
         }}
       >
         <Typography sx={{ fontSize: 14, color: '#b0b0b0', fontFamily: 'Montserrat, sans-serif' }}>
-          {t('subscriptions.deletionIrreversible') || 'Questa operazione non può essere annullata.'}
+          {description}
         </Typography>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'center', gap: 2, pb: 2 }}>

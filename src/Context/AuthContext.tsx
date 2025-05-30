@@ -43,28 +43,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedRefreshToken = localStorage.getItem('refreshToken');
-    const currentTimestamp = Date.now()
-    if (storedToken) {
-      const decoded = decodeToken(storedToken);
-      if (decoded && decoded.exp * 1000 > currentTimestamp) {
-        setIsAuth(true);
-        setToken(storedToken);
-      }
-      else if (storedRefreshToken) refreshMutation.mutate({ refreshToken: storedRefreshToken || '' })
-      else setIsAuth(false); // Set to false if no valid token exists 
-    }
-    else setIsAuth(false);
-
-    if (storedRefreshToken) {
-      const decoded = decodeToken(storedRefreshToken);
-      if (decoded && decoded.exp * 1000 > currentTimestamp) {
-        setRefreshToken(storedRefreshToken);
-      }
-    }
-  }, []);
 
   // React Query mutation for login
   const loginMutation = useMutation<LoginResponse, Error, LoginCredentials>({

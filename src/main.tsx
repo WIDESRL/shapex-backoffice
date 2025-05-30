@@ -8,6 +8,7 @@ import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './Context/AuthContext';
 import { SubscriptionsProvider } from './Context/SubscriptionsContext';
+import { BannersProvider } from './Context/BannersContext';
 import './i18n/i18n'; // Import the i18n configuration file
 import { requestNotificationPermission, listenForMessages } from './notifications';
 import './splash.css'; // Add this import
@@ -31,7 +32,9 @@ const renderApp = () => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SubscriptionsProvider>
-          <App />
+          <BannersProvider>
+            <App />
+          </BannersProvider>
         </SubscriptionsProvider>
       </AuthProvider>
     </QueryClientProvider>

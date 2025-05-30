@@ -43,5 +43,29 @@
       "orderPositive": "L'ordine deve essere un numero positivo maggiore di 0."
     },
     "deletionIrreversible": "Questa operazione non può essere annullata."
+  },
+  "banners": {
+    "manageBanners": "Gestione Banners",
+    "addBanner": "Aggiungi Banner",
+    "editBanner": "Modifica Banner",
+    "title": "Titolo",
+    "description": "Descrizione",
+    "size": "Dimensione",
+    "link": "Link",
+    "couponCode": "Codice Coupon",
+    "color": "Colore",
+    "image": "Immagine",
+    "actions": "Azioni",
+    "noBanners": "Nessun banner trovato",
+    "addToGetStarted": "Aggiungi un nuovo banner per iniziare!",
+    "save": "Salva",
+    "saveChanges": "Salva Modifiche",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "confirmDeletion": "Sei sicuro di voler eliminare questo banner?",
+    "loading": "Caricamento banners...",
+    "sizeGreat": "Grande",
+    "sizeMedium": "Media",
+    "sizeSmall": "Piccola"
   }
 }
