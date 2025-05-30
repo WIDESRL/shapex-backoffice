@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
 import { Dialog, DialogActions, DialogContent, Button, Box, Slider } from '@mui/material';
 
-function getCroppedImg(imageSrc: string, crop: any, zoom: number, aspect: number): Promise<string> {
+function getCroppedImg(imageSrc: string, crop: any): Promise<string> {
   return new Promise((resolve, reject) => {
     const image = new window.Image();
     image.src = imageSrc;
@@ -57,7 +57,7 @@ const ImageCropDialog: React.FC<ImageCropDialogProps> = ({ open, imageSrc, aspec
 
   const handleCrop = async () => {
     if (!croppedAreaPixels) return;
-    const croppedImg = await getCroppedImg(imageSrc, croppedAreaPixels, zoom, aspect);
+    const croppedImg = await getCroppedImg(imageSrc, croppedAreaPixels);
     onCropComplete(croppedImg);
     onClose();
   };

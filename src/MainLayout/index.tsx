@@ -10,7 +10,7 @@ const drawerWidth = 240;
 const miniDrawerWidth = 65;
 
 const MainLayout: React.FC = () => {
-  const { isAuth, logout } = useAuth();
+  const { isAuth } = useAuth();
   const [_, setDrawerOpen] = React.useState(false);
 
   const theme = useTheme();

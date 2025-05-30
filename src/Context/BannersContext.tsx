@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '../utils/axiosInstance';
-
+import { useAuth } from './AuthContext';
 export interface Banner {
     id: number;
     title: string;
@@ -35,6 +35,39 @@ const BannersContext = createContext<BannersContextType | undefined>(undefined);
 
 export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [banners, setBanners] = useState<Banner[]>([]);
+    const { socketInstance } = useAuth();
+
+
+    useEffect(() => {
+        if (socketInstance) {
+            // Listen for banner updates from the socket
+            socketInstance.on('bannerUpdated', (updatedBanner: Banner) => {
+                console.log('Banner updated:', updatedBanner);
+                // Update the banners state with the updated banner
+                setBanners(prev => {
+                    const index = prev.findIndex(b => b.id === updatedBanner.id);
+                    if (index !== -1) {
+                        // If banner exists, update it
+                        const newBanners = [...prev];
+                        newBanners[index] = updatedBanner;
+                        return newBanners;
+                    } else {
+                        // If banner does not exist, add it
+                        return [...prev, updatedBanner];
+                    }
+                }
+                );
+            });
+
+    
+        }
+
+        return () => {
+            if (socketInstance) {
+                socketInstance.off('bannerUpdated');
+            }
+        };
+    }, [socketInstance]);
 
     // Fetch banners
     const { data, isLoading, refetch } = useQuery<Banner[], Error>({
@@ -147,6 +180,8 @@ export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children })
 
 export const useBanners = (): BannersContextType => {
     const context = useContext(BannersContext);
+
+  
     if (!context) {
         throw new Error('useBanners must be used within a BannersProvider');
     }

@@ -1,8 +1,21 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect, useRef, useCallback } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 // import axios from 'axios';
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { api } from '../utils/axiosInstance'; // Import the reusable API methods
+import { v4 as uuidv4 } from 'uuid';
+import {connectSocketPromise, disconnectSocket} from '../socket'; // Import socket connection methods
+import { Socket } from 'socket.io-client';
+import { requestNotificationPermission, stopPushNotifications } from '../notifications';
+
+const getDeviceId = () => {
+  let deviceId = localStorage.getItem('deviceId');
+  if (!deviceId) {
+    deviceId = uuidv4();
+    localStorage.setItem('deviceId', deviceId);
+  }
+  return deviceId;
+};
+
 
 interface AuthContextType {
   isAuth: boolean;
@@ -10,6 +23,7 @@ interface AuthContextType {
   refreshToken: string | null;
   login: (credentials: { username: string; password: string }) => Promise<void>;
   logout: () => void;
+  socketInstance: Socket | null;
 }
 
 interface LoginResponse {
@@ -28,20 +42,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isAuth, setIsAuth] = useState(localStorage.getItem('token') !== null);
   const [token, setToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [socketInstance, setSocketInstance] = useState<Socket | null>(null);
 
-  // Reference to store the interval ID
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Decode token to get expiration time
-  const decodeToken = (token: string): { exp: number } | null => {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1])); // Decode the payload
-      return payload;
-    } catch (error) {
-      console.error('Failed to decode token:', error);
-      return null;
+  useEffect(() => {
+    if (isAuth) {
+      connectSocketPromise()
+        .then((socket) => {
+          setSocketInstance(socket);
+        })
+    } else {
+      setSocketInstance(null);
     }
-  };
+  }, [isAuth]);
 
 
   // React Query mutation for login
@@ -55,6 +68,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setRefreshToken(data.refreshToken);
       localStorage.setItem('token', data.token); // Save token to localStorage
       localStorage.setItem('refreshToken', data.refreshToken); // Save token to localStorage
+      requestNotificationPermission()
+      .then(fcmToken => {
+         const deviceId = getDeviceId();
+        if(fcmToken && deviceId){
+          api.post('/users/register-fcm-token', { fcmToken, deviceId });
+        }
+      })
     },
     onError: (error) => {
       console.error('Login failed:', error);
@@ -78,58 +98,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setToken(null);
           setRefreshToken(null);
           setIsAuth(false);
+          disconnectSocket();
+          stopPushNotifications();
         });
     }
   };
 
-  // React Query mutation for refreshing the token
-  const refreshMutation = useMutation<LoginResponse, Error, { refreshToken: string }>({
-    mutationFn: async ({ refreshToken }) => api.post('/auth/refresh-token', { refreshToken }),
-    onSuccess: (data) => {
-      if (data?.token) {
-        setIsAuth(true);
-        setToken(data.token);
-        localStorage.setItem('token', data.token); // Update token in localStorage
-      }
-      if (data?.refreshToken) {
-        setRefreshToken(data.refreshToken);
-        localStorage.setItem('refreshToken', data.refreshToken); // Update refreshToken in localStorage
-      }
-    },
-    onError: (error) => console.error('Token refresh failed:', error)
-  });
-
-  // Function to start the interval
-  const startTokenExpirationCheck = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-
-    intervalRef.current = setInterval(() => {
-      if (token && refreshToken) {
-        const decoded = decodeToken(token);
-        if (decoded) {
-          const timeLeft = decoded.exp * 1000 - Date.now();
-          if (timeLeft <= 60000) refreshMutation.mutate({ refreshToken: localStorage.getItem('refreshToken') || refreshToken });
-        }
-      }
-    }, 60000); // Check every minute
-  }, [token, refreshToken, refreshMutation]);
-
-  // Function to stop the interval
-  const stopTokenExpirationCheck = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
-
-  // Start or stop the interval based on token and refreshToken
-  useEffect(() => {
-    if (token && refreshToken) startTokenExpirationCheck();
-    else stopTokenExpirationCheck();
-    return stopTokenExpirationCheck; // Cleanup on unmount
-  }, [token, refreshToken, startTokenExpirationCheck, stopTokenExpirationCheck]);
   return (
-    <AuthContext.Provider value={{ isAuth, token, login, logout, refreshToken }}>
+    <AuthContext.Provider value={{ isAuth, token, login, logout, refreshToken, socketInstance }}>
       {children}
     </AuthContext.Provider>
   );

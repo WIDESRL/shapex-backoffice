@@ -27,7 +27,9 @@
     "react-easy-crop": "^5.4.2",
     "react-i18next": "^15.4.1",
     "react-quill-new": "^3.4.6",
-    "react-router-dom": "^7.4.0"
+    "react-router-dom": "^7.4.0",
+    "socket.io-client": "^4.8.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

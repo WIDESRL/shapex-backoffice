@@ -8,7 +8,6 @@ import DisabledClientsIcon from '../icons/DisabledClientsIcon';
 import CompletedTrainingsIcon from '../icons/CompletedTrainingsIcon';
 import ProgramsCompletedIcon from '../icons/ProgramsCompletedIcon';
 import MagnifierIcon from '../icons/MagnifierIcon';
-import { text } from 'stream/consumers';
 
 // Fake data for dashboard summary
 const dashboardStats = [
