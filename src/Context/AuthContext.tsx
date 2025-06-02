@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 // import axios from 'axios';
 import { api } from '../utils/axiosInstance'; // Import the reusable API methods
 import { v4 as uuidv4 } from 'uuid';
-import {connectSocketPromise, disconnectSocket} from '../socket'; // Import socket connection methods
+import { disconnectSocket, initSocket} from '../socket'; // Import socket connection methods
 import { Socket } from 'socket.io-client';
 import { requestNotificationPermission, stopPushNotifications } from '../notifications';
 
@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     if (isAuth) {
-      connectSocketPromise()
+      initSocket()
         .then((socket) => {
           setSocketInstance(socket);
         })
