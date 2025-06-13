@@ -2,6 +2,8 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '../utils/axiosInstance';
 import { useAuth } from './AuthContext';
+import { uploadFileAndGetId } from '../utils/uploadFileAndGetId';
+
 export interface Banner {
     id: number;
     title: string;
@@ -40,19 +42,15 @@ export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     useEffect(() => {
         if (socketInstance) {
-            // Listen for banner updates from the socket
             socketInstance.on('bannerUpdated', (updatedBanner: Banner) => {
                 console.log('Banner updated:', updatedBanner);
-                // Update the banners state with the updated banner
                 setBanners(prev => {
                     const index = prev.findIndex(b => b.id === updatedBanner.id);
                     if (index !== -1) {
-                        // If banner exists, update it
                         const newBanners = [...prev];
                         newBanners[index] = updatedBanner;
                         return newBanners;
                     } else {
-                        // If banner does not exist, add it
                         return [...prev, updatedBanner];
                     }
                 }
@@ -80,23 +78,6 @@ export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children })
     useEffect(() => {
         if (data) setBanners(data);
     }, [data]);
-
-    // Helper to upload file and get imageId
-    const uploadFileAndGetId = async (file: File): Promise<number> => {
-        // 1. Get upload url and file object
-        const response = await api.post('/storage/create-file', { fileName: file.name, contentType: file.type });
-        const uploadUrl = response.uploadUrl;
-        const fileObj = response.file;
-        // 2. Upload to uploadUrl
-        console.log('FILE', file)
-        await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': file.type },
-            body: file,
-        });
-        // 3. Return file id
-        return fileObj.id;
-    };
 
     // Add banner
     const addBannerMutation = useMutation<Banner, Error, { banner: Omit<Banner, 'id' | 'image' | 'createdAt' | 'updatedAt'>, file?: File }>({
@@ -127,7 +108,6 @@ export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children })
             if (file) {
                 imageId = await uploadFileAndGetId(file);
             }
-            // Remove any accidental image property
             const payload = {
                 title: banner.title,
                 description: banner.description,
@@ -145,7 +125,6 @@ export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children })
         },
     });
 
-    // Remove banner
     const removeBannerMutation = useMutation<void, Error, number>({
         mutationFn: async (id: number) => {
             await api.delete(`/banners/${id}`);

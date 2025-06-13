@@ -16,7 +16,7 @@ const resources = {
 };
 
 // Load the saved language from localStorage or default to 'en'
-const savedLanguage = localStorage.getItem('i18nextLng') || 'en';
+const savedLanguage = localStorage.getItem('i18nextLng') || 'it';
 
 i18n.use(initReactI18next).init({
   resources,

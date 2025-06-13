@@ -12,8 +12,8 @@ import {
 } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-// Import SVGs as React components
 import ShapexLogo from '../icons/Shapex';
 import DashboardIcon from '../icons/Dashboard';
 import SubscriptionsIcon from '../icons/Subscriptions';
@@ -24,16 +24,13 @@ import BannersIcon from '../icons/Banners';
 import LogoutIcon from '../icons/Logout';
 import { useAuth } from '../Context/AuthContext';
 
-// Replace useSideDrawerStyles with a StyleSheet-like helper
 
 const menuColor = '#EDB528';
 const hoverBg = 'rgba(237,181,40,0.08)';
 const submenuHoverBg = 'rgba(237,181,40,0.12)';
-// Use this filter for active icon color (yellow)
 const activeIconFilter =
   'brightness(0) saturate(100%) invert(73%) sepia(74%) saturate(749%) hue-rotate(352deg) brightness(92%) contrast(95%)';
 
-// Simple StyleSheet.create helper for JS objects
 const StyleSheet = {
   create: <T extends { [key: string]: React.CSSProperties }>(styles: T) => styles,
 };
@@ -72,8 +69,9 @@ export enum ClientiSubMenu {
 }
 
 export enum TrainingSubMenu {
-  Test1 = 'Test Submenu 1',
-  Test2 = 'Test Submenu 2',
+  Exercise = 'Esercizio',
+  TrainingProgram = 'Programma di Allenamento',
+  CompletedTraining = 'Allenamenti Completati',
 }
 
 // Add enum for navigation paths
@@ -87,8 +85,9 @@ export enum MenuPath {
   ClientsAlimentazione = '/clients/alimentazione',
   ClientsAltro = '/clients/altro',
   Training = '/training',
-  TrainingTest1 = '/training/test1',
-  TrainingTest2 = '/training/test2',
+  TrainingExercise = '/training/exercise',
+  TrainingProgram = '/training/training-program',
+  CompletedTraining = '/training/completed-training',
   Chat = '/chat',
   Banners = '/banners',
 }
@@ -112,6 +111,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
   drawerWidth,
   miniDrawerWidth,
 }) => {
+  const { t } = useTranslation();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -142,8 +142,9 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       else if (path.startsWith(MenuPath.ClientsAltro)) activeSubmenu = ClientiSubMenu.Altro;
     } else if (path.startsWith(MenuPath.Training)) {
       activeMenu = ActiveMenu.Training;
-      if (path.startsWith(MenuPath.TrainingTest1)) activeSubmenu = TrainingSubMenu.Test1;
-      else if (path.startsWith(MenuPath.TrainingTest2)) activeSubmenu = TrainingSubMenu.Test2;
+      if (path.startsWith(MenuPath.TrainingExercise)) activeSubmenu = TrainingSubMenu.Exercise;
+      else if (path.startsWith(MenuPath.TrainingProgram)) activeSubmenu = TrainingSubMenu.TrainingProgram;
+      else if (path.startsWith(MenuPath.CompletedTraining)) activeSubmenu = TrainingSubMenu.CompletedTraining;
     } else if (path.startsWith(MenuPath.Chat)) {
       activeMenu = ActiveMenu.Chat;
     } else if (path.startsWith(MenuPath.Banners)) {
@@ -163,10 +164,6 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       setOpenSubmenu(null);
     }
   }, [activeMenu]);
-
-  const handleToggleSubmenu = (menu: string) => {
-    setOpenSubmenu((prev) => (prev === menu ? null : menu));
-  };
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -196,20 +193,6 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
     }
   };
 
-  // Helper for training submenu navigation
-  const handleTrainingSubmenuNavigation = (submenu: string) => {
-    switch (submenu) {
-      case TrainingSubMenu.Test1:
-        handleNavigation(MenuPath.TrainingTest1);
-        break;
-      case TrainingSubMenu.Test2:
-        handleNavigation(MenuPath.TrainingTest2);
-        break;
-      default:
-        handleNavigation(MenuPath.Training);
-    }
-  };
-
   return (
     <Drawer
       variant="permanent"
@@ -227,13 +210,11 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
         onMouseLeave: () => isSmallScreen && !miniDrawer && toggleMiniDrawer(true),
       }}
     >
-      {/* Logo */}
       <Toolbar style={styles.toolbar}>
         {!miniDrawer && <ShapexLogo style={{ width: 170, height: 40, margin: '0 auto' }} />}
       </Toolbar>
 
       <List sx={{ pt: 2 }}>
-        {/* Dashboard */}
         <ListItem disablePadding sx={{ mb: 1 }}>
           <ListItemButton
             style={{
@@ -252,7 +233,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             />
             {!miniDrawer && (
               <ListItemText
-                primary="Dashboard"
+                primary={t('mainMenu.dashboard')}
                 style={{
                   ...styles.listItemText,
                   color: activeMenu === ActiveMenu.Dashboard ? menuColor : styles.listItemText.color,
@@ -262,7 +243,6 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             )}
           </ListItemButton>
         </ListItem>
-        {/* Abbonamenti */}
         <ListItem disablePadding sx={{ mb: 1 }}>
           <ListItemButton
             style={{
@@ -281,7 +261,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             />
             {!miniDrawer && (
               <ListItemText
-                primary="Abbonamenti"
+                primary={t('mainMenu.subscriptions')}
                 style={{
                   ...styles.listItemText,
                   color: activeMenu === ActiveMenu.Subscriptions ? menuColor : styles.listItemText.color,
@@ -291,14 +271,20 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             )}
           </ListItemButton>
         </ListItem>
-        {/* Clienti with submenu */}
         <ListItem disablePadding sx={{ mb: 0 }}>
           <ListItemButton
             style={{
               ...styles.listItemButton,
               color: activeMenu === ActiveMenu.Clients ? menuColor : undefined,
             }}
-            onClick={() => handleToggleSubmenu(ActiveMenu.Clients)}
+            onClick={() => {
+              if (openSubmenu !== ActiveMenu.Clients) {
+                setOpenSubmenu(ActiveMenu.Clients);
+                handleNavigation(MenuPath.Clients);
+              } else {
+                setOpenSubmenu(null);
+              }
+            }}
             sx={{ '&:hover': { bgcolor: hoverBg } }}
           >
             <ClientIcon
@@ -310,7 +296,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             />
             {!miniDrawer && (
               <ListItemText
-                primary="Clienti"
+                primary={t('mainMenu.clients')}
                 style={{
                   ...styles.listItemText,
                   color: activeMenu === ActiveMenu.Clients ? menuColor : styles.listItemText.color,
@@ -342,7 +328,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
                   onClick={() => handleClientSubmenuNavigation(label)}
                 >
                   <ListItemText
-                    primary={label}
+                    primary={t(`clientiSubMenu.${label}`)}
                     sx={{
                       color: activeSubmenu === label ? menuColor : '#fff',
                       fontWeight: activeSubmenu === label ? 700 : 400,
@@ -360,7 +346,14 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
               ...styles.listItemButton,
               color: activeMenu === ActiveMenu.Training ? menuColor : undefined,
             }}
-            onClick={() => handleToggleSubmenu(ActiveMenu.Training)}
+            onClick={() => {
+              if (openSubmenu !== ActiveMenu.Training) {
+                setOpenSubmenu(ActiveMenu.Training);
+                handleNavigation(MenuPath.Training);
+              } else {
+                setOpenSubmenu(null);
+              }
+            }}
             sx={{ position: 'relative', '&:hover': { bgcolor: hoverBg } }}
           >
             <TrainingIcon
@@ -372,7 +365,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             />
             {!miniDrawer && (
               <ListItemText
-                primary="Allenamento"
+                primary={t('mainMenu.training')}
                 style={{
                   ...styles.listItemText,
                   color: activeMenu === ActiveMenu.Training ? menuColor : styles.listItemText.color,
@@ -391,23 +384,27 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
         </ListItem>
         <Collapse in={openSubmenu === ActiveMenu.Training} timeout="auto" unmountOnExit>
           <List component="div" disablePadding sx={{ pl: 9 }}>
-            {Object.values(TrainingSubMenu).map((label) => (
-              <ListItem disablePadding key={label}>
+            {[
+              { key: 'Exercise', path: MenuPath.TrainingExercise },
+              { key: 'TrainingProgram', path: MenuPath.TrainingProgram },
+              { key: 'CompletedTraining', path: MenuPath.CompletedTraining },
+            ].map(({ key, path }) => (
+              <ListItem disablePadding key={key}>
                 <ListItemButton
                   sx={{
                     py: 0.7,
-                    color: activeSubmenu === label ? menuColor : '#fff',
-                    fontWeight: activeSubmenu === label ? 700 : 400,
+                    color: activeSubmenu === TrainingSubMenu[key as keyof typeof TrainingSubMenu] ? menuColor : '#fff',
+                    fontWeight: activeSubmenu === TrainingSubMenu[key as keyof typeof TrainingSubMenu] ? 700 : 400,
                     fontSize: 16,
                     '&:hover': { bgcolor: submenuHoverBg },
                   }}
-                  onClick={() => handleTrainingSubmenuNavigation(label)}
+                  onClick={() => handleNavigation(path)}
                 >
                   <ListItemText
-                    primary={label}
+                    primary={t(`trainingSubMenu.${key.charAt(0).toLowerCase() + key.slice(1)}`)}
                     sx={{
-                      color: activeSubmenu === label ? menuColor : '#fff',
-                      fontWeight: activeSubmenu === label ? 700 : 400,
+                      color: activeSubmenu === TrainingSubMenu[key as keyof typeof TrainingSubMenu] ? menuColor : '#fff',
+                      fontWeight: activeSubmenu === TrainingSubMenu[key as keyof typeof TrainingSubMenu] ? 700 : 400,
                     }}
                   />
                 </ListItemButton>
@@ -434,7 +431,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             />
             {!miniDrawer && (
               <ListItemText
-                primary="Chat"
+                primary={t('mainMenu.chat')}
                 style={{
                   ...styles.listItemText,
                   color: activeMenu === ActiveMenu.Chat ? menuColor : styles.listItemText.color,
@@ -463,7 +460,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             />
             {!miniDrawer && (
               <ListItemText
-                primary="Banners pubblicitari"
+                primary={t('mainMenu.banners')}
                 style={{
                   ...styles.listItemText,
                   color: activeMenu === ActiveMenu.Banners ? menuColor : styles.listItemText.color,
@@ -487,7 +484,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
           >
             <LogoutIcon style={styles.icon} />
             <ListItemText
-              primary={MainMenu.Logout}
+              primary={t('mainMenu.logout')}
               style={styles.listItemText}
             />
           </ListItemButton>
@@ -526,7 +523,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     width: 22,
-    height: 22,
+    height: 24,
     minWidth: 22,
     minHeight: 22,
     marginRight: 18,

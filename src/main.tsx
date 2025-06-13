@@ -1,8 +1,4 @@
 import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.tsx'
-
-
 import React from 'react';
 import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,12 +6,12 @@ import { AuthProvider } from './Context/AuthContext';
 import { SubscriptionsProvider } from './Context/SubscriptionsContext';
 import { BannersProvider } from './Context/BannersContext';
 import { MessagesProvider } from './Context/MessagesContext';
-import './i18n/i18n'; // Import the i18n configuration file
+import { TrainingProvider } from './Context/TrainingContext';
+import './i18n/i18n';
 import { requestNotificationPermission, listenForMessages } from './notifications';
-import './splash.css'; // Add this import
-import './global-font.css'; // Add this import for global font style
+import './splash.css';
+import './global-font.css';
 
-// import { BrowserRouter } from 'react-router-dom';
 const queryClient = new QueryClient();
 
 requestNotificationPermission();
@@ -29,22 +25,21 @@ const hideSplash = () => {
 const renderApp = () => {
   createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-  {/* <BrowserRouter> */}
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SubscriptionsProvider>
           <BannersProvider>
             <MessagesProvider>
-              <App />
+              <TrainingProvider>
+                <App />
+              </TrainingProvider>
             </MessagesProvider>
           </BannersProvider>
         </SubscriptionsProvider>
       </AuthProvider>
     </QueryClientProvider>
-  {/* </BrowserRouter> */}
 </React.StrictMode>
   );
-  // Hide splash after render and at least 300ms
   setTimeout(hideSplash, 200);
 };
 

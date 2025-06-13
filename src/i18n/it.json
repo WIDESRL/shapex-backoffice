@@ -67,5 +67,108 @@
     "sizeGreat": "Grande",
     "sizeMedium": "Media",
     "sizeSmall": "Piccola"
+  },
+  "mainMenu": {
+    "dashboard": "Dashboard",
+    "subscriptions": "Abbonamenti",
+    "clients": "Clienti",
+    "training": "Allenamento",
+    "chat": "Chat",
+    "banners": "Banners pubblicitari",
+    "logout": "Disconnettersi"
+  },
+  "clientiSubMenu": {
+    "Anagrafica": "Anagrafica",
+    "Allenamenti": "Allenamenti",
+    "Diario": "Diario",
+    "Alimentazione": "Alimentazione",
+    "Altro": "Altro"
+  },
+  "trainingSubMenu": {
+    "exercise": "Esercizio",
+    "trainingProgram": "Programma di Allenamento",
+    "completedTraining": "Allenamento Completato"
+  },
+  "training": {
+    "title": "Allenamento",
+    "exercises": "Esercizi",
+    "addExercise": "Aggiungi Esercizio",
+    "editExercise": "Modifica Esercizio",
+    "exerciseTitle": "Titolo Esercizio",
+    "exerciseName": "Nome esercizio",
+    "description": "Descrizione",
+    "muscleGroup": "Gruppo muscolare",
+    "exerciseVideo": "Video Esercizio",
+    "uploadVideoHere": "Caricare qui il video",
+    "dragOrChooseFile": "Trascinare e rilasciare o scegliere il file da caricare",
+    "fileName": "Nome file",
+    "duration": "Durata",
+    "seconds": "sec.",
+    "uploadDate": "Data upload",
+    "saveChanges": "Salva modifiche",
+    "save": "Salva",
+    "errorNotVideo": "Il file selezionato non è un video.",
+    "actions": "Azioni",
+    "video": "Video",
+    "muscleGroups": {
+      "Pettorali": "Pettorali",
+      "Dorsali": "Dorsali",
+      "Spalle": "Spalle",
+      "Trapezi": "Trapezi",
+      "Bicipiti": "Bicipiti",
+      "Tricipiti": "Tricipiti",
+      "Avambracci": "Avambracci",
+      "Quadricipiti": "Quadricipiti"
+    },
+    "noExercisesTitle": "Nessun esercizio ancora",
+    "noExercisesDesc": "Inizia aggiungendo il tuo primo esercizio alla sezione allenamento.",
+    "addFirstExercise": "Aggiungi esercizio",
+    "deleteExerciseTitle": "Sei sicuro di voler eliminare questo esercizio?",
+    "deleteTrainingProgramTitle": "Sei sicuro di voler eliminare questo programma di allenamento?"
+  },
+  "trainingPrograms": {
+    "title": "Programmi di allenamento",
+    "trainingProgramsTitle": "Programmi di allenamento",
+    "trainingPrograms": "Programmi di allenamento",
+    "addTrainingProgram": "Aggiungi Programma",
+    "editTrainingProgram": "Modifica Programma",
+    "programName": "Nome programma",
+    "programType": "Tipologia di allenamento",
+    "selectType": "Seleziona tipologia",
+    "programTypes": {
+      "Body Building": "Body Building",
+      "Crossfit": "Crossfit",
+      "Functional Training": "Functional Training",
+      "HIIT": "HIIT",
+      "Cardio": "Cardio",
+      "Calisthenics": "Calisthenics",
+      "Other": "Altro"
+    },
+    "noProgramsTitle": "Nessun programma ancora",
+    "noProgramsDesc": "Inizia aggiungendo il tuo primo programma di allenamento.",
+    "notFoundTitle": "Programma non trovato",
+    "notFoundDesc": "Il programma di allenamento che stai cercando non esiste o è stato rimosso.\nControlla l'elenco dei programmi disponibili oppure riprova.",
+    "retry": "Riprova",
+    "backToPrograms": "Torna ai programmi"
+  },
+  "common": {
+    "cancel": "Annulla",
+    "confirm": "Conferma"
+  },
+  "trainingPage": {
+    "trainingPageTitle": "Allenamento",
+    "exercisesSectionTitle": "Esercizi",
+    "latestExercises": "ultimi 3 esercizi inseriti",
+    "fullList": "Lista completa",
+    "programsSectionTitle": "Programmi di allenamento",
+    "latestPrograms": "ultimi 3 programmi di allenamento inseriti",
+    "completedSectionTitle": "Allenamenti completati",
+    "latestCompleted": "ultimi 3 allenamenti completati",
+    "completedDate": "Data",
+    "completedClient": "Cliente",
+    "completedPlan": "Piano di allenamento",
+    "completedFreq": "Giorno / Settimana",
+    "completedDetail": "Dettaglio esercizio"
+    
   }
 }

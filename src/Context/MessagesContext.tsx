@@ -1,8 +1,8 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { useAuth } from './AuthContext';
+import { uploadFileAndGetId } from '../utils/uploadFileAndGetId';
 
-// --- Types ---
 export interface Message {
     id: number;
     sender: string;
@@ -12,7 +12,6 @@ export interface Message {
     date: string;
 }
 
-// --- API Conversation Type (matches backend) ---
 export interface ApiConversation {
     id: number;
     userId: number;
@@ -54,7 +53,6 @@ export interface ApiConversation {
     };
 }
 
-// --- Context ---
 const MessagesContext = createContext<MessagesContextType | undefined>(undefined);
 
 export const useMessages = () => {
@@ -63,7 +61,6 @@ export const useMessages = () => {
     return ctx;
 };
 
-// Add to MessagesContextType
 interface MessagesContextType {
     conversations: ApiConversation[];
     selectedConversationId: number | null;
@@ -133,7 +130,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
         updateUserOnlineStatus(user, false);
     }, [updateUserOnlineStatus]);
 
-    // Helper to update or add a conversation
     const upsertConversation = useCallback((updatedConv: ApiConversation) => {
         setConversations(prev => {
             const idx = prev.findIndex(c => c.id === updatedConv.id);
@@ -147,7 +143,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
         });
     }, []);
 
-    // Helper to add or update a message in the correct conversation
     const upsertMessage = useCallback((msg: Message & { conversationId: number }) => {
         setMessagesByConversationId(prev => {
             const convId = msg.conversationId;
@@ -183,7 +178,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
     }, [socketInstance]);
 
 
-    // On mount, load conversations from API
     useEffect(() => {
         const fetchConversations = async () => {
             try {
@@ -196,7 +190,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
         fetchConversations();
     }, []);
 
-    // When selectedConversationId changes, mark as seen and fetch messages
     useEffect(() => {
         const fetchAndMarkSeen = async () => {
             if (!selectedConversationId) return;
@@ -218,10 +211,8 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             } catch { }
         };
         fetchAndMarkSeen();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedConversationId]);
 
-    // Expose messages for the selected conversation
     const messages = selectedConversationId && messagesByConversationId[selectedConversationId]
         ? messagesByConversationId[selectedConversationId]
         : [];
@@ -230,7 +221,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
         setConversations(prev => prev.map(c => c.id === id ? { ...c, seen: true } : c));
     };
 
-    // Send text message to API and reload messages
     const sendTextMessage = async (convId: number | undefined, content: string, userId?: number) => {
         setSendingMessage(true);
         try {
@@ -247,29 +237,11 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                 content,
             });
         } catch (e) {
-            // Optionally handle error
         } finally {
             setSendingMessage(false);
         }
     };
 
-    // Helper to upload file and get fileId (for chat messages)
-    const uploadFileAndGetId = async (file: File): Promise<number> => {
-        // 1. Get upload url and file object
-        const response = await axiosInstance.post('/storage/create-file', { fileName: file.name, contentType: file.type });
-        const uploadUrl = response.data.uploadUrl;
-        const fileObj = response.data.file;
-        // 2. Upload to uploadUrl
-        await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': file.type },
-            body: file,
-        });
-        // 3. Return file id
-        return fileObj.id;
-    };
-
-    // Send file message to API and append to messages
     const sendFileMessage = async (convId: number | undefined, file: File, userId?: number) => {
         setSendingMessage(true);
         try {
@@ -287,13 +259,11 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                 fileId,
             });
         } catch (e) {
-            // Optionally handle error
         } finally {
             setSendingMessage(false);
         }
     };
 
-    // Fetch users without conversation
     const fetchUsersWithoutConversation = useCallback(async () => {
         setLoadingUsersWithoutConversation(true);
         try {
@@ -311,7 +281,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
     }, [usersWithoutConversationSearch, usersWithoutConversationPage, usersWithoutConversationPageSize]);
 
-    // Reset users without conversation state
     const resetUsersWithoutConversation = useCallback(() => {
         setUsersWithoutConversation([]);
         setUsersWithoutConversationSearch('');
@@ -319,7 +288,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
         setUsersWithoutConversationHasMore(true);
     }, []);
 
-    // Fetch conversations with server-side search & pagination
     const fetchConversations = useCallback(async (opts?: { append?: boolean }) => {
         setLoadingConversations(true);
         try {
@@ -341,7 +309,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
     }, [conversationSearch, conversationPage, conversationPageSize]);
 
-    // Load more messages for a conversation (pagination)
     const loadMoreMessages = useCallback(async (conversationId: number, lastMessageId: number) => {
         try {
             const conv = conversations.find(c => c.id === conversationId);
@@ -353,7 +320,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             const newMessages = res.data || [];
             setMessagesByConversationId(prev => {
                 const existing = prev[conversationId] || [];
-                // Prepend new messages (older) to the top
                 return {
                     ...prev,
                     [conversationId]: [...newMessages, ...existing],
@@ -363,7 +329,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
     }, [messagesPerPage, conversations]);
 
-    // Reset conversation search state
     const resetConversationSearch = useCallback(() => {
         setConversations([]);
         setConversationSearch('');
@@ -381,7 +346,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             messages,
             sendTextMessage,
             sendFileMessage,
-            sendingMessage, // expose sendingMessage state
+            sendingMessage,
             usersWithoutConversation,
             loadingUsersWithoutConversation,
             fetchUsersWithoutConversation,
@@ -391,7 +356,6 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             setUsersWithoutConversationPage,
             usersWithoutConversationHasMore,
             resetUsersWithoutConversation,
-            // Conversation search/pagination
             conversationSearch,
             setConversationSearch,
             conversationPage,

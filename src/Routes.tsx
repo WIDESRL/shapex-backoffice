@@ -14,8 +14,10 @@ import AllenamentiPage from './screens/clients/AllenamentiPage';
 import DiarioPage from './screens/clients/DiarioPage';
 import AlimentazionePage from './screens/clients/AlimentazionePage';
 import AltroPage from './screens/clients/AltroPage';
-import TrainingTest1Page from './screens/training/TrainingTest1Page';
-import TrainingTest2Page from './screens/training/TrainingTest2Page';
+import TrainingExercisePage from './screens/training/Exercises/TrainingExercisePage';
+import TrainingProgramPage from './screens/training/TrainingProgram/TrainingProgramPage';
+import TrainingProgramDetailPage from './screens/training/TrainingProgram/TrainingProgramDetailPage';
+import CompletedTrainingPage from './screens/training/CompletedTrainingPage';
 
 const AppRoutes: React.FC = () => {
   const { isAuth } = useAuth();
@@ -35,8 +37,10 @@ const AppRoutes: React.FC = () => {
           <Route path="/clients/alimentazione" element={<AlimentazionePage />} />
           <Route path="/clients/altro" element={<AltroPage />} />
           <Route path="/training" element={<TrainingPage />} />
-          <Route path="/training/test1" element={<TrainingTest1Page />} />
-          <Route path="/training/test2" element={<TrainingTest2Page />} />
+          <Route path="/training/exercise" element={<TrainingExercisePage />} />
+          <Route path="/training/training-program" element={<TrainingProgramPage />} />
+          <Route path="/training/training-program/:trainingProgramId" element={<TrainingProgramDetailPage />} />
+          <Route path="/training/completed-training" element={<CompletedTrainingPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/banners" element={<BannersPage />} />
           <Route path="/" element={<DashboardPage />} />
