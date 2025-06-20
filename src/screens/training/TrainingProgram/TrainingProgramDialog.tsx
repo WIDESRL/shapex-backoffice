@@ -3,13 +3,14 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Box, TextField, Typo
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import DialogCloseIcon from '../../../icons/DialogCloseIcon2';
+import { TrainingProgram } from '../../../Context/TrainingContext';
 
 interface TrainingProgramDialogProps {
   open: boolean;
   onClose: () => void;
   onSave: (data: { title: string; description: string; type: string }) => void;
   loading?: boolean;
-  editData?: { title: string; description: string; type: string } | null;
+  editData?: TrainingProgram | null;
   programTypes: string[];
   t: (key: string, defaultText?: string) => string;
 }

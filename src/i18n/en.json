@@ -149,7 +149,12 @@
     "notFoundTitle": "Program not found",
     "notFoundDesc": "The training program you are looking for does not exist or has been removed.\nCheck the list of available programs or try again.",
     "retry": "Retry",
-    "backToPrograms": "Back to programs"
+    "backToPrograms": "Back to programs",
+    "modify": {
+      "success": "Training program updated successfully!",
+      "error": "Error while updating training program.",
+      "loading": "Saving..."
+    }
   },
   "common": {
     "cancel": "Cancel",
@@ -168,6 +173,37 @@
     "completedClient": "Client",
     "completedPlan": "Training plan",
     "completedFreq": "Day / Week",
-    "completedDetail": "Exercise detail"
+    "completedDetail": "Exercise detail",
+    "editDay": {
+      "title": "Rename workout",
+      "lable": "Name",
+      "save": "Save",
+      "success": "Workout renamed successfully!",
+      "error": "Error renaming workout."
+    },
+    "deleteDay": {
+      "title": "Are you sure you want to delete this workout?",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "deleteWeek": {
+      "title": {
+        "line1": "Are you sure you want to delete",
+        "line2": "this week?"
+      },
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "success": "Week deleted successfully!",
+      "error": "Error while deleting the week."
+    },
+    "createNewWeek": {
+      "title": "Confirm new week creation",
+      "confirmText": "Are you sure you want to create a new week?",
+      "confirm": "Create",
+      "loading": "Creating...",
+      "error": "Error while creating the week.",
+      "success": "Week created successfully!"
+    }
+
   }
 }

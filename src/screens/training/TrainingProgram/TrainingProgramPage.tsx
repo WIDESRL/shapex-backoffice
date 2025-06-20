@@ -1,8 +1,8 @@
 import React from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
+import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
 import EditIcon from '../../../icons/EditIcon';
 import DeleteIcon from '../../../icons/DeleteIcon';
-import { useTraining } from '../../../Context/TrainingContext';
+import { TrainingProgram, useTraining } from '../../../Context/TrainingContext';
 import { useTranslation } from 'react-i18next';
 import DeleteDialog from '../DeleteDialog';
 import OutlinedTextIconButton from '../../../components/OutlinedTextIconButton';
@@ -30,7 +30,7 @@ const styles = {
   emptyDesc: { color: '#bdbdbd', fontSize: 16, fontFamily: 'Montserrat, sans-serif' },
 };
 
-const programTypes = [
+export const programTypes = [
   'Altro',
   'BodyBuilding',
   'Crossfit',
@@ -63,9 +63,9 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
   const navigate = useNavigate();
   const { trainingPrograms, fetchTrainingPrograms, addTrainingProgram, updateTrainingProgram, deleteTrainingProgram, isLoading } = useTraining();
   const [modalOpen, setModalOpen] = React.useState(false);
-  const [editData, setEditData] = React.useState<any | null>(null);
+  const [editData, setEditData] = React.useState<TrainingProgram | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [deleteTarget, setDeleteTarget] = React.useState<any | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<TrainingProgram | null>(null);
   const [saving, setSaving] = React.useState(false);
 
   React.useEffect(() => {
@@ -77,12 +77,13 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
     setModalOpen(true);
   };
 
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: TrainingProgram) => {
     setEditData(row);
     setModalOpen(true);
   };
 
-  const handleDelete = (row: any) => {
+  const handleDelete = (row: TrainingProgram) => {
+    console.log('Deleting program:', row);
     setDeleteTarget(row);
     setDeleteDialogOpen(true);
   };
@@ -186,7 +187,7 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         loading={saving}
-        editData={editData}
+        editData={editData }
         programTypes={programTypes}
         t={(key, defaultText) => t(key, defaultText || '')}
       />

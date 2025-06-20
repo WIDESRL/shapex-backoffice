@@ -149,7 +149,12 @@
     "notFoundTitle": "Programma non trovato",
     "notFoundDesc": "Il programma di allenamento che stai cercando non esiste o è stato rimosso.\nControlla l'elenco dei programmi disponibili oppure riprova.",
     "retry": "Riprova",
-    "backToPrograms": "Torna ai programmi"
+    "backToPrograms": "Torna ai programmi",
+    "modify": {
+      "success": "Programma di allenamento aggiornato con successo!",
+      "error": "Errore durante l'aggiornamento del programma di allenamento.",
+      "loading": "Salvataggio..."
+    }
   },
   "common": {
     "cancel": "Annulla",
@@ -168,7 +173,37 @@
     "completedClient": "Cliente",
     "completedPlan": "Piano di allenamento",
     "completedFreq": "Giorno / Settimana",
-    "completedDetail": "Dettaglio esercizio"
-    
+    "completedDetail": "Dettaglio esercizio",
+    "editDay": {
+      "title": "Rinomina workout",
+      "lable": "Nome workout",
+      "save": "Salva",
+      "success": "Workout rinominato con successo!",
+      "error": "Errore durante la rinomina del workout."
+    },
+    "deleteDay": {
+      "title": "Sei sicuro di voler eliminare questo workout?",
+      "cancel": "Annulla",
+      "confirm": "Conferma"
+    },
+    "deleteWeek": {
+      "title": {
+        "line1": "Sei sicuro di voler eliminare",
+        "line2": "questa settimana?"
+      },
+      "cancel": "Annulla",
+      "confirm": "Conferma",
+      "success": "Settimana eliminata con successo!",
+      "error": "Errore durante l'eliminazione della settimana."
+    },
+    "createNewWeek": {
+      "title": "Conferma creazione settimana",
+      "confirmText": "Sei sicuro di voler creare una nuova settimana?",
+      "confirm": "Crea",
+      "loading": "Creazione...",
+      "error": "Errore durante la creazione della settimana.",
+      "success": "Settimana creata con successo!"
+    }
+
   }
 }

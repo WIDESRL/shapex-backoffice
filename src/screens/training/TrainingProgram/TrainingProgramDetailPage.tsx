@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTraining } from '../../../Context/TrainingContext';
 import TrainingProgramNotFound from './TrainingProgramNotFound';
+import TrainingProgramCompositionPage from './TrainingProgramComposition/TrainingProgramCompositionPage';
 
 const TrainingProgramDetailPage: React.FC = () => {
     const { trainingProgramId } = useParams<{ trainingProgramId: string }>();
@@ -22,7 +23,7 @@ const TrainingProgramDetailPage: React.FC = () => {
 
     React.useEffect(() => {
         fetchTrainingProgram();
-    }, [trainingProgramId, fetchTrainingProgramById]);
+    }, [trainingProgramId, fetchTrainingProgramById, fetchTrainingProgram]);
 
     if (isLoading) {
         return (
@@ -47,13 +48,7 @@ const TrainingProgramDetailPage: React.FC = () => {
         return <TrainingProgramNotFound onRetry={fetchTrainingProgram} />;
     }
 
-    return (
-        <div style={{ padding: 32, fontFamily: 'Montserrat, sans-serif' }}>
-            <h1>Training Program Detail</h1>
-            <p><strong>ID:</strong> {trainingProgramId}</p>
-            <pre>{selectedTrainingProgram ? JSON.stringify(selectedTrainingProgram, null, 2) : 'Nessun programma trovato.'}</pre>
-        </div>
-    );
+    return <TrainingProgramCompositionPage />;
 };
 
 export default TrainingProgramDetailPage;
