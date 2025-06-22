@@ -7,7 +7,6 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
@@ -60,6 +59,29 @@ import debounce from 'lodash/debounce';
 import { useTranslation } from 'react-i18next';
 import DeleteExerciseModal from "./Modals/DeleteExerciseModal";
 import CopyExerciseModal from "./Modals/CopyExerciseModal";
+import SuperSetGroupLine from '../../../../components/SuperSetGroupLine';
+
+// Custom arrow tooltip styled for left placement
+import type { TooltipProps } from "@mui/material/Tooltip";
+
+const ArrowTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} arrow placement="left" classes={{ popper: className }} />
+))(() => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#ededed",
+    color: "#616160",
+    fontSize: 22,
+    fontFamily: "Montserrat, sans-serif",
+    borderRadius: 24,
+    boxShadow: "0 4px 32px 0 rgba(33,33,33,0.10)",
+    padding: 24,
+    maxWidth: 380,
+    whiteSpace: "pre-line",
+  },
+  [`& .${tooltipClasses.arrow}`]: {
+    color: "#ededed",
+  },
+}));
 
 // --- styles ---
 const styles = {
@@ -231,6 +253,8 @@ const TrainingProgramCompositionPage = () => {
   const [copyExerciseModalOpen, setCopyExerciseModalOpen] = useState(false);
   const [copyExerciseId, setCopyExerciseId] = useState<number | null>(null);
   const [supersetWorkoutExerciseId, setSupersetWorkoutExerciseId] = useState<number | null>(null);
+  const [draggedGroup, setDraggedGroup] = useState<number | null>(null);
+  const [draggedId, setDraggedId] = useState<number | null>(null);
   const { selectedTrainingProgram: trainingProgram, updateExercisesOrder } = useTraining();
   const debouncedUpdateExercisesOrder = React.useRef(
     debounce((changedExercises) => {
@@ -302,14 +326,14 @@ useEffect(() => {
   };
 
   // Add this helper component for sortable rows
-  function SortableExerciseRow({ exercise, children, ...props }: { exercise: TrainingProgramExercise; children: React.ReactNode }) {
+  function SortableExerciseRow({ exercise, bracketCell, children, isGroupDragging, ...props }: { exercise: TrainingProgramExercise; bracketCell?: React.ReactNode; children: React.ReactNode; isGroupDragging?: boolean }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: exercise.id,
     });
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
-      background: isDragging ? '#f5f5f5' : undefined,
+      background: isDragging || isGroupDragging ? '#f5f5f5' : undefined,
     };
     return (
       <TableRow
@@ -318,6 +342,7 @@ useEffect(() => {
         {...attributes}
         {...props}
       >
+        {bracketCell}
         <TableCell sx={styles.tableCell} {...listeners} style={{ cursor: 'grab' }}>
           <IconButton size="small">
             <OrderIcon />
@@ -346,25 +371,103 @@ useEffect(() => {
     day: TrainingProgramDay
   ) => {
     const { active, over } = event;
-    if (active.id !== over?.id) {
-      setWeeks((prevWeeks) =>
-        prevWeeks.map((w) => {
-          if (w.id !== selectedWeek.id) return w;
-          const days = w.days.map((d) => {
-            if (d.id !== day.id) return d;
-            const oldIndex = d.exercises.findIndex((ex) => ex.id === active.id);
-            const newIndex = d.exercises.findIndex((ex) => ex.id === over?.id);
-            if (oldIndex === -1 || newIndex === -1) return d;
-            // Move and update order
-            const newExercises = arrayMove(d.exercises, oldIndex, newIndex)
-              .map((ex, idx) => ({ ...ex, order: idx + 1 }));
-            return { ...d, exercises: newExercises };
-          });
-          return { ...w, days };
-        })
-      );
-      setHasChangedExercisesOrder(true);
-    }
+    if (!over || active.id === over.id) return;
+
+    setWeeks((prevWeeks) =>
+      prevWeeks.map((w) => {
+        if (w.id !== selectedWeek.id) return w;
+        const days = w.days.map((d) => {
+          if (d.id !== day.id) return d;
+          const exercises = d.exercises.slice().sort((a, b) => a.order - b.order);
+          const activeIdx = exercises.findIndex((ex) => ex.id === active.id);
+          const overIdx = exercises.findIndex((ex) => ex.id === over.id);
+          if (activeIdx === -1 || overIdx === -1) return d;
+          const activeGroup = exercises[activeIdx].supersetGroup || null;
+          const overGroup = exercises[overIdx].supersetGroup || null;
+
+          // --- If dragging within the same superset group, reorder only inside the group ---
+          if (activeGroup !== null && activeGroup === overGroup) {
+            const groupIndices = exercises
+              .map((ex, idx) => (ex.supersetGroup === activeGroup ? idx : -1))
+              .filter(idx => idx !== -1);
+            const groupPosActive = groupIndices.indexOf(activeIdx);
+            const groupPosOver = groupIndices.indexOf(overIdx);
+            if (groupPosActive === -1 || groupPosOver === -1) return d;
+            const groupItems = groupIndices.map(idx => exercises[idx]);
+            const [moved] = groupItems.splice(groupPosActive, 1);
+            groupItems.splice(groupPosOver, 0, moved);
+            const newExercises = exercises.slice();
+            groupIndices.forEach((idx, i) => {
+              newExercises[idx] = groupItems[i];
+            });
+            const finalExercises = newExercises.map((ex, idx) => ({ ...ex, order: idx + 1 }));
+            return { ...d, exercises: finalExercises };
+          }
+
+          // --- If dragging a single exercise (not a superset group) ---
+          let groupIndices = [activeIdx];
+          if (activeGroup !== null) {
+            groupIndices = exercises
+              .map((ex, idx) => (ex.supersetGroup === activeGroup ? idx : -1))
+              .filter(idx => idx !== -1);
+          }
+          const groupItems = groupIndices.map(idx => exercises[idx]);
+          let newExercises = exercises.filter((_, idx) => !groupIndices.includes(idx));
+
+          let insertAt = overIdx;
+          if (overGroup !== null) {
+            const overGroupIndices = exercises
+              .map((ex, idx) => (ex.supersetGroup === overGroup ? idx : -1))
+              .filter(idx => idx !== -1);
+            const firstOverIdx = overGroupIndices[0];
+            const lastOverIdx = overGroupIndices[overGroupIndices.length - 1];
+            let pointerPosition = null;
+            if (event && event.over && event.over.rect && event.delta) {
+              const pointerY = event.over.rect.top + event.delta.y;
+              const rowMid = event.over.rect.top + event.over.rect.height / 2;
+              pointerPosition = pointerY < rowMid ? 'above' : 'below';
+            }
+            // If dragging a single exercise (not a superset group)
+            if (activeGroup === null) {
+              if (overIdx === firstOverIdx && pointerPosition === 'above') {
+                // Drop before the superset group
+                insertAt = firstOverIdx;
+              } else if (overIdx === lastOverIdx && pointerPosition === 'below') {
+                // Drop after the superset group
+                insertAt = lastOverIdx + 1;
+              } else {
+                // Default: drop inside the group (not allowed), so do nothing
+                return d;
+              }
+            } else {
+              // If dragging a superset group, keep previous logic
+              if (groupIndices[0] < firstOverIdx) {
+                insertAt = firstOverIdx - groupIndices.filter(idx => idx < firstOverIdx).length;
+              } else if (groupIndices[0] > lastOverIdx) {
+                insertAt = lastOverIdx + 1 - groupIndices.filter(idx => idx < lastOverIdx + 1).length;
+              } else {
+                return d;
+              }
+            }
+          } else {
+            if (groupIndices[0] < overIdx) {
+              insertAt = overIdx + 1 - groupIndices.length;
+            }
+          }
+          if (insertAt < 0) insertAt = 0;
+          if (insertAt > newExercises.length) insertAt = newExercises.length;
+          newExercises = [
+            ...newExercises.slice(0, insertAt),
+            ...groupItems,
+            ...newExercises.slice(insertAt),
+          ];
+          newExercises = newExercises.map((ex, idx) => ({ ...ex, order: idx + 1 }));
+          return { ...d, exercises: newExercises };
+        });
+        return { ...w, days };
+      })
+    );
+    setHasChangedExercisesOrder(true);
   };
 
   return (
@@ -465,9 +568,9 @@ useEffect(() => {
       {/* Only render the selected week */}
       {selectedWeek ? (
         <React.Fragment key={selectedWeek.id}>
-          <Typography
-            sx={styles.weekTitle}
-          >{t('trainingProgramComposition.weekLabel', { number: selectedWeek.order })}</Typography>
+          <Typography sx={styles.weekTitle}>
+            {t('trainingProgramComposition.weekLabel', { number: selectedWeek.order })}
+          </Typography>
           {selectedWeek.days.map((day) => (
             <Paper key={day.id} sx={styles.dayPaper}>
               <Box sx={styles.dayHeader}>
@@ -487,13 +590,11 @@ useEffect(() => {
                     {t('trainingProgramComposition.dayLabel', { number: day.dayOfWeek })} -
                   </span>
                   <span
-                    style={
-                      {
-                        ...styles.dayHeaderTitle,
-                        color: "#fff",
-                        zIndex: 1,
-                      } as React.CSSProperties
-                    }
+                    style={{
+                      ...styles.dayHeaderTitle,
+                      color: "#fff",
+                      zIndex: 1,
+                    } as React.CSSProperties}
                   >
                     {day.title}
                   </span>
@@ -541,12 +642,27 @@ useEffect(() => {
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
-                  onDragEnd={(event) => handleExerciseDragEnd(event, selectedWeek, day)}
+                  onDragStart={(event) => {
+                    const { active } = event;
+                    setDraggedId(Number(active.id));
+                    const ex = day.exercises.find(e => e.id === active.id);
+                    setDraggedGroup(ex?.supersetGroup ?? null);
+                  }}
+                  onDragEnd={(event) => {
+                    setDraggedGroup(null);
+                    setDraggedId(null);
+                    handleExerciseDragEnd(event, selectedWeek, day);
+                  }}
+                  onDragCancel={() => {
+                    setDraggedGroup(null);
+                    setDraggedId(null);
+                  }}
                 >
                   <Table>
                     <TableHead sx={styles.tableHead}>
                       <TableRow>
-                        <TableCell sx={styles.tableHeadCell}></TableCell>
+                        <TableCell sx={styles.tableHeadCell}></TableCell> 
+                        <TableCell sx={styles.tableHeadCell}></TableCell> 
                         <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.name')}</TableCell>
                         <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.type')}</TableCell>
                         <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.sets')}</TableCell>
@@ -567,102 +683,142 @@ useEffect(() => {
                       <TableBody>
                         {day.exercises.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={12} align="center" sx={{ color: '#888', fontSize: 18, py: 6 }}>
+                            <TableCell colSpan={13} align="center" sx={{ color: '#888', fontSize: 18, py: 6 }}>
                               {t('trainingProgramComposition.noExercises')}
                             </TableCell>
                           </TableRow>
                         ) : (
-                          <>
-                            {day.exercises
-                              .slice()
-                              .sort((a, b) => a.order - b.order)
-                              .map((ex) => (
-                                <SortableExerciseRow
-                                  key={ex.id}
-                                  exercise={ex}
-                                >
-                                  <TableCell sx={styles.tableCell}>
-                                    {ex.exercise?.title}
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    {ex.type}
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    {ex.sets}
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    {ex.repsOrTime}
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    {ex.rest}
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    {ex.weight}
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    {ex.rpe}
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    {ex.rir}
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    {ex.tut}
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    <ArrowTooltip
-                                      title={ex.note || ""}
-                                      placement="left"
-                                      arrow
-                                      enterTouchDelay={0}
-                                      enterDelay={0}
-                                      leaveDelay={200}
-                                      disableInteractive={false}
-                                    >
-                                      <span>
-                                        <IconButton size="small">
-                                          <NotesIcon />
+                          (() => {
+                            // --- Group exercises by supersetGroup ---
+                            const sortedExercises = day.exercises.slice().sort((a, b) => a.order - b.order);
+                            const groups: { key: number | null | undefined, start: number, end: number }[] = [];
+                            let prevKey = null;
+                            let groupStart = 0;
+                            for (let i = 0; i < sortedExercises.length; i++) {
+                              const currKey = sortedExercises[i].supersetGroup || null;
+                              if (currKey !== prevKey) {
+                                if (i > 0) groups.push({ key: prevKey, start: groupStart, end: i - 1 });
+                                groupStart = i;
+                              }
+                              prevKey = currKey;
+                            }
+                            groups.push({ key: prevKey, start: groupStart, end: sortedExercises.length - 1 });
+                            // --- Render rows with bracket cell ---
+                            const rows: React.ReactNode[] = [];
+                            groups.forEach(group => {
+                              const isSuperset = group.key !== null && group.key !== undefined;
+                              const groupLen = group.end - group.start + 1;
+                              let highlightGroup = false;
+                              if (draggedId !== null) {
+                                if (isSuperset && draggedGroup !== null && group.key === draggedGroup) {
+                                  highlightGroup = true;
+                                } else if (!isSuperset && group.start <= sortedExercises.findIndex(e => e.id === draggedId) && group.end >= sortedExercises.findIndex(e => e.id === draggedId)) {
+                                  highlightGroup = true;
+                                }
+                              }
+                              for (let idx = group.start; idx <= group.end; idx++) {
+                                const ex = sortedExercises[idx];
+                                let bracketCell = null;
+                                if (isSuperset && idx === group.start) {
+                                  bracketCell = (
+                                    <TableCell rowSpan={groupLen} sx={{  border: 0, verticalAlign: 'top' }}>
+                                      {!highlightGroup && groupLen > 1 && <SuperSetGroupLine rows={groupLen} rowHeight={50} strokeColor="#EDB528" strokeWidth={8} />}
+                                    </TableCell>
+
+                                  );
+                                } else if (isSuperset) {
+                                  // Empty cell for other rows in the group
+                                  bracketCell = null;
+                                } else {
+                                  bracketCell = <TableCell sx={{ width: 22, border: 0 }} />;
+                                }
+                                rows.push(
+                                  <SortableExerciseRow key={ex.id} exercise={ex} bracketCell={bracketCell} isGroupDragging={highlightGroup}>
+                                    <TableCell sx={styles.tableCell}>
+                                      {ex.exercise?.title}
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      {ex.type}
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      {ex.sets}
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      {ex.repsOrTime}
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      {ex.rest}
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      {ex.weight}
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      {ex.rpe}
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      {ex.rir}
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      {ex.tut}
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      <ArrowTooltip
+                                        title={ex.note || ""}
+                                        placement="left"
+                                        arrow
+                                        enterTouchDelay={0}
+                                        enterDelay={0}
+                                        leaveDelay={200}
+                                        disableInteractive={false}
+                                      >
+                                        <span>
+                                          <IconButton size="small">
+                                            <NotesIcon />
+                                          </IconButton>
+                                        </span>
+                                      </ArrowTooltip>
+                                    </TableCell>
+                                    <TableCell sx={styles.tableCell}>
+                                      <Box sx={styles.tableCellBox}>
+                                        <IconButton size="small" onClick={() => {
+                                          setSupersetWorkoutExerciseId(null);
+                                          setEditExerciseId(ex.id);
+                                          setAddExerciseDayId(day.id);
+                                          setAddEditExerciseModalOpen(true);
+                                        }}>
+                                          <EditIcon />
                                         </IconButton>
-                                      </span>
-                                    </ArrowTooltip>
-                                  </TableCell>
-                                  <TableCell sx={styles.tableCell}>
-                                    <Box sx={styles.tableCellBox}>
-                                      <IconButton size="small" onClick={() => {
-                                        setSupersetWorkoutExerciseId(null);
-                                        setEditExerciseId(ex.id);
-                                        setAddExerciseDayId(day.id);
-                                        setAddEditExerciseModalOpen(true);
-                                      }}>
-                                        <EditIcon />
-                                      </IconButton>
-                                      <IconButton size="small" onClick={async () => {
-                                        setSupersetWorkoutExerciseId(ex.id);
-                                        setAddExerciseDayId(day.id);
-                                        setEditExerciseId(null);
-                                        setAddEditExerciseModalOpen(true);
-                                      }}>
-                                        <StarIcon />
-                                      </IconButton>
-                                      <IconButton size="small" onClick={() => {
-                                        setCopyExerciseId(ex.id);
-                                        setCopyExerciseModalOpen(true);
-                                      }}>
-                                        <DublicateIcon />
-                                      </IconButton>
-                                      <IconButton size="small" onClick={() => {
-                                        setDeleteExerciseId(ex.id);
-                                        setShowDeleteExerciseModal(true);
-                                      }}>
-                                        <DeleteIcon />
-                                      </IconButton>
-                                    </Box>
-                                  </TableCell>
-                                </SortableExerciseRow>
-                              ))}
-                          </>
+                                        <IconButton size="small" onClick={async () => {
+                                          setSupersetWorkoutExerciseId(ex.id);
+                                          setAddExerciseDayId(day.id);
+                                          setEditExerciseId(null);
+                                          setAddEditExerciseModalOpen(true);
+                                        }}>
+                                          <StarIcon />
+                                        </IconButton>
+                                        <IconButton size="small" onClick={() => {
+                                          setCopyExerciseId(ex.id);
+                                          setCopyExerciseModalOpen(true);
+                                        }}>
+                                          <DublicateIcon />
+                                        </IconButton>
+                                        <IconButton size="small" onClick={() => {
+                                          setDeleteExerciseId(ex.id);
+                                          setShowDeleteExerciseModal(true);
+                                        }}>
+                                          <DeleteIcon />
+                                        </IconButton>
+                                      </Box>
+                                    </TableCell>
+                                  </SortableExerciseRow>
+                                );
+                              }
+                            });
+                            return rows;
+                          })()
                         )}
                         <TableRow>
-                          <TableCell colSpan={12} sx={styles.addExerciseRow}>
+                          <TableCell colSpan={13} sx={styles.addExerciseRow}>
                             <Box
                               sx={styles.addExerciseBox}
                               onClick={() => {
@@ -821,25 +977,3 @@ useEffect(() => {
 };
 
 export default TrainingProgramCompositionPage;
-
-// Custom arrow tooltip styled for left placement
-import type { TooltipProps } from "@mui/material/Tooltip";
-
-const ArrowTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} arrow placement="left" classes={{ popper: className }} />
-))(() => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: "#ededed",
-    color: "#616160",
-    fontSize: 22,
-    fontFamily: "Montserrat, sans-serif",
-    borderRadius: 24,
-    boxShadow: "0 4px 32px 0 rgba(33,33,33,0.10)",
-    padding: 24,
-    maxWidth: 380,
-    whiteSpace: "pre-line",
-  },
-  [`& .${tooltipClasses.arrow}`]: {
-    color: "#ededed",
-  },
-}));
