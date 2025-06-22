@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, IconButton, MenuItem, Select, InputLabel, FormControl, Fade } from '@mui/material';
 import DialogCloseIcon from '../../../../../icons/DialogCloseIcon2';
+import { useTraining } from '../../../../../Context/TrainingContext';
+import { useSnackbar } from '../../../../../Context/SnackbarContext';
 
 const styles = {
   dialogPaper: {
@@ -119,17 +121,42 @@ const daysOfWeek = [
 interface AddDayModalProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (day: number, workoutName: string) => void;
+  selectedWeekId: number | null;
 }
 
-const AddDayModal: React.FC<AddDayModalProps> = ({ open, onClose, onAdd }) => {
+const AddDayModal: React.FC<AddDayModalProps> = ({ open, onClose, selectedWeekId }) => {
+  const { selectedTrainingProgram, createDay } = useTraining();
+  const { showSnackbar } = useSnackbar();
   const [day, setDay] = useState<number>(1);
   const [workoutName, setWorkoutName] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleAdd = () => {
-    onAdd(day, workoutName);
-    setWorkoutName('');
-    setDay(1);
+  // Find the selected week
+  const selectedWeek = React.useMemo(() =>
+    selectedTrainingProgram?.weeks?.find(w => w.id === selectedWeekId),
+    [selectedTrainingProgram, selectedWeekId]
+  );
+  // Get the list of dayOfWeek numbers already used in this week
+  const usedDays = React.useMemo(() =>
+    selectedWeek ? selectedWeek.days.map(d => d.dayOfWeek) : [],
+    [selectedWeek]
+  );
+
+  const handleAdd = async () => {
+    if (!selectedWeekId) return;
+    setLoading(true);
+    try {
+      await createDay(selectedWeekId, day, workoutName);
+      showSnackbar('Giorno aggiunto con successo', 'success');
+      setWorkoutName('');
+      setDay(1);
+      onClose();
+    } catch (error: unknown) {
+      console.error('Error creating day:', error);
+      showSnackbar('Errore durante la creazione del giorno', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -153,7 +180,14 @@ const AddDayModal: React.FC<AddDayModalProps> = ({ open, onClose, onAdd }) => {
             sx={styles.select}
           >
             {daysOfWeek.map(d => (
-              <MenuItem key={d.value} value={d.value} sx={{ fontSize: 22, fontFamily: 'Montserrat, sans-serif' }}>{d.value}</MenuItem>
+              <MenuItem
+                key={d.value}
+                value={d.value}
+                sx={{ fontSize: 22, fontFamily: 'Montserrat, sans-serif' }}
+                disabled={usedDays.includes(d.value)}
+              >
+                {d.value}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -172,7 +206,7 @@ const AddDayModal: React.FC<AddDayModalProps> = ({ open, onClose, onAdd }) => {
           variant="contained"
           onClick={handleAdd}
           sx={styles.addButton}
-          disabled={!workoutName.trim()}
+          disabled={!workoutName.trim() || loading}
         >
           Aggiungi
         </Button>

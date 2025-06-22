@@ -8,7 +8,7 @@ const styles = {
   dialogPaper: {
     borderRadius: 4,
     p: 0,
-    background: '#f5f5f5', // light grey background for the whole modal
+    background: '#f5f5f5',
     boxShadow: '0 4px 32px 0 rgba(33,33,33,0.10)',
     width: 900,
     maxWidth: '98vw',
@@ -50,7 +50,7 @@ const styles = {
     mb: 3,
     mt: 3,
     border: '3px solid #ededed',
-    boxShadow: 'none', // remove shadow
+    boxShadow: 'none',
   },
   weekTitle: {
     fontWeight: 500,
@@ -68,35 +68,32 @@ const styles = {
     fontFamily: 'Montserrat, sans-serif',
     mb: 1,
     mr: 3,
-    cursor: 'pointer', // make the whole option clickable
+    cursor: 'pointer',
     userSelect: 'none',
   },
   radioInput: {
     marginRight: 8,
     width: 22,
     height: 22,
-    accentColor: '#616160', // custom grey color for checked state
+    accentColor: '#616160',
   },
   dialogActions: { px: 4, pb: 4, pt: 0, display: 'flex', justifyContent: 'flex-end' },
   copyButton: { background: '#EDB528', color: '#fff', borderRadius: 2.5, fontWeight: 500, fontSize: 24, px: 8, py: 2, minWidth: 180, boxShadow: 0, textTransform: 'none', fontFamily: 'Montserrat, sans-serif', '&:hover': { background: '#d1a53d' } },
 };
 
-interface CopyDayModalProps {
+interface CopyExerciseModalProps {
   open: boolean;
   onClose: () => void;
-  sourceWeekId: number;
-  sourceDayOfWeek: number;
+  exerciseId: number | null;
 }
 
-const CopyDayModal: React.FC<CopyDayModalProps> = ({ open, onClose, sourceWeekId, sourceDayOfWeek }) => {
-  const { selectedTrainingProgram, cloneDay } = useTraining();
+const CopyExerciseModal: React.FC<CopyExerciseModalProps> = ({ open, onClose, exerciseId }) => {
+  const { selectedTrainingProgram, copyExerciseToDay } = useTraining();
   const { showSnackbar } = useSnackbar();
   const weeks = selectedTrainingProgram?.weeks || [];
-
-  // State: selected week and day
   const [selected, setSelected] = useState<{ weekIdx: number; day: number } | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  // Reset selection if weeks change
   React.useEffect(() => {
     setSelected(null);
   }, [weeks.length]);
@@ -105,33 +102,42 @@ const CopyDayModal: React.FC<CopyDayModalProps> = ({ open, onClose, sourceWeekId
     setSelected({ weekIdx, day });
   };
 
-  const handleCloneDay = async () => {
-    if (selected) {
-      const destinationWeek = weeks[selected.weekIdx];
-      const destinationDay = selected.day;
+  // Helper to handle closing and clear selection
+  const handleClose = () => {
+    setSelected(null);
+    onClose();
+  };
+
+  const handleCopyExercise = async () => {
+    if (selected && exerciseId) {
+      setLoading(true);
       try {
-        await cloneDay(
-          sourceWeekId,
-          sourceDayOfWeek,
-          destinationWeek.id,
-          destinationDay
-        );
-        onClose();
-      } catch (error: unknown) {
-        console.error('Error cloning day:', error);
-        showSnackbar('Errore durante la clonazione del giorno', 'error');
+        const targetDayId = weeks[selected.weekIdx].days.find(d => d.dayOfWeek === selected.day)?.id;
+        if (targetDayId) {
+          await copyExerciseToDay(exerciseId, targetDayId);
+          showSnackbar('Esercizio copiato con successo!', 'success');
+        } else {
+          showSnackbar('Errore: giorno di destinazione non trovato.', 'error');
+        }
+        handleClose();
+      } catch (err: unknown) {
+        console.error('Error copying exercise:', err);
+        showSnackbar('Errore durante la copia dell\'esercizio.', 'error');
+        setLoading(false);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth={false} fullWidth TransitionComponent={undefined}
+    <Dialog open={open} onClose={handleClose} maxWidth={false} fullWidth TransitionComponent={undefined}
       PaperProps={{ sx: styles.dialogPaper }}
       slotProps={{ backdrop: { timeout: 300, sx: styles.dialogBackdrop } }}
     >
       <DialogTitle sx={styles.dialogTitle}>
-        Copia giorno
-        <IconButton onClick={onClose} sx={styles.closeButton}>
+        Copia esercizio
+        <IconButton onClick={handleClose} sx={styles.closeButton}>
           <DialogCloseIcon />
         </IconButton>
       </DialogTitle>
@@ -140,26 +146,22 @@ const CopyDayModal: React.FC<CopyDayModalProps> = ({ open, onClose, sourceWeekId
           <Box key={week.id} sx={styles.weekBox}>
             <Typography sx={styles.weekTitle}>{`Settimana ${week.order}`}</Typography>
             <Box sx={styles.radioGroup}>
-              {Array.from({ length: 7 }, (_, i) => i + 1).map(day => {
-                const isCreated = week.days.some(d => d.dayOfWeek === day);
-                return (
-                  <Box
-                    key={day}
-                    sx={{ ...styles.radioOption, opacity: isCreated ? 0.5 : 1, pointerEvents: isCreated ? 'none' : 'auto' }}
-                    onClick={() => !isCreated && handleDayChange(weekIdx, day)}
-                  >
-                    <input
-                      type="radio"
-                      name={`week-${weekIdx}`}
-                      checked={selected?.weekIdx === weekIdx && selected.day === day}
-                      disabled={isCreated}
-                      onChange={() => handleDayChange(weekIdx, day)}
-                      style={styles.radioInput}
-                    />
-                    Giorno {day}
-                  </Box>
-                );
-              })}
+              {week.days.map(day => (
+                <Box
+                  key={day.id}
+                  sx={{ ...styles.radioOption, opacity: 1, pointerEvents: 'auto' }}
+                  onClick={() => handleDayChange(weekIdx, day.dayOfWeek)}
+                >
+                  <input
+                    type="radio"
+                    name={`week-${weekIdx}`}
+                    checked={selected?.weekIdx === weekIdx && selected.day === day.dayOfWeek}
+                    onChange={() => handleDayChange(weekIdx, day.dayOfWeek)}
+                    style={styles.radioInput}
+                  />
+                  Giorno {day.dayOfWeek}
+                </Box>
+              ))}
             </Box>
           </Box>
         ))}
@@ -168,14 +170,14 @@ const CopyDayModal: React.FC<CopyDayModalProps> = ({ open, onClose, sourceWeekId
         <Button
           variant="contained"
           sx={styles.copyButton}
-          onClick={handleCloneDay}
-          disabled={!selected}
+          onClick={handleCopyExercise}
+          disabled={!selected || loading}
         >
-          Copia
+          {loading ? 'Copia...' : 'Copia'}
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default CopyDayModal;
+export default CopyExerciseModal;

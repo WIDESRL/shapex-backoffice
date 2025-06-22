@@ -51,8 +51,7 @@ interface EditDayModalProps {
   open: boolean;
   value: string;
   onClose: () => void;
-  onSave: (value: string) => void;
-  editDayId: number;
+  editDayId: number | null;
 }
 
 const EditDayModal: React.FC<EditDayModalProps> = ({ open, value, onClose, editDayId }) => {
@@ -67,6 +66,7 @@ const EditDayModal: React.FC<EditDayModalProps> = ({ open, value, onClose, editD
   }, [value, open]);
 
   const handleSave = async () => {
+    if (!editDayId || !input.trim()) return;
     setLoading(true);
     try {
       await updateDayTitle(editDayId, input);

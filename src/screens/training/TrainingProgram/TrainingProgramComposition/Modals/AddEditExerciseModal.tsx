@@ -7,7 +7,8 @@ import MagnifierIcon from '../../../../../icons/MagnifierIcon';
 import FilterIcon from '../../../../../icons/FilterIcon';
 import VideoIcon from '../../../../../icons/VideoIcon';
 import DialogCloseIcon from '../../../../../icons/DialogCloseIcon2';
-import { useTraining } from '../../../../../Context/TrainingContext';
+import { useTraining, WorkoutExercisePayload } from '../../../../../Context/TrainingContext';
+import { useSnackbar } from '../../../../../Context/SnackbarContext';
 
 const styles = {
   dialog: {
@@ -73,7 +74,7 @@ const styles = {
 
 const exerciseTypes = ['Ripetizioni', 'Tempo', 'Ramping'];
 
-interface InitialData {
+export interface InitialData {
   selectedExercises?: number[];
   fields?: Record<string, unknown>;
   note?: string;
@@ -82,28 +83,148 @@ interface InitialData {
 interface EditExerciseModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: unknown) => void;
   initialData?: InitialData;
-  exercises: Array<{ id: number; title: string; thumbnailUrl: string }>;
+  dayId?: number | null;
+  editExerciseId?: number | null;
+  supersetWorkoutExerciseId?: number | null;
 }
 
-const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose, onSave, initialData }) => {
+const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose, initialData, dayId, editExerciseId, supersetWorkoutExerciseId }) => {
   const { t } = useTranslation();
+  const { showSnackbar } = useSnackbar();
   const [search, setSearch] = useState('');
   const [selectedExercises, setSelectedExercises] = useState<number[]>(initialData?.selectedExercises || []);
   const [showFilters, setShowFilters] = useState(false);
-  const { exercises, fetchExercisesWithoutLoading } = useTraining();
+  const { exercises, fetchExercisesWithoutLoading, selectedTrainingProgram, createWorkoutExercise, updateWorkoutExercise } = useTraining();
+
+  // Find the day object from the context training program using dayId
+  const selectedDay = React.useMemo(() => {
+    if (!dayId || !selectedTrainingProgram) return undefined;
+    for (const week of selectedTrainingProgram.weeks) {
+      const day = week.days.find(d => d.id === dayId);
+      if (day) return day;
+    }
+    return undefined;
+  }, [dayId, selectedTrainingProgram]);
+
+  // Find the next order number for the new exercise in the selected day
+  const nextOrder = React.useMemo(() => {
+    if (!selectedDay) return 1;
+    const maxOrder = selectedDay.exercises.reduce((max, ex) => Math.max(max, ex.order), 0);
+    return maxOrder + 1;
+  }, [selectedDay]);
+
+  // Form state for required/optional fields
+  const [type, setType] = useState('Ripetizioni');
+  const [series, setSeries] = useState('');
+  const [repOrTime, setRepOrTime] = useState('');
+  const [rest, setRest] = useState('');
+  const [weight, setWeight] = useState('');
+  const [rpe, setRpe] = useState('');
+  const [rir, setRir] = useState('');
+  const [tut, setTut] = useState('');
+  const [note, setNote] = useState(initialData?.note || '');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if(open) fetchExercisesWithoutLoading();
   }, [fetchExercisesWithoutLoading, open]);
 
-  // Drag & drop logic would go here (not implemented in this stub)
+  // Reset all form values when modal is closed
+  useEffect(() => {
+    if (!open) {
+      setType('Ripetizioni');
+      setSeries('');
+      setRepOrTime('');
+      setRest('');
+      setWeight('');
+      setRpe('');
+      setRir('');
+      setTut('');
+      setNote(initialData?.note || '');
+      setSelectedExercises(initialData?.selectedExercises || []);
+      setErrors({});
+      setSearch('');
+      setShowFilters(false);
+    }
+  }, [open, initialData]);
+
+  // Populate form state when editing an exercise
+  useEffect(() => {
+    if (open && editExerciseId && selectedDay) {
+      const ex = selectedDay.exercises.find(e => e.id === editExerciseId);
+      if (ex) {
+        setType(ex.type || 'Ripetizioni');
+        setSeries(ex.sets?.toString() || '');
+        setRepOrTime(ex.repsOrTime?.toString() || '');
+        setRest(ex.rest?.toString() || '');
+        setWeight(ex.weight?.toString() || '');
+        setRpe(ex.rpe?.toString() || '');
+        setRir(ex.rir?.toString() || '');
+        setTut(ex.tut?.toString() || '');
+        setNote(ex.note || '');
+        setSelectedExercises([ex.exerciseId]);
+        setErrors({});
+      }
+    }
+  }, [open, editExerciseId, selectedDay]);
+
+  // Memoized edit mode: true if editExerciseId exists
+  const editMode = React.useMemo(() => !!editExerciseId, [editExerciseId]);
+  const superSetNode =  React.useMemo(() => !!supersetWorkoutExerciseId, [supersetWorkoutExerciseId]);
+
+  // Validation logic for required fields
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!type) newErrors.type = t('validation.required', 'Campo obbligatorio');
+    if (!series) newErrors.series = t('validation.required', 'Campo obbligatorio');
+    if (!repOrTime) newErrors.repOrTime = t('validation.required', 'Campo obbligatorio');
+    if (!rest) newErrors.rest = t('validation.required', 'Campo obbligatorio');
+    if (!selectedExercises[0]) newErrors.selectedExercises = t('validation.required', 'Seleziona un esercizio');
+    return newErrors;
+  };
+
+  const handleSave = async () => {
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+    if (!dayId) return;
+    const payload: WorkoutExercisePayload = {
+      exerciseId: selectedExercises[0],
+      type,
+      sets: Number(series),
+      repsOrTime: repOrTime,
+      rest: Number(rest),
+      weight: weight ? Number(weight) : undefined,
+      rpe: rpe ? Number(rpe) : undefined,
+      rir: rir ? Number(rir) : undefined,
+      tut: tut ? Number(tut) : undefined,
+      note: note,
+    };
+    if(!editMode) payload.order = nextOrder;
+    if(superSetNode) payload.supersetWorkoutExerciseId = supersetWorkoutExerciseId;
+    try {
+      if (editMode && editExerciseId) {
+        await updateWorkoutExercise(editExerciseId, payload);
+      } else {
+         await createWorkoutExercise(dayId, payload);
+      }
+  
+      onClose();
+    } catch {
+      showSnackbar(
+        editMode
+          ? t('trainingPage.exerciseUpdateError', "Errore durante l'aggiornamento dell'esercizio")
+          : t('trainingPage.exerciseAddError', "Errore durante la creazione dell'esercizio"),
+        'error'
+      );
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth={false} fullWidth PaperProps={{ sx: styles.dialog }}  slotProps={{ backdrop: { timeout: 300, sx: styles.backdrop } }} >
       <DialogTitle sx={styles.title}>
-        {t('trainingPage.editExercise', 'Modifica esercizio')}
+        {superSetNode ? t('training.addSupersetExercise') :  editMode ? t('training.editExercise') : t('training.addExercise')}
         <IconButton onClick={onClose} sx={{ position: 'absolute', right: 24, top: 24, background: 'transparent', boxShadow: 'none', p: 0 }}>
           <DialogCloseIcon />
         </IconButton>
@@ -111,27 +232,75 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose, on
       <DialogContent sx={styles.content}>
         {/* General Data Fields */}
         <Box sx={styles.fieldRow}>
-          <TextField size='small' label={t('training.exerciseName', 'Nome esercizio')} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
-          <FormControl sx={styles.field}>
+          {/* Type (required) */}
+          <FormControl sx={styles.field} error={!!errors.type}>
             <InputLabel>{t('training.exerciseType', 'Tipo')}</InputLabel>
-            <Select label={t('training.exerciseType', 'Tipo')} defaultValue={exerciseTypes[0]} sx={{ height: 40, minHeight: 40 }}>
-              {exerciseTypes.map(type => (
-                <MenuItem key={type} value={type}>{type}</MenuItem>
+            <Select
+              label={t('training.exerciseType', 'Tipo')}
+              value={type}
+              onChange={e => setType(e.target.value)}
+              sx={{ height: 40, minHeight: 40 }}
+            >
+              {exerciseTypes.map(typeOption => (
+                <MenuItem key={typeOption} value={typeOption}>{typeOption}</MenuItem>
               ))}
             </Select>
+            {errors.type && <Typography color="error" variant="caption">{errors.type}</Typography>}
           </FormControl>
-          <TextField size='small' label={t('training.series', 'Serie')} type="number" sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
-          <TextField size='small' label={t('training.repOrTime', 'Ripetizioni/Tempo')} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
+          {/* Series (required) */}
+          <TextField
+            size='small'
+            label={t('training.series', 'Serie')}
+            type="number"
+            value={series}
+            onChange={e => setSeries(e.target.value)}
+            error={!!errors.series}
+            helperText={errors.series}
+            sx={styles.field}
+            InputProps={{ style: { height: 40, minHeight: 40 } }}
+          />
+          {/* RepOrTime (required) */}
+          <TextField
+            size='small'
+            type="number"
+            label={t('training.repOrTime', 'Ripetizioni/Tempo')}
+            value={repOrTime}
+            onChange={e => setRepOrTime(e.target.value)}
+            error={!!errors.repOrTime}
+            helperText={errors.repOrTime}
+            sx={styles.field}
+            InputProps={{ style: { height: 40, minHeight: 40 } }}
+          />
+          {/* Rest (required) */}
+          <TextField
+            size='small'
+            type="number"
+            label={t('training.rest', 'Recupero')}
+            value={rest}
+            onChange={e => setRest(e.target.value)}
+            error={!!errors.rest}
+            helperText={errors.rest}
+            sx={styles.field}
+            InputProps={{ style: { height: 40, minHeight: 40 } }}
+          />
         </Box>
         <Box sx={styles.fieldRow}>
-          <TextField size='small' label={t('training.rest', 'Recupero')} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
-          <TextField size='small' label={t('training.weight', 'Peso')} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
-          <TextField size='small' label={t('training.rpe', 'RPE')} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
-          <TextField size='small' label={t('training.rir', 'RIR')} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
-          <TextField size='small' label={t('training.tut', 'TUT')} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
+          {/* Weight (optional) */}
+          <TextField size='small' type="number" label={t('training.weight', 'Peso')} value={weight} onChange={e => setWeight(e.target.value)} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
+          {/* RPE (optional) */}
+          <TextField size='small' type="number" label={t('training.rpe', 'RPE')} value={rpe} onChange={e => setRpe(e.target.value)} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
+          {/* RIR (optional) */}
+          <TextField size='small' type="number" label={t('training.rir', 'RIR')} value={rir} onChange={e => setRir(e.target.value)} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
+          {/* TUT (optional) */}
+          <TextField size='small' type="number" label={t('training.tut', 'TUT')} value={tut} onChange={e => setTut(e.target.value)} sx={styles.field} InputProps={{ style: { height: 40, minHeight: 40 } }} />
         </Box>
         {/* Exercise Search & Filter Section */}
         <Typography sx={{ fontWeight: 500, fontSize: 20, mt: 4, mb: 1 }}>{t('trainingPage.exerciseList', 'Elenco esercizi')}</Typography>
+        {errors.selectedExercises && (
+          <Typography color="error" variant="caption" sx={{ mb: 1, display: 'block' }}>
+            {errors.selectedExercises}
+          </Typography>
+        )}
         <Box sx={styles.searchRow}>
           <TextField
             placeholder={t('trainingPage.search', 'Cerca qui ...')}
@@ -213,11 +382,12 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose, on
           multiline
           minRows={3}
           fullWidth
-          defaultValue={initialData?.note || ''}
+          value={note}
+          onChange={e => setNote(e.target.value)}
         />
       </DialogContent>
       <DialogActions sx={styles.actions}>
-        <Button onClick={onSave} sx={styles.saveBtn} size="large">
+        <Button onClick={handleSave} sx={styles.saveBtn} size="large">
           {t('training.save', 'Salva')}
         </Button>
       </DialogActions>
@@ -225,7 +395,4 @@ const EditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose, on
   );
 };
 
-
-
-
-export default EditExerciseModal;
+export default AddEditExerciseModal;

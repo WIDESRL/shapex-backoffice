@@ -94,6 +94,7 @@
     "exercises": "Exercises",
     "addExercise": "Add Exercise",
     "editExercise": "Edit Exercise",
+    "addSupersetExercise": "Supersets - Add Exercise",
     "exerciseTitle": "Exercise Title",
     "exerciseName": "Exercise Name",
     "description": "Description",
@@ -203,7 +204,69 @@
       "loading": "Creating...",
       "error": "Error while creating the week.",
       "success": "Week created successfully!"
+    },
+    "exerciseAddError": "Error while creating exercise.",
+    "exerciseUpdateError": "Error while updating exercise.",
+    "exerciseDeleteError": "Error while deleting exercise."
+  },
+  "trainingProgramComposition": {
+    "title": "Training Program Composition",
+    "modifyProgram": "Edit Program",
+    "assign": "Assign",
+    "duration": "Program Duration",
+    "weekLabel": "Week {{number}}",
+    "duplicateWeek": "Duplicate week",
+    "deleteWeek": "Delete week",
+    "dayLabel": "DAY {{number}}",
+    "addExercise": "Add Exercise",
+    "noExercises": "No exercises yet, add a new one.",
+    "exerciseTableHeaders": {
+      "name": "Exercise Name",
+      "type": "Type",
+      "sets": "Sets",
+      "repsOrTime": "Reps/Time",
+      "rest": "Rest",
+      "weight": "Weight",
+      "rpe": "RPE",
+      "rir": "RIR",
+      "tut": "TUT",
+      "notes": "Notes",
+      "actions": "Actions"
+    },
+    "addDay": "Add Day",
+    "addWeek": "Add Week",
+    "noWeekSelected": "No week selected",
+    "selectOrCreateWeek": "Select or create a week to get started"
+  },
+  "exercise": {
+    "copy": {
+      "title": "Copy Exercise",
+      "selectDestination": "Select destination workout",
+      "confirm": "Copy Exercise",
+      "success": "Exercise copied successfully!",
+      "dayNotFound": "Error: destination day not found.",
+      "error": "Error while copying exercise."
     }
-
+  },
+  "assignUsersModal": {
+    "title": "Assign program",
+    "programLabel": "Program",
+    "assignTo": "Assign to:",
+    "assignedTo": "Assigned to:",
+    "clientsList": "Clients list",
+    "searchPlaceholder": "Search here ...",
+    "noAvailableTitle": "No users available",
+    "noAvailableSubtitle": "There are no users available for assignment.",
+    "noAssignedTitle": "No users assigned",
+    "noAssignedSubtitle": "There are no users assigned to this program.",
+    "toRemove": "To remove",
+    "toAssign": "To assign",
+    "noActiveSubscription": "No active subscription",
+    "undo": "Undo",
+    "assign": "Assign",
+    "remove": "Remove",
+    "save": "Save",
+    "saveSuccess": "Changes have been saved successfully.",
+    "saveError": "An error occurred while saving assignments. Please try again."
   }
 }

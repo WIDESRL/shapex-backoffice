@@ -94,6 +94,7 @@
     "exercises": "Esercizi",
     "addExercise": "Aggiungi Esercizio",
     "editExercise": "Modifica Esercizio",
+    "addSupersetExercise": "Superserie - Aggiungi esercizio",
     "exerciseTitle": "Titolo Esercizio",
     "exerciseName": "Nome esercizio",
     "description": "Descrizione",
@@ -203,7 +204,69 @@
       "loading": "Creazione...",
       "error": "Errore durante la creazione della settimana.",
       "success": "Settimana creata con successo!"
+    },
+    "exerciseAddError": "Errore durante la creazione dell'esercizio.",
+    "exerciseUpdateError": "Errore durante l'aggiornamento dell'esercizio.",
+    "exerciseDeleteError": "Errore durante la cancellazione dell'esercizio."
+  },
+  "trainingProgramComposition": {
+    "title": "Composizione Allenamento",
+    "modifyProgram": "Modifica Programma",
+    "assign": "Assegna",
+    "duration": "Durata allenamento",
+    "weekLabel": "Settimana {{number}}",
+    "duplicateWeek": "Duplica settimana",
+    "deleteWeek": "Elimina settimana",
+    "dayLabel": "GIORNO {{number}}",
+    "addExercise": "Aggiungi esercizio",
+    "noExercises": "Non ci sono ancora esercizi, aggiungine uno nuovo.",
+    "exerciseTableHeaders": {
+      "name": "Nome esercizio",
+      "type": "Tipo",
+      "sets": "Serie",
+      "repsOrTime": "Rip/Tempo",
+      "rest": "Rec",
+      "weight": "Peso",
+      "rpe": "RPE",
+      "rir": "RIR",
+      "tut": "TUT",
+      "notes": "Note",
+      "actions": "Azioni"
+    },
+    "addDay": "Aggiungi Giorno",
+    "addWeek": "Aggiungi Settimana",
+    "noWeekSelected": "Nessuna settimana selezionata",
+    "selectOrCreateWeek": "Seleziona o crea una settimana per iniziare"
+  },
+  "exercise": {
+    "copy": {
+      "title": "Copia esercizio",
+      "selectTarget": "Seleziona un giorno di destinazione per copiare l'esercizio.",
+      "noDaysAvailable": "Nessun giorno disponibile per la copia dell'esercizio.",
+      "success": "Esercizio copiato con successo!",
+      "dayNotFound": "Errore: giorno di destinazione non trovato.",
+      "error": "Errore durante la copia dell'esercizio."
     }
-
+  },
+  "assignUsersModal": {
+    "title": "Assegna programma",
+    "programLabel": "Programma",
+    "assignTo": "Assegna a:",
+    "assignedTo": "Assegnato a:",
+    "clientsList": "Elenco clienti",
+    "searchPlaceholder": "Cerca qui ...",
+    "noAvailableTitle": "Nessun utente disponibile",
+    "noAvailableSubtitle": "Non ci sono utenti disponibili per l'assegnazione.",
+    "noAssignedTitle": "Nessun utente assegnato",
+    "noAssignedSubtitle": "Non ci sono utenti assegnati a questo programma.",
+    "toRemove": "Da rimuovere",
+    "toAssign": "Da assegnare",
+    "noActiveSubscription": "Non ha un abbonamento attivo",
+    "undo": "Annulla",
+    "assign": "Assegna",
+    "remove": "Rimuovi",
+    "save": "Salva",
+    "saveSuccess": "Le modifiche sono state salvate con successo.",
+    "saveError": "Si è verificato un errore durante il salvataggio delle assegnazioni. Riprova."
   }
 }

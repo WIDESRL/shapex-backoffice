@@ -46,7 +46,7 @@ import EditDayModal from "./Modals/EditDayModal";
 import DeleteDayModal from "./Modals/DeleteDayModal";
 import ModifyTrainingProgramModal from "./Modals/ModifyTrainingProgramModal";
 import DeleteWeekModal from "./Modals/DeleteWeekModal";
-import EditExerciseModal from "./Modals/EditExerciseModal";
+import AddEditExerciseModal, { InitialData } from "./Modals/AddEditExerciseModal";
 import AddDayModal from "./Modals/AddDayModal";
 import AssignUsersModal from "./Modals/AssignUsersModal";
 import CopyWeekModal from "./Modals/CopyWeekModal";
@@ -54,7 +54,12 @@ import CopyDayModal from "./Modals/CopyDayModal";
 import ConfirmCreateWeekModal from "./Modals/ConfirmCreateWeekModal";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useTraining } from '../../../../Context/TrainingContext';
+import { useTraining, TrainingProgramWeek, TrainingProgramDay, TrainingProgramExercise } from '../../../../Context/TrainingContext';
+import type { DragEndEvent } from "@dnd-kit/core";
+import debounce from 'lodash/debounce';
+import { useTranslation } from 'react-i18next';
+import DeleteExerciseModal from "./Modals/DeleteExerciseModal";
+import CopyExerciseModal from "./Modals/CopyExerciseModal";
 
 // --- styles ---
 const styles = {
@@ -200,53 +205,93 @@ const styles = {
 };
 
 const TrainingProgramCompositionPage = () => {
+  const { t } = useTranslation();
   // Use real training program data if available
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editDayName, setEditDayName] = useState("");
-  const [editDayId, setEditDayId] = useState("");
+  const [editDayId, setEditDayId] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [modifyModalOpen, setModifyModalOpen] = useState(false);
   const [deleteWeekModalOpen, setDeleteWeekModalOpen] = useState(false);
   const [copyWeekModalOpen, setCopyWeekModalOpen] = useState(false);
   const [copyDayModalOpen, setCopyDayModalOpen] = useState(false);
   const [confirmCreateWeekModalOpen, setConfirmCreateWeekModalOpen] = useState(false);
+  const [copyDaySource, setCopyDaySource] = useState<{ weekId: number; dayOfWeek: number } | null>(null);
 
-  const [editExerciseModalOpen, setEditExerciseModalOpen] = useState(false);
-  // Define InitialData type for exercise modal initial data
-  type InitialData = {
-    id?: number;
-    name?: string;
-    type?: string;
-    // Add other fields as needed
-  };
-  const [editExerciseInitialData, setEditExerciseInitialData] =
-    useState<InitialData | null>(null);
+  const [addEditExerciseModalOpen, setAddEditExerciseModalOpen] = useState(false);
+  const [addExerciseDayId, setAddExerciseDayId] = useState<number | null>(null);
+  const [editExerciseId, setEditExerciseId] = useState<number | null>(null);
+  const [deleteExerciseId, setDeleteExerciseId] = useState<number | null>(null);
+  const [showdeleteExerciseModal, setShowDeleteExerciseModal] = useState(false);
+  // Add this for delete day modal state
+  const [deleteDayId, setDeleteDayId] = useState<number | null>(null);
+  const [editExerciseInitialData, setEditExerciseInitialData] = useState<InitialData | null>(null);
   const [addDayModalOpen, setAddDayModalOpen] = useState(false);
   const [assignUsersModalOpen, setAssignUsersModalOpen] = useState(false);
-    const { selectedTrainingProgram: trainingProgram } = useTraining();
+  const [copyExerciseModalOpen, setCopyExerciseModalOpen] = useState(false);
+  const [copyExerciseId, setCopyExerciseId] = useState<number | null>(null);
+  const [supersetWorkoutExerciseId, setSupersetWorkoutExerciseId] = useState<number | null>(null);
+  const { selectedTrainingProgram: trainingProgram, updateExercisesOrder } = useTraining();
+  const debouncedUpdateExercisesOrder = React.useRef(
+    debounce((changedExercises) => {
+      setHasChangedExercisesOrder(false);
+      updateExercisesOrder(changedExercises);
+    }, 1000)
+  ).current;
 
   const [weeks, setWeeks] = useState(trainingProgram?.weeks || []);
   const [selectedWeekId, setSelectedWeekId] = useState<number | null>(() => (trainingProgram?.weeks?.[0]?.id ?? null));
+  const [hasChangedExercisesOrder, setHasChangedExercisesOrder] = useState(false);
+  // const prevContextWeeksRef = React.useRef(trainingProgram?.weeks || []);
 
   const selectedWeek = React.useMemo(() => {
     if (!weeks || weeks.length === 0) return null;
     return weeks.find(w => w.id === selectedWeekId) || weeks[0] || null;
   }, [weeks, selectedWeekId]);
+  
   const weekChipsContainerRef = React.useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    console.log("Training Program:", trainingProgram);
-  }, [trainingProgram]);
+useEffect(() => {
+  if(!hasChangedExercisesOrder) return;
+  // Compare context weeks (prevContextWeeksRef.current) with local weeks
+  const changedExercises: { exerciseId: number; order: number }[] = [];
+
+  weeks.forEach((localWeek) => {
+    const contextWeek = trainingProgram?.weeks.find(w => w.id === localWeek.id);
+    if (!contextWeek) return;
+    localWeek.days.forEach((localDay) => {
+      const contextDay = contextWeek.days.find(d => d.id === localDay.id);
+      if (!contextDay) return;
+      localDay.exercises.forEach((localEx) => {
+        const contextEx = contextDay.exercises.find(e => e.id === localEx.id);
+        if (contextEx && contextEx.order !== localEx.order) {
+          changedExercises.push({ exerciseId: localEx.id, order: localEx.order });
+        }
+      });
+    });
+  });
+
+  if (changedExercises.length > 0) {
+    debouncedUpdateExercisesOrder(changedExercises);
+  }
+
+  // Update the ref for next comparison
+  // prevContextWeeksRef.current = trainingProgram?.weeks || [];
+}, [weeks, trainingProgram, debouncedUpdateExercisesOrder, hasChangedExercisesOrder]);
+
+
 
   // Keep local state in sync with prop changes
-  useEffect(() => {
+ useEffect(() => {
     setWeeks(trainingProgram?.weeks || []);
     if (trainingProgram?.weeks && trainingProgram.weeks.length > 0) {
-      setSelectedWeekId(trainingProgram.weeks[0].id);
+      const found = trainingProgram.weeks.find(w => w.id === selectedWeekId);
+      if (found) setSelectedWeekId(selectedWeekId);
+      else setSelectedWeekId(trainingProgram.weeks[0].id);
     } else {
       setSelectedWeekId(null);
     }
-  }, [trainingProgram]);
+  }, [trainingProgram, selectedWeekId]);
 
   // DnD-kit sensors (must be outside render/map)
   const sensors = useSensors(useSensor(PointerSensor));
@@ -257,7 +302,7 @@ const TrainingProgramCompositionPage = () => {
   };
 
   // Add this helper component for sortable rows
-  function SortableExerciseRow({ exercise, children, ...props }: any) {
+  function SortableExerciseRow({ exercise, children, ...props }: { exercise: TrainingProgramExercise; children: React.ReactNode }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
       id: exercise.id,
     });
@@ -294,50 +339,77 @@ const TrainingProgramCompositionPage = () => {
     }
   };
 
+  // Move drag end handler out of JSX
+  const handleExerciseDragEnd = (
+    event: DragEndEvent,
+    selectedWeek: TrainingProgramWeek,
+    day: TrainingProgramDay
+  ) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      setWeeks((prevWeeks) =>
+        prevWeeks.map((w) => {
+          if (w.id !== selectedWeek.id) return w;
+          const days = w.days.map((d) => {
+            if (d.id !== day.id) return d;
+            const oldIndex = d.exercises.findIndex((ex) => ex.id === active.id);
+            const newIndex = d.exercises.findIndex((ex) => ex.id === over?.id);
+            if (oldIndex === -1 || newIndex === -1) return d;
+            // Move and update order
+            const newExercises = arrayMove(d.exercises, oldIndex, newIndex)
+              .map((ex, idx) => ({ ...ex, order: idx + 1 }));
+            return { ...d, exercises: newExercises };
+          });
+          return { ...w, days };
+        })
+      );
+      setHasChangedExercisesOrder(true);
+    }
+  };
+
   return (
     <Box sx={styles.root}>
-      <Typography sx={styles.title}>Composizione Allenamento</Typography>
+      <Typography sx={styles.title}>{t('trainingProgramComposition.title')}</Typography>
       <Box sx={styles.topActions}>
         <OutlinedTextIconButton
-          text="Modifica Programma"
+          text={t('trainingProgramComposition.modifyProgram')}
           icon={<EditIcon />}
           onClick={handleOpenModify}
           sx={{ height: 45 }}
         />
         <OutlinedTextIconButton
-          text="Assegna"
+          text={t('trainingProgramComposition.assign')}
           icon={<AssignIcon />}
           onClick={() => setAssignUsersModalOpen(true)}
           sx={{ height: 45 }}
         />
       </Box>
-      <Typography sx={styles.subtitle}>Durata allenamento</Typography>
+      <Typography sx={styles.subtitle}>{t('trainingProgramComposition.duration')}</Typography>
       <Box
         sx={{
           ...styles.weekSelector,
-          width: '100%',
-          overflowX: 'auto',
-          overflowY: 'hidden',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
+          width: "100%",
+          overflowX: "auto",
+          overflowY: "hidden",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
           pb: 1,
           minHeight: 60,
         }}
       >
-       
         <Box
           ref={weekChipsContainerRef}
           sx={{
-            display: 'flex',
-            flexDirection: 'row',
+            display: "flex",
+            flexDirection: "row",
             gap: 2,
-            overflowX: 'auto',
+            overflowX: "auto",
             flex: 1,
-            maxWidth: '70vw',
-            scrollbarWidth: 'none', 
-            '&::-webkit-scrollbar': { display: 'none' },
-            msOverflowStyle: 'none',
+            maxWidth: "70vw",
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": { display: "none" },
+            msOverflowStyle: "none",
           }}
         >
           {weeks
@@ -346,57 +418,57 @@ const TrainingProgramCompositionPage = () => {
             .map((week) => (
               <Chip
                 key={week.id}
-                label={`Settimana ${week.order}`}
+                label={t('trainingProgramComposition.weekLabel', { number: week.order })}
                 onClick={() => setSelectedWeekId(week.id)}
                 sx={{
                   ...styles.weekChip,
-                  flex: '0 0 auto',
-                  maxWidth: 'none',
-                  width: 'auto',
-                  background: week.id === selectedWeekId ? '#616160' : '#ededed',
-                  color: week.id === selectedWeekId ? '#fff' : '#616160',
+                  flex: "0 0 auto",
+                  maxWidth: "none",
+                  width: "auto",
+                  background:
+                    week.id === selectedWeekId ? "#616160" : "#ededed",
+                  color: week.id === selectedWeekId ? "#fff" : "#616160",
                   fontWeight: week.id === selectedWeekId ? 700 : 400,
-                  transition: 'background 0.2s, color 0.2s',
+                  transition: "background 0.2s, color 0.2s",
                   ...(week.id === selectedWeekId
-                    ? { '&:hover': { background: '#616160' } }
-                    : { '&:hover': { background: '#d6d6d6' } }),
+                    ? { "&:hover": { background: "#616160" } }
+                    : { "&:hover": { background: "#d6d6d6" } }),
                 }}
               />
             ))}
         </Box>
-         <IconButton onClick={() => handleScrollWeeks('left')}>
-          <ChevronLeftIcon />
-        </IconButton>
-        <IconButton onClick={() => handleScrollWeeks('right')}>
-          <ChevronRightIcon />
-        </IconButton>
+        {weeks.length > 0 && (
+          <React.Fragment>
+            <IconButton onClick={() => handleScrollWeeks("left")}> <ChevronLeftIcon /> </IconButton>
+            <IconButton onClick={() => handleScrollWeeks("right")}> <ChevronRightIcon /> </IconButton>
+          </React.Fragment>
+        )}
       </Box>
       <Box sx={styles.weekActions}>
-        {
-          selectedWeek && (
-            <>
-              <OutlinedTextIconButton
-                text="Duplica settimana"
-                icon={<DublicateIcon />}
-                onClick={() => setCopyWeekModalOpen(true)}
-                sx={{ height: 45 }}
-              />
-              <OutlinedTextIconButton
-                text="Elimina settimana"
-                icon={<DeleteIcon />}
-                onClick={() => setDeleteWeekModalOpen(true)}
-                sx={{ height: 45 }}
-              />
-            </>
-          )
-        }
-
+        {selectedWeek && (
+          <>
+            <OutlinedTextIconButton
+              text={t('trainingProgramComposition.duplicateWeek')}
+              icon={<DublicateIcon />}
+              onClick={() => setCopyWeekModalOpen(true)}
+              sx={{ height: 45 }}
+            />
+            <OutlinedTextIconButton
+              text={t('trainingProgramComposition.deleteWeek')}
+              icon={<DeleteIcon />}
+              onClick={() => setDeleteWeekModalOpen(true)}
+              sx={{ height: 45 }}
+            />
+          </>
+        )}
       </Box>
       {/* Only render the selected week */}
       {selectedWeek ? (
         <React.Fragment key={selectedWeek.id}>
-          <Typography sx={styles.weekTitle}>{`Settimana ${selectedWeek.order}`}</Typography>
-          {selectedWeek.days.map((day, dayIdx) => (
+          <Typography
+            sx={styles.weekTitle}
+          >{t('trainingProgramComposition.weekLabel', { number: selectedWeek.order })}</Typography>
+          {selectedWeek.days.map((day) => (
             <Paper key={day.id} sx={styles.dayPaper}>
               <Box sx={styles.dayHeader}>
                 <Box sx={{ ...styles.dayHeaderTab, ...styles.dayHeaderTabBox }}>
@@ -412,7 +484,7 @@ const TrainingProgramCompositionPage = () => {
                       zIndex: 1,
                     }}
                   >
-                    GIORNO {dayIdx + 1} -
+                    {t('trainingProgramComposition.dayLabel', { number: day.dayOfWeek })} -
                   </span>
                   <span
                     style={
@@ -438,13 +510,19 @@ const TrainingProgramCompositionPage = () => {
                     </IconButton>
                     <IconButton
                       size="small"
-                      onClick={() => setCopyDayModalOpen(true)}
+                      onClick={() => {
+                        setCopyDaySource({ weekId: selectedWeek.id, dayOfWeek: day.dayOfWeek });
+                        setCopyDayModalOpen(true);
+                      }}
                     >
                       <DublicateIconWhite />
                     </IconButton>
                     <IconButton
                       size="small"
-                      onClick={() => setDeleteModalOpen(true)}
+                      onClick={() => {
+                        setDeleteDayId(day.id);
+                        setDeleteModalOpen(true);
+                      }}
                     >
                       <DeleteIconWhite />
                     </IconButton>
@@ -463,42 +541,23 @@ const TrainingProgramCompositionPage = () => {
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
-                  onDragEnd={event => {
-                    const { active, over } = event;
-                    if (active.id !== over?.id) {
-                      setWeeks(prevWeeks => prevWeeks.map((w) => {
-                        if (w.id !== selectedWeek.id) return w;
-                        const days = w.days.map((d) => {
-                          if (d.id !== day.id) return d;
-                          const oldIndex = d.exercises.findIndex((ex) => ex.id === active.id);
-                          const newIndex = d.exercises.findIndex((ex) => ex.id === over?.id);
-                          if (oldIndex === -1 || newIndex === -1) return d;
-                          const newExercises = arrayMove(d.exercises, oldIndex, newIndex);
-                          return { ...d, exercises: newExercises };
-                        });
-                        return { ...w, days };
-                      }));
-                    }
-                  }}
+                  onDragEnd={(event) => handleExerciseDragEnd(event, selectedWeek, day)}
                 >
                   <Table>
                     <TableHead sx={styles.tableHead}>
                       <TableRow>
                         <TableCell sx={styles.tableHeadCell}></TableCell>
-                        <TableCell sx={styles.tableHeadCell}>
-                          Nome esercizio
-                        </TableCell>
-                        <TableCell sx={styles.tableHeadCell}>Tipo</TableCell>
-                        <TableCell sx={styles.tableHeadCell}>Serie</TableCell>
-                        <TableCell sx={styles.tableHeadCell}>Rip/Tempo</TableCell>
-                        <TableCell sx={styles.tableHeadCell}>Rec</TableCell>
-                        <TableCell sx={styles.tableHeadCell}>Peso</TableCell>
-                        <TableCell sx={styles.tableHeadCell}>RPE</TableCell>
-                        <TableCell sx={styles.tableHeadCell}>RIR</TableCell>
-                        <TableCell sx={styles.tableHeadCell}>TUT</TableCell>
-                        <TableCell sx={styles.tableHeadCell}>Note</TableCell>
-                        
-                        <TableCell sx={styles.tableHeadCell}>Azioni</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.name')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.type')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.sets')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.repsOrTime')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.rest')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.weight')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.rpe')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.rir')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.tut')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.notes')}</TableCell>
+                        <TableCell sx={styles.tableHeadCell}>{t('trainingProgramComposition.exerciseTableHeaders.actions')}</TableCell>
                       </TableRow>
                     </TableHead>
                     <SortableContext
@@ -506,65 +565,118 @@ const TrainingProgramCompositionPage = () => {
                       strategy={verticalListSortingStrategy}
                     >
                       <TableBody>
-                        {day.exercises.map((ex, idx) => (
-                          <SortableExerciseRow key={ex.id} exercise={ex} index={idx}>
-                            <TableCell sx={styles.tableCell}>{ex.exercise?.title}</TableCell>
-                            <TableCell sx={styles.tableCell}>{ex.type}</TableCell>
-                            <TableCell sx={styles.tableCell}>{ex.sets}</TableCell>
-                            <TableCell sx={styles.tableCell}>{ex.repsOrTime}</TableCell>
-                            <TableCell sx={styles.tableCell}>{ex.rest}</TableCell>
-                            <TableCell sx={styles.tableCell}>{ex.weight}</TableCell>
-                            <TableCell sx={styles.tableCell}>{ex.rpe}</TableCell>
-                            <TableCell sx={styles.tableCell}>{ex.rir}</TableCell>
-                            <TableCell sx={styles.tableCell}>{ex.tut}</TableCell>
-                            <TableCell sx={styles.tableCell}>
-                              <ArrowTooltip
-                                title={ex.note || ""}
-                                placement="left"
-                                arrow
-                                enterTouchDelay={0}
-                                enterDelay={0}
-                                leaveDelay={200}
-                                disableInteractive={false}
-                              >
-                                <span>
-                                  <IconButton size="small">
-                                    <NotesIcon />
-                                  </IconButton>
-                                </span>
-                              </ArrowTooltip>
+                        {day.exercises.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={12} align="center" sx={{ color: '#888', fontSize: 18, py: 6 }}>
+                              {t('trainingProgramComposition.noExercises')}
                             </TableCell>
-                            <TableCell sx={styles.tableCell}>
-                              <Box sx={styles.tableCellBox}>
-                                <IconButton size="small">
-                                  <EditIcon />
-                                </IconButton>
-                                <IconButton size="small">
-                                  <StarIcon />
-                                </IconButton>
-                                <IconButton size="small">
-                                  <DublicateIcon />
-                                </IconButton>
-                                <IconButton size="small">
-                                  <DeleteIcon />
-                                </IconButton>
-                             </Box>
-                            </TableCell>
-                          </SortableExerciseRow>
-                        ))}
+                          </TableRow>
+                        ) : (
+                          <>
+                            {day.exercises
+                              .slice()
+                              .sort((a, b) => a.order - b.order)
+                              .map((ex) => (
+                                <SortableExerciseRow
+                                  key={ex.id}
+                                  exercise={ex}
+                                >
+                                  <TableCell sx={styles.tableCell}>
+                                    {ex.exercise?.title}
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    {ex.type}
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    {ex.sets}
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    {ex.repsOrTime}
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    {ex.rest}
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    {ex.weight}
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    {ex.rpe}
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    {ex.rir}
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    {ex.tut}
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    <ArrowTooltip
+                                      title={ex.note || ""}
+                                      placement="left"
+                                      arrow
+                                      enterTouchDelay={0}
+                                      enterDelay={0}
+                                      leaveDelay={200}
+                                      disableInteractive={false}
+                                    >
+                                      <span>
+                                        <IconButton size="small">
+                                          <NotesIcon />
+                                        </IconButton>
+                                      </span>
+                                    </ArrowTooltip>
+                                  </TableCell>
+                                  <TableCell sx={styles.tableCell}>
+                                    <Box sx={styles.tableCellBox}>
+                                      <IconButton size="small" onClick={() => {
+                                        setSupersetWorkoutExerciseId(null);
+                                        setEditExerciseId(ex.id);
+                                        setAddExerciseDayId(day.id);
+                                        setAddEditExerciseModalOpen(true);
+                                      }}>
+                                        <EditIcon />
+                                      </IconButton>
+                                      <IconButton size="small" onClick={async () => {
+                                        setSupersetWorkoutExerciseId(ex.id);
+                                        setAddExerciseDayId(day.id);
+                                        setEditExerciseId(null);
+                                        setAddEditExerciseModalOpen(true);
+                                      }}>
+                                        <StarIcon />
+                                      </IconButton>
+                                      <IconButton size="small" onClick={() => {
+                                        setCopyExerciseId(ex.id);
+                                        setCopyExerciseModalOpen(true);
+                                      }}>
+                                        <DublicateIcon />
+                                      </IconButton>
+                                      <IconButton size="small" onClick={() => {
+                                        setDeleteExerciseId(ex.id);
+                                        setShowDeleteExerciseModal(true);
+                                      }}>
+                                        <DeleteIcon />
+                                      </IconButton>
+                                    </Box>
+                                  </TableCell>
+                                </SortableExerciseRow>
+                              ))}
+                          </>
+                        )}
                         <TableRow>
                           <TableCell colSpan={12} sx={styles.addExerciseRow}>
                             <Box
                               sx={styles.addExerciseBox}
                               onClick={() => {
                                 setEditExerciseInitialData(null);
-                                setEditExerciseModalOpen(true);
+                                setAddExerciseDayId(day.id);
+                                setAddEditExerciseModalOpen(true);
                               }}
                             >
                               <span style={{ marginRight: 10 }}>
-                                Aggiungi esercizio
+                                {t('trainingProgramComposition.addExercise')}
                               </span>
-                              <PlusIcon style={{ fontSize: 20, marginRight: 6 }} />
+                              <PlusIcon
+                                style={{ fontSize: 20, marginRight: 6 }}
+                              />
                             </Box>
                           </TableCell>
                         </TableRow>
@@ -576,42 +688,44 @@ const TrainingProgramCompositionPage = () => {
             </Paper>
           ))}
         </React.Fragment>
-      ): 
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: 200,
-          background: '#f8f8f8',
-          borderRadius: 4,
-          boxShadow: '0 2px 12px 0 rgba(237,181,40,0.10)',
-          mt: 4,
-          mb: 4,
-          p: 4,
-        }}
-      >
-        <Typography variant="h5" sx={{ color: '#616160', mb: 2, fontWeight: 600 }}>
-          Nessuna settimana selezionata
-        </Typography>
-        <Typography variant="body1" sx={{ color: '#888' }}>
-          Seleziona o crea una settimana per iniziare
-        </Typography>
-      </Box>}
+      ) : (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: 200,
+            background: "#f8f8f8",
+            borderRadius: 4,
+            boxShadow: "0 2px 12px 0 rgba(237,181,40,0.10)",
+            mt: 4,
+            mb: 4,
+            p: 4,
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{ color: "#616160", mb: 2, fontWeight: 600 }}
+          >
+            {t('trainingProgramComposition.noWeekSelected')}
+          </Typography>
+          <Typography variant="body1" sx={{ color: "#888" }}>
+            {t('trainingProgramComposition.selectOrCreateWeek')}
+          </Typography>
+        </Box>
+      )}
       <Box sx={styles.addDayWeekActions}>
-        {
-          selectedWeek && (
-            <OutlinedTextIconButton
-              text="Aggiungi Giorno"
-              icon={<PlusIcon style={{ fontSize: 22 }} />}
-              onClick={() => setAddDayModalOpen(true)}
-              sx={{ height: 45 }}
-            />
-          )
-        }
+        {selectedWeek && selectedWeek.days.length < 7 && (
+          <OutlinedTextIconButton
+            text={t('trainingProgramComposition.addDay')}
+            icon={<PlusIcon style={{ fontSize: 22 }} />}
+            onClick={() => setAddDayModalOpen(true)}
+            sx={{ height: 45 }}
+          />
+        )}
         <OutlinedTextIconButton
-          text="Aggiungi Settimana"
+          text={t('trainingProgramComposition.addWeek')}
           icon={<PlusIcon style={{ fontSize: 22 }} />}
           sx={{ height: 45 }}
           onClick={() => setConfirmCreateWeekModalOpen(true)}
@@ -621,18 +735,21 @@ const TrainingProgramCompositionPage = () => {
         open={editModalOpen}
         value={editDayName}
         editDayId={editDayId}
-        onClose={() => setEditModalOpen(false)}
+        onClose={() => {
+          setEditModalOpen(false);
+          setEditDayId(null);
+        }}
       />
       <DeleteDayModal
         open={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={() => {
-          setDeleteModalOpen(false); /* handle delete here */
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setDeleteDayId(null);
         }}
+        deletedDayId={deleteDayId}
       />
       <ModifyTrainingProgramModal
         open={modifyModalOpen}
-        // programTypes={programTypes}
         onClose={() => setModifyModalOpen(false)}
       />
       <DeleteWeekModal
@@ -640,20 +757,23 @@ const TrainingProgramCompositionPage = () => {
         weekId={selectedWeek?.id}
         onClose={() => setDeleteWeekModalOpen(false)}
       />
-      <EditExerciseModal
-        open={editExerciseModalOpen}
-        onClose={() => setEditExerciseModalOpen(false)}
-        onSave={() => setEditExerciseModalOpen(false)}
+      <AddEditExerciseModal
+        open={addEditExerciseModalOpen}
+        onClose={() => {
+          setAddEditExerciseModalOpen(false);
+          setAddExerciseDayId(null);
+          setEditExerciseId(null);
+          setSupersetWorkoutExerciseId(null);
+        }}
         initialData={editExerciseInitialData ?? undefined}
-        exercises={[]}
+        dayId={addExerciseDayId ?? undefined}
+        editExerciseId={editExerciseId}
+        supersetWorkoutExerciseId={supersetWorkoutExerciseId}
       />
       <AddDayModal
         open={addDayModalOpen}
         onClose={() => setAddDayModalOpen(false)}
-        onAdd={() => {
-          // TODO: handle add day logic here
-          setAddDayModalOpen(false);
-        }}
+        selectedWeekId={selectedWeekId}
       />
       <AssignUsersModal
         open={assignUsersModalOpen}
@@ -663,20 +783,41 @@ const TrainingProgramCompositionPage = () => {
       <CopyWeekModal
         open={copyWeekModalOpen}
         onClose={() => setCopyWeekModalOpen(false)}
-        weekNumber={1} 
+        weekNumber={1}
         selectedWeekId={selectedWeekId || null}
       />
       <CopyDayModal
         open={copyDayModalOpen}
-        onClose={() => setCopyDayModalOpen(false)}
+        onClose={() => {
+          setCopyDayModalOpen(false)
+          setCopyDaySource(null);
+        }}
+        sourceWeekId={copyDaySource?.weekId ?? 0}
+        sourceDayOfWeek={copyDaySource?.dayOfWeek ?? 1}
       />
       <ConfirmCreateWeekModal
         open={confirmCreateWeekModalOpen}
         onClose={() => setConfirmCreateWeekModalOpen(false)}
         programId={trainingProgram?.id}
       />
+      <DeleteExerciseModal
+        open={showdeleteExerciseModal}
+        onClose={() => {
+          setShowDeleteExerciseModal(false);
+          setDeleteExerciseId(null);
+        }}
+        exerciseId={deleteExerciseId}
+      />
+      <CopyExerciseModal
+        open={copyExerciseModalOpen}
+        onClose={() => {
+          setCopyExerciseModalOpen(false);
+          setCopyExerciseId(null);
+        }}
+        exerciseId={copyExerciseId}
+      />
     </Box>
-  )
+  );
 };
 
 export default TrainingProgramCompositionPage;

@@ -41,49 +41,43 @@ const styles = {
 };
 // --- end styles ---
 
-interface DeleteDayModalProps {
+interface DeleteExerciseModalProps {
   open: boolean;
   onClose: () => void;
-  deletedDayId: number | null;
+  exerciseId: number | null;
 }
 
-const DeleteDayModal: React.FC<DeleteDayModalProps> = ({ open, onClose, deletedDayId }) => {
+const DeleteExerciseModal: React.FC<DeleteExerciseModalProps> = ({ open, onClose, exerciseId }) => {
   const { t } = useTranslation();
-  const { deleteDay } = useTraining();
+  const { deleteWorkoutExercise } = useTraining();
   const { showSnackbar } = useSnackbar();
   const [loading, setLoading] = React.useState(false);
 
-  const handleConfirm = async () => {
-    if (!deletedDayId) return;
+  const handleDelete = async () => {
+    if (!exerciseId) return;
     setLoading(true);
     try {
-      await deleteDay(deletedDayId);
+      await deleteWorkoutExercise(exerciseId);
       onClose();
-    } catch (err: unknown) {
-      let message = t('trainingPage.deleteDay.error') || 'Errore eliminazione giorno';
-      if (err && typeof err === 'object' && 'message' in err) {
-        message += `: ${(err as { message?: string }).message}`;
-      }
-      showSnackbar?.(message, 'error');
+    } catch {
+      showSnackbar(t('trainingPage.exerciseDeleteError'), 'error');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{
-      sx: styles.dialog
-    }}
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: styles.dialog }}
       slotProps={{
-          backdrop: {
-              timeout: 300,
-              sx: styles.backdrop,
-          },
+        backdrop: {
+          timeout: 300,
+          sx: styles.backdrop,
+        },
       }}
     >
       <DialogContent sx={styles.content}>
         <Typography sx={styles.title}>
-          {t('trainingPage.deleteDay.title')}
+          {t('training.deleteExerciseTitle')}
         </Typography>
         <Box sx={styles.actions}>
           <Button
@@ -92,15 +86,15 @@ const DeleteDayModal: React.FC<DeleteDayModalProps> = ({ open, onClose, deletedD
             size="large"
             disabled={loading}
           >
-            {t('trainingPage.deleteDay.cancel')}
+            {t('common.cancel', 'Annulla')}
           </Button>
           <Button
-            onClick={handleConfirm}
+            onClick={handleDelete}
             sx={styles.confirmBtn}
             size="large"
-            disabled={loading || !deletedDayId}
+            disabled={loading || !exerciseId}
           >
-            {t('trainingPage.deleteDay.confirm')}
+            {t('common.delete', 'Elimina')}
           </Button>
         </Box>
       </DialogContent>
@@ -108,4 +102,4 @@ const DeleteDayModal: React.FC<DeleteDayModalProps> = ({ open, onClose, deletedD
   );
 };
 
-export default DeleteDayModal;
+export default DeleteExerciseModal;
