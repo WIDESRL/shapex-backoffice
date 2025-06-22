@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // React Query mutation for login
   const loginMutation = useMutation<LoginResponse, Error, LoginCredentials>({
     mutationFn: async (credentials: LoginCredentials) => {
-      return api.post('/auth/login', credentials); // Use the reusable API method
+      return api.post('/auth/login/backoffice', credentials); // Use the reusable API method
     },
     onSuccess: (data) => {
       setIsAuth(true);
