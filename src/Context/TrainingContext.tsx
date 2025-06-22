@@ -8,6 +8,7 @@ export interface UploadedFile {
   fileName: string;
   signedUrl: string;
   signedUrlExpire: string;
+  createdAt?: string;
 }
 
 export interface Exercise {

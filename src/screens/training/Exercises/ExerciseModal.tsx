@@ -695,7 +695,7 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ open, onClose, onSave, on
                 <Typography sx={styles.videoMetaLabel}>{t('training.duration')}</Typography>
                 <Typography sx={styles.videoMetaValue}>{videoDuration ? `${Math.round(videoDuration)} ${t('training.seconds')}` : '---'}</Typography>
                 <Typography sx={styles.videoMetaLabel}>{t('training.uploadDate')}</Typography>
-                <Typography sx={styles.videoMetaValueNoMargin}>{new Date().toLocaleDateString('it-IT')}</Typography>
+                <Typography sx={styles.videoMetaValueNoMargin}>{initialData?.createdAt && new Date(initialData?.createdAt).toLocaleDateString('it-IT')}</Typography>
               </Box>
             </Box>
           )}
