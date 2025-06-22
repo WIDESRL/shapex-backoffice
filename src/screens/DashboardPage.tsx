@@ -8,6 +8,7 @@ import DisabledClientsIcon from '../icons/DisabledClientsIcon';
 import CompletedTrainingsIcon from '../icons/CompletedTrainingsIcon';
 import ProgramsCompletedIcon from '../icons/ProgramsCompletedIcon';
 import MagnifierIcon from '../icons/MagnifierIcon';
+import WarningDummyDataBanner from '../components/WarningDummyDataBanner';
 
 // Fake data for dashboard summary
 const dashboardStats = [
@@ -83,6 +84,7 @@ const tableBodyCellSx = {
 const DashboardPage: React.FC = () => {
 	return (
 		<Box sx={{ p: 4, background: '#fff', minHeight: '100vh' }}>
+      		<WarningDummyDataBanner />
 			{/* Top stats */}
 			<Box
 				sx={{
