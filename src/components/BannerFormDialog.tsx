@@ -5,6 +5,7 @@ import 'react-quill-new/dist/quill.snow.css';
 import { useTranslation } from 'react-i18next';
 import DialogCloseIcon from '../icons/DialogCloseIcon';
 import ImageCropDialog from './ImageCropDialog';
+import ImageCustom from './ImageCustom';
 
 const defaultBanner = {
   title: '',
@@ -192,19 +193,19 @@ const BannerFormDialog = ({ open, onClose, onSubmit, initialValues }: any) => {
           {(form.image || (form.imageUrl || (form.image && form.image.signedUrl))) && (
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
               <Box sx={{ position: 'relative', display: 'inline-block', boxShadow: 3, borderRadius: 3, background: '#faf9f7', p: 1 }}>
-                <img
-                  src={
-                    form.image?.signedUrl
-                      ? form.image.signedUrl
-                      : form.imageUrl
-                      ? form.imageUrl
-                      : typeof form.image === 'string' && form.image.startsWith('data:')
-                      ? form.image
-                      : undefined
-                  }
-                  alt="banner"
-                  style={{ width: '100%', objectFit: 'cover', borderRadius: 8, border: '1px solid #eee', background: '#fff' }}
-                />
+                  <ImageCustom
+                    src={
+                      form.image?.signedUrl
+                        ? form.image.signedUrl
+                        : form.imageUrl
+                        ? form.imageUrl
+                        : typeof form.image === 'string' && form.image.startsWith('data:')
+                        ? form.image
+                        : undefined
+                    }
+                    alt="banner"
+                    style={{ width: '100%', objectFit: 'cover', borderRadius: 8, border: '1px solid #eee', background: '#fff' }}
+                  />
                 <Button
                   size="small"
                   onClick={() => {

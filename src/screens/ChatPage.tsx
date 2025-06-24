@@ -11,6 +11,8 @@ import { useMessages } from '../Context/MessagesContext';
 import ImagePreviewIcon from '../icons/ImagePreviewIcon';
 import StartConversationDialog from '../components/StartConversationDialog';
 import AddIcon from '@mui/icons-material/Add';
+import ImageCustom from '../components/ImageCustom';
+import AvatarCustom from '../components/AvatarCustom';
 
 // --- Styled Components ---
 const ChatContainer = styled(Box)({
@@ -393,7 +395,12 @@ const ChatPageContent: React.FC = () => {
 								>
 									<ListItemAvatar>
 										<Box sx={{ position: 'relative', display: 'inline-block' }}>
-											<Avatar src={conv.user.profilePictureFile?.signedUrl || '/profile.svg'} alt={((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || 'User'} sx={{ width: 48, height: 48 }} />
+											<AvatarCustom
+												src={conv.user.profilePictureFile?.signedUrl || '/profile.svg'}
+												alt={((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || 'User'}
+												sx={{ width: 48, height: 48 }}
+												fallback={((conv.user.firstName || '')[0] || '') + ((conv.user.lastName || '')[0] || '')}
+											/>
 											<Box
 												sx={{
 													position: 'absolute',
@@ -530,8 +537,8 @@ const ChatPageContent: React.FC = () => {
 											{msg.type === 'text' && (
 												<span>{msg.content}</span>
 											)}
-											{msg.type === 'file' && msg.file && msg.file.type && msg.file.type.startsWith('image/') && (
-												<img
+											{msg.type === 'file' && msg.file && msg.file.type && msg.file.type.startsWith('image/') && (	
+												<ImageCustom
 													src={msg.file.signedUrl}
 													alt={msg.file.fileName || 'image'}
 													style={{ maxWidth: 180, maxHeight: 180, borderRadius: 8, cursor: 'pointer', margin: 2 }}
@@ -601,7 +608,6 @@ const ChatPageContent: React.FC = () => {
 					open={startDialogOpen}
 					onClose={() => setStartDialogOpen(false)}
 					onSend={async (userId, message, file) => {
-                        debugger;
 						if (file) {
 							await sendFileMessage(undefined, file, userId);
 						} else if (message.trim()) {

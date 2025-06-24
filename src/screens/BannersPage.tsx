@@ -9,6 +9,7 @@ import DeleteIcon from '../icons/DeleteIcon';
 import { useBanners } from '../Context/BannersContext';
 import { useTranslation } from 'react-i18next';
 import FullscreenImageDialog from '../components/FullscreenImageDialog';
+import ImageCustom from '../components/ImageCustom';
 
 const BannersPage: React.FC = () => {
 	const { t } = useTranslation();
@@ -162,7 +163,7 @@ const BannersPage: React.FC = () => {
 									</TableCell>
 									<TableCell sx={{ border: 0 }}>
 										{banner.image && banner.image.signedUrl ? (
-											<img
+											<ImageCustom
 												src={banner.image.signedUrl}
 												alt="banner"
 												style={{ width: 48, height: 32, objectFit: 'cover', borderRadius: 4, cursor: 'pointer' }}
