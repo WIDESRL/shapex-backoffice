@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, Avatar, List, ListItem, ListItemAvatar, ListItemText, IconButton, InputBase, Paper, CircularProgress, Button } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemAvatar, ListItemText, IconButton, InputBase, Paper, CircularProgress, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import FullscreenImageDialog from '../components/FullscreenImageDialog';
 import { useTranslation } from 'react-i18next';
