@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect, ReactNode, useCa
 import axiosInstance from '../utils/axiosInstance';
 import { useAuth } from './AuthContext';
 import { uploadFileAndGetId } from '../utils/uploadFileAndGetId';
+import { User } from './TrainingContext';
 
 export interface Message {
     id: number;
@@ -71,7 +72,7 @@ interface MessagesContextType {
     sendTextMessage: (convId: number | undefined, content: string, userId?: number) => Promise<void>;
     sendFileMessage: (convId: number | undefined, file: File, userId?: number) => Promise<void>;
     sendingMessage: boolean;
-    usersWithoutConversation: any[];
+    usersWithoutConversation: User[];
     loadingUsersWithoutConversation: boolean;
     fetchUsersWithoutConversation: () => Promise<void>;
     resetUsersWithoutConversation: () => void;
@@ -99,7 +100,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
     const [messagesByConversationId, setMessagesByConversationId] = useState<Record<number, Message[]>>({});
     const [sendingMessage, setSendingMessage] = useState(false); // <-- Initialize sendingMessage state
-    const [usersWithoutConversation, setUsersWithoutConversation] = useState<any[]>([]);
+    const [usersWithoutConversation, setUsersWithoutConversation] = useState<User[]>([]);
     const [loadingUsersWithoutConversation, setLoadingUsersWithoutConversation] = useState(false);
     const [usersWithoutConversationSearch, setUsersWithoutConversationSearch] = useState('');
     const [usersWithoutConversationPage, setUsersWithoutConversationPage] = useState(1);
@@ -184,6 +185,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                 const res = await axiosInstance.get('/messages/admin/conversations');
                 setConversations(res.data);
             } catch (err) {
+                console.error("Error fetching conversations:", err);
                 setConversations([]);
             }
         };
@@ -199,7 +201,9 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                 // 1. Mark as seen
                 await axiosInstance.patch(`/messages/admin/${selectedConversationId}/seen`);
                 setConversations(prev => prev.map(c => c.id === selectedConversationId ? { ...c, seen: true } : c));
-            } catch { }
+            } catch { 
+                console.error("Error marking conversation as seen");
+            }
             try {
                 // 2. Fetch messages for this conversation (by userId)
                 const res = await axiosInstance.get(`/messages/admin/${conv.userId}`);
@@ -208,7 +212,9 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                     ...prev,
                     [selectedConversationId]: res.data,
                 }));
-            } catch { }
+            } catch {
+                console.error("Error fetching messages for conversation:", selectedConversationId);
+             }
         };
         fetchAndMarkSeen();
     }, [selectedConversationId]);
@@ -237,6 +243,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                 content,
             });
         } catch (e) {
+            console.error("Error sending text message:", e);
         } finally {
             setSendingMessage(false);
         }
@@ -259,6 +266,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                 fileId,
             });
         } catch (e) {
+            console.error("Error sending file message:", e);
         } finally {
             setSendingMessage(false);
         }
@@ -326,6 +334,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                 };
             });
         } catch {
+            console.error("Error loading more messages");
         }
     }, [messagesPerPage, conversations]);
 

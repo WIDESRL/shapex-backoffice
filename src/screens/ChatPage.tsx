@@ -7,7 +7,7 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import SendIcon from '@mui/icons-material/Send';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { format, parseISO } from 'date-fns';
-import { useMessages } from '../Context/MessagesContext';
+import { ApiConversation, Message, useMessages } from '../Context/MessagesContext';
 import ImagePreviewIcon from '../icons/ImagePreviewIcon';
 import StartConversationDialog from '../components/StartConversationDialog';
 import AddIcon from '@mui/icons-material/Add';
@@ -158,7 +158,7 @@ const ChatInputContainer = styled(Paper)(({ theme }) => ({
 }));
 
 // Debounce utility
-function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
+function debounce<T extends (...args: unknown[]) => void>(fn: T, delay: number) {
   let timer: ReturnType<typeof setTimeout> | null = null;
   return (...args: Parameters<T>) => {
     if (timer) clearTimeout(timer);
@@ -322,12 +322,13 @@ const ChatPageContent: React.FC = () => {
 		try {
 			await sendFileMessage(selectedConversationId, file);
 			justSentMessageRef.current = true;
-		} catch (err) {
+		} catch (error) {
+			console.error('Error sending file message:', error);
 			// Optionally handle error
 		}
 	};
 
-	const handleSelectConversation = (conv: any) => {
+	const handleSelectConversation = (conv: ApiConversation) => {
 		if (selectedConversationId === conv.id) return;
 		setSelectedConversationId(conv.id);
 		setConversationSeen(conv.id);
@@ -335,13 +336,13 @@ const ChatPageContent: React.FC = () => {
 	};
 
 	// Group messages by date
-	const groupedMessages = messages.reduce((acc: Record<string, any[]>, msg: any) => {
+	const groupedMessages = messages.reduce((acc: Record<string, unknown[]>, msg: Message) => {
 		const dateKey = format(parseISO(msg.date), 'dd/MM/yyyy');
 		if (!acc[dateKey]) acc[dateKey] = [];
 		acc[dateKey].push(msg);
 		return acc;
 	}, {});
-	const dateSections: [string, any[]][] = Object.entries(groupedMessages);
+	const dateSections: [string, unknown[]][] = Object.entries(groupedMessages);
 
 	const debouncedHandleMessagesScroll = React.useCallback(
 		debounce(handleMessagesScroll, 500),
