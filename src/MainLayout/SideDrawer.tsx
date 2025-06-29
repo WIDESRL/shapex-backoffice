@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Drawer,
   Toolbar,
@@ -9,30 +9,30 @@ import {
   ListItemText,
   ListItemButton,
   Collapse,
-} from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
-import ShapexLogo from '../icons/Shapex';
-import DashboardIcon from '../icons/Dashboard';
-import SubscriptionsIcon from '../icons/Subscriptions';
-import ClientIcon from '../icons/Client';
-import TrainingIcon from '../icons/Training';
-import ChatIcon from '../icons/Chat';
-import BannersIcon from '../icons/Banners';
-import LogoutIcon from '../icons/Logout';
-import { useAuth } from '../Context/AuthContext';
+import ShapexLogo from "../icons/Shapex";
+import DashboardIcon from "../icons/Dashboard";
+import SubscriptionsIcon from "../icons/Subscriptions";
+import ClientIcon from "../icons/Client";
+import TrainingIcon from "../icons/Training";
+import ChatIcon from "../icons/Chat";
+import BannersIcon from "../icons/Banners";
+import LogoutIcon from "../icons/Logout";
+import { useAuth } from "../Context/AuthContext";
 
-
-const menuColor = '#EDB528';
-const hoverBg = 'rgba(237,181,40,0.08)';
-const submenuHoverBg = 'rgba(237,181,40,0.12)';
+const menuColor = "#EDB528";
+const hoverBg = "rgba(237,181,40,0.08)";
+const submenuHoverBg = "rgba(237,181,40,0.12)";
 const activeIconFilter =
-  'brightness(0) saturate(100%) invert(73%) sepia(74%) saturate(749%) hue-rotate(352deg) brightness(92%) contrast(95%)';
+  "brightness(0) saturate(100%) invert(73%) sepia(74%) saturate(749%) hue-rotate(352deg) brightness(92%) contrast(95%)";
 
 const StyleSheet = {
-  create: <T extends { [key: string]: React.CSSProperties }>(styles: T) => styles,
+  create: <T extends { [key: string]: React.CSSProperties }>(styles: T) =>
+    styles,
 };
 
 const ActiveMenuIndicator: React.FC = () => (
@@ -51,45 +51,45 @@ interface SideDrawerProps {
 
 // Add enums for menu and submenu names
 export enum MainMenu {
-  Dashboard = 'dashboard',
-  Abbonamenti = 'subscriptions',
-  Clienti = 'clients',
-  Allenamento = 'training',
-  Chat = 'chat',
-  Banners = 'banners',
-  Logout = 'logout',
+  Dashboard = "dashboard",
+  Abbonamenti = "subscriptions",
+  Clienti = "clients",
+  Allenamento = "training",
+  Chat = "chat",
+  Banners = "banners",
+  Logout = "logout",
 }
 
 export enum ClientiSubMenu {
-  Anagrafica = 'Anagrafica',
-  Allenamenti = 'Allenamenti',
-  Diario = 'Diario',
-  Alimentazione = 'Alimentazione',
-  Altro = 'Altro',
+  Anagrafica = "Anagrafica",
+  Allenamenti = "Allenamenti",
+  Diario = "Diario",
+  Alimentazione = "Alimentazione",
+  Altro = "Altro",
 }
 
 export enum TrainingSubMenu {
-  Exercise = 'Esercizio',
-  TrainingProgram = 'Programma di Allenamento',
-  CompletedTraining = 'Allenamenti Completati',
+  Exercise = "Esercizio",
+  TrainingProgram = "Programma di Allenamento",
+  CompletedTraining = "Allenamenti Completati",
 }
 
 // Add enum for navigation paths
 export enum MenuPath {
-  Dashboard = '/dashboard',
-  Subscriptions = '/subscriptions',
-  Clients = '/clients',
-  ClientsAnagrafica = '/clients/anagrafica',
-  ClientsAllenamenti = '/clients/allenamenti',
-  ClientsDiario = '/clients/diario',
-  ClientsAlimentazione = '/clients/alimentazione',
-  ClientsAltro = '/clients/altro',
-  Training = '/training',
-  TrainingExercise = '/training/exercise',
-  TrainingProgram = '/training/training-program',
-  CompletedTraining = '/training/completed-training',
-  Chat = '/chat',
-  Banners = '/banners',
+  Dashboard = "/dashboard",
+  Subscriptions = "/subscriptions",
+  Clients = "/clients",
+  ClientsAnagrafica = "/clients/anagrafica",
+  ClientsAllenamenti = "/clients/allenamenti",
+  ClientsDiario = "/clients/diario",
+  ClientsAlimentazione = "/clients/alimentazione",
+  ClientsAltro = "/clients/altro",
+  Training = "/training",
+  TrainingExercise = "/training/exercise",
+  TrainingProgram = "/training/training-program",
+  CompletedTraining = "/training/completed-training",
+  Chat = "/chat",
+  Banners = "/banners",
 }
 
 export enum ActiveMenu {
@@ -99,7 +99,7 @@ export enum ActiveMenu {
   Training = MainMenu.Allenamento,
   Chat = MainMenu.Chat,
   Banners = MainMenu.Banners,
-  None = '',
+  None = "",
 }
 
 const SideDrawer: React.FC<SideDrawerProps> = ({
@@ -123,6 +123,12 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
     [miniDrawer, miniDrawerWidth, drawerWidth]
   );
 
+  // Extract clientId from current URL
+  const clientId = React.useMemo(() => {
+    const match = location.pathname.match(/\/clients\/([^/]+)\//);
+    return match ? match[1] : null;
+  }, [location.pathname]);
+
   // Memoize activeMenu and activeSubmenu calculations
   const { activeMenu, activeSubmenu } = React.useMemo(() => {
     const path = location.pathname;
@@ -133,18 +139,24 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       activeMenu = ActiveMenu.Dashboard;
     } else if (path.startsWith(MenuPath.Subscriptions)) {
       activeMenu = ActiveMenu.Subscriptions;
-    } else if (path.startsWith(MenuPath.Clients)) {
+    } else if (path.startsWith("/clients")) {
       activeMenu = ActiveMenu.Clients;
-      if (path.startsWith(MenuPath.ClientsAnagrafica)) activeSubmenu = ClientiSubMenu.Anagrafica;
-      else if (path.startsWith(MenuPath.ClientsAllenamenti)) activeSubmenu = ClientiSubMenu.Allenamenti;
-      else if (path.startsWith(MenuPath.ClientsDiario)) activeSubmenu = ClientiSubMenu.Diario;
-      else if (path.startsWith(MenuPath.ClientsAlimentazione)) activeSubmenu = ClientiSubMenu.Alimentazione;
-      else if (path.startsWith(MenuPath.ClientsAltro)) activeSubmenu = ClientiSubMenu.Altro;
+      if (path.includes("/anagrafica"))
+        activeSubmenu = ClientiSubMenu.Anagrafica;
+      else if (path.includes("/allenamenti"))
+        activeSubmenu = ClientiSubMenu.Allenamenti;
+      else if (path.includes("/diario")) activeSubmenu = ClientiSubMenu.Diario;
+      else if (path.includes("/alimentazione"))
+        activeSubmenu = ClientiSubMenu.Alimentazione;
+      else if (path.includes("/altro")) activeSubmenu = ClientiSubMenu.Altro;
     } else if (path.startsWith(MenuPath.Training)) {
       activeMenu = ActiveMenu.Training;
-      if (path.startsWith(MenuPath.TrainingExercise)) activeSubmenu = TrainingSubMenu.Exercise;
-      else if (path.startsWith(MenuPath.TrainingProgram)) activeSubmenu = TrainingSubMenu.TrainingProgram;
-      else if (path.startsWith(MenuPath.CompletedTraining)) activeSubmenu = TrainingSubMenu.CompletedTraining;
+      if (path.startsWith(MenuPath.TrainingExercise))
+        activeSubmenu = TrainingSubMenu.Exercise;
+      else if (path.startsWith(MenuPath.TrainingProgram))
+        activeSubmenu = TrainingSubMenu.TrainingProgram;
+      else if (path.startsWith(MenuPath.CompletedTraining))
+        activeSubmenu = TrainingSubMenu.CompletedTraining;
     } else if (path.startsWith(MenuPath.Chat)) {
       activeMenu = ActiveMenu.Chat;
     } else if (path.startsWith(MenuPath.Banners)) {
@@ -173,23 +185,35 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
   // Helper for submenu navigation
   const handleClientSubmenuNavigation = (submenu: string) => {
     switch (submenu) {
-      case ClientiSubMenu.Anagrafica:
-        handleNavigation(MenuPath.ClientsAnagrafica);
+      case ClientiSubMenu.Anagrafica: {
+        const anagraficaPath = clientId
+          ? `/clients/${clientId}/anagrafica`
+          : "/clients/anagrafica";
+        handleNavigation(anagraficaPath);
         break;
+      }
       case ClientiSubMenu.Allenamenti:
-        handleNavigation(MenuPath.ClientsAllenamenti);
-        break;
       case ClientiSubMenu.Diario:
-        handleNavigation(MenuPath.ClientsDiario);
-        break;
       case ClientiSubMenu.Alimentazione:
-        handleNavigation(MenuPath.ClientsAlimentazione);
+      case ClientiSubMenu.Altro: {
+        if (!clientId) {
+          handleNavigation("/clients");
+          return;
+        }
+        const baseClientPath = `/clients/${clientId}`;
+        const sectionMap = {
+          [ClientiSubMenu.Allenamenti]: "allenamenti",
+          [ClientiSubMenu.Diario]: "diario",
+          [ClientiSubMenu.Alimentazione]: "alimentazione",
+          [ClientiSubMenu.Altro]: "altro",
+        };
+        handleNavigation(
+          `${baseClientPath}/${sectionMap[submenu as keyof typeof sectionMap]}`
+        );
         break;
-      case ClientiSubMenu.Altro:
-        handleNavigation(MenuPath.ClientsAltro);
-        break;
+      }
       default:
-        handleNavigation(MenuPath.Clients);
+        handleNavigation("/clients");
     }
   };
 
@@ -200,18 +224,22 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       sx={{
         width: currentWidth,
         flexShrink: 0,
-        '& .MuiDrawer-paper': {
+        "& .MuiDrawer-paper": {
           width: currentWidth,
           ...styles.drawerPaper,
         },
       }}
       PaperProps={{
-        onMouseEnter: () => isSmallScreen && miniDrawer && toggleMiniDrawer(false),
-        onMouseLeave: () => isSmallScreen && !miniDrawer && toggleMiniDrawer(true),
+        onMouseEnter: () =>
+          isSmallScreen && miniDrawer && toggleMiniDrawer(false),
+        onMouseLeave: () =>
+          isSmallScreen && !miniDrawer && toggleMiniDrawer(true),
       }}
     >
       <Toolbar style={styles.toolbar}>
-        {!miniDrawer && <ShapexLogo style={{ width: 170, height: 40, margin: '0 auto' }} />}
+        {!miniDrawer && (
+          <ShapexLogo style={{ width: 170, height: 40, margin: "0 auto" }} />
+        )}
       </Toolbar>
 
       <List sx={{ pt: 2 }}>
@@ -219,25 +247,34 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
           <ListItemButton
             style={{
               ...styles.listItemButton,
-              color: activeMenu === ActiveMenu.Dashboard ? menuColor : undefined,
+              color:
+                activeMenu === ActiveMenu.Dashboard ? menuColor : undefined,
             }}
             onClick={() => handleNavigation(MenuPath.Dashboard)}
-            sx={{ '&:hover': { bgcolor: hoverBg } }}
+            sx={{ "&:hover": { bgcolor: hoverBg } }}
           >
             <DashboardIcon
               style={{
                 ...styles.icon,
-                color: activeMenu === ActiveMenu.Dashboard ? menuColor : undefined,
-                filter: activeMenu === ActiveMenu.Dashboard ? activeIconFilter : undefined,
+                color:
+                  activeMenu === ActiveMenu.Dashboard ? menuColor : undefined,
+                filter:
+                  activeMenu === ActiveMenu.Dashboard
+                    ? activeIconFilter
+                    : undefined,
               }}
             />
             {!miniDrawer && (
               <ListItemText
-                primary={t('mainMenu.dashboard')}
+                primary={t("mainMenu.dashboard")}
                 style={{
                   ...styles.listItemText,
-                  color: activeMenu === ActiveMenu.Dashboard ? menuColor : styles.listItemText.color,
-                  fontWeight: activeMenu === ActiveMenu.Dashboard ? 600 : undefined,
+                  color:
+                    activeMenu === ActiveMenu.Dashboard
+                      ? menuColor
+                      : styles.listItemText.color,
+                  fontWeight:
+                    activeMenu === ActiveMenu.Dashboard ? 600 : undefined,
                 }}
               />
             )}
@@ -247,25 +284,36 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
           <ListItemButton
             style={{
               ...styles.listItemButton,
-              color: activeMenu === ActiveMenu.Subscriptions ? menuColor : undefined,
+              color:
+                activeMenu === ActiveMenu.Subscriptions ? menuColor : undefined,
             }}
             onClick={() => handleNavigation(MenuPath.Subscriptions)}
-            sx={{ '&:hover': { bgcolor: hoverBg } }}
+            sx={{ "&:hover": { bgcolor: hoverBg } }}
           >
             <SubscriptionsIcon
               style={{
                 ...styles.icon,
-                color: activeMenu === ActiveMenu.Subscriptions ? menuColor : undefined,
-                filter: activeMenu === ActiveMenu.Subscriptions ? activeIconFilter : undefined,
+                color:
+                  activeMenu === ActiveMenu.Subscriptions
+                    ? menuColor
+                    : undefined,
+                filter:
+                  activeMenu === ActiveMenu.Subscriptions
+                    ? activeIconFilter
+                    : undefined,
               }}
             />
             {!miniDrawer && (
               <ListItemText
-                primary={t('mainMenu.subscriptions')}
+                primary={t("mainMenu.subscriptions")}
                 style={{
                   ...styles.listItemText,
-                  color: activeMenu === ActiveMenu.Subscriptions ? menuColor : styles.listItemText.color,
-                  fontWeight: activeMenu === ActiveMenu.Subscriptions ? 600 : undefined,
+                  color:
+                    activeMenu === ActiveMenu.Subscriptions
+                      ? menuColor
+                      : styles.listItemText.color,
+                  fontWeight:
+                    activeMenu === ActiveMenu.Subscriptions ? 600 : undefined,
                 }}
               />
             )}
@@ -285,22 +333,30 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
                 setOpenSubmenu(null);
               }
             }}
-            sx={{ '&:hover': { bgcolor: hoverBg } }}
+            sx={{ "&:hover": { bgcolor: hoverBg } }}
           >
             <ClientIcon
               style={{
                 ...styles.icon,
-                filter: activeMenu === ActiveMenu.Clients ? activeIconFilter : undefined,
-                color: activeMenu === ActiveMenu.Clients ? menuColor : undefined,
+                filter:
+                  activeMenu === ActiveMenu.Clients
+                    ? activeIconFilter
+                    : undefined,
+                color:
+                  activeMenu === ActiveMenu.Clients ? menuColor : undefined,
               }}
             />
             {!miniDrawer && (
               <ListItemText
-                primary={t('mainMenu.clients')}
+                primary={t("mainMenu.clients")}
                 style={{
                   ...styles.listItemText,
-                  color: activeMenu === ActiveMenu.Clients ? menuColor : styles.listItemText.color,
-                  fontWeight: activeMenu === ActiveMenu.Clients ? 600 : undefined,
+                  color:
+                    activeMenu === ActiveMenu.Clients
+                      ? menuColor
+                      : styles.listItemText.color,
+                  fontWeight:
+                    activeMenu === ActiveMenu.Clients ? 600 : undefined,
                 }}
                 sx={{ mr: 15 }}
               />
@@ -308,29 +364,35 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             {openSubmenu === ActiveMenu.Clients ? (
               <ExpandLess sx={{ color: menuColor }} />
             ) : (
-              <ExpandMore sx={{ color: '#fff' }} />
+              <ExpandMore sx={{ color: "#fff" }} />
             )}
-            {openSubmenu === ActiveMenu.Clients && !miniDrawer && <ActiveMenuIndicator />}
+            {openSubmenu === ActiveMenu.Clients && !miniDrawer && (
+              <ActiveMenuIndicator />
+            )}
           </ListItemButton>
         </ListItem>
-        <Collapse in={openSubmenu === ActiveMenu.Clients} timeout="auto" unmountOnExit>
+        <Collapse
+          in={openSubmenu === ActiveMenu.Clients}
+          timeout="auto"
+          unmountOnExit
+        >
           <List component="div" disablePadding sx={{ pl: 9 }}>
             {Object.values(ClientiSubMenu).map((label) => (
               <ListItem disablePadding key={label}>
                 <ListItemButton
                   sx={{
                     py: 0.7,
-                    color: activeSubmenu === label ? menuColor : '#fff',
+                    color: activeSubmenu === label ? menuColor : "#fff",
                     fontWeight: activeSubmenu === label ? 700 : 400,
                     fontSize: 16,
-                    '&:hover': { bgcolor: submenuHoverBg },
+                    "&:hover": { bgcolor: submenuHoverBg },
                   }}
                   onClick={() => handleClientSubmenuNavigation(label)}
                 >
                   <ListItemText
                     primary={t(`clientiSubMenu.${label}`)}
                     sx={{
-                      color: activeSubmenu === label ? menuColor : '#fff',
+                      color: activeSubmenu === label ? menuColor : "#fff",
                       fontWeight: activeSubmenu === label ? 700 : 400,
                     }}
                   />
@@ -354,22 +416,30 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
                 setOpenSubmenu(null);
               }
             }}
-            sx={{ position: 'relative', '&:hover': { bgcolor: hoverBg } }}
+            sx={{ position: "relative", "&:hover": { bgcolor: hoverBg } }}
           >
             <TrainingIcon
               style={{
                 ...styles.icon,
-                color: activeMenu === ActiveMenu.Training ? menuColor : undefined,
-                filter: activeMenu === ActiveMenu.Training ? activeIconFilter : undefined,
+                color:
+                  activeMenu === ActiveMenu.Training ? menuColor : undefined,
+                filter:
+                  activeMenu === ActiveMenu.Training
+                    ? activeIconFilter
+                    : undefined,
               }}
             />
             {!miniDrawer && (
               <ListItemText
-                primary={t('mainMenu.training')}
+                primary={t("mainMenu.training")}
                 style={{
                   ...styles.listItemText,
-                  color: activeMenu === ActiveMenu.Training ? menuColor : styles.listItemText.color,
-                  fontWeight: activeMenu === ActiveMenu.Training ? 600 : undefined,
+                  color:
+                    activeMenu === ActiveMenu.Training
+                      ? menuColor
+                      : styles.listItemText.color,
+                  fontWeight:
+                    activeMenu === ActiveMenu.Training ? 600 : undefined,
                 }}
                 sx={{ mr: 15 }}
               />
@@ -377,34 +447,60 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             {openSubmenu === ActiveMenu.Training ? (
               <ExpandLess sx={{ color: menuColor }} />
             ) : (
-              <ExpandMore sx={{ color: '#fff' }} />
+              <ExpandMore sx={{ color: "#fff" }} />
             )}
-            {openSubmenu === ActiveMenu.Training && !miniDrawer && <ActiveMenuIndicator />}
+            {openSubmenu === ActiveMenu.Training && !miniDrawer && (
+              <ActiveMenuIndicator />
+            )}
           </ListItemButton>
         </ListItem>
-        <Collapse in={openSubmenu === ActiveMenu.Training} timeout="auto" unmountOnExit>
+        <Collapse
+          in={openSubmenu === ActiveMenu.Training}
+          timeout="auto"
+          unmountOnExit
+        >
           <List component="div" disablePadding sx={{ pl: 9 }}>
             {[
-              { key: 'Exercise', path: MenuPath.TrainingExercise },
-              { key: 'TrainingProgram', path: MenuPath.TrainingProgram },
-              { key: 'CompletedTraining', path: MenuPath.CompletedTraining },
+              { key: "Exercise", path: MenuPath.TrainingExercise },
+              { key: "TrainingProgram", path: MenuPath.TrainingProgram },
+              { key: "CompletedTraining", path: MenuPath.CompletedTraining },
             ].map(({ key, path }) => (
               <ListItem disablePadding key={key}>
                 <ListItemButton
                   sx={{
                     py: 0.7,
-                    color: activeSubmenu === TrainingSubMenu[key as keyof typeof TrainingSubMenu] ? menuColor : '#fff',
-                    fontWeight: activeSubmenu === TrainingSubMenu[key as keyof typeof TrainingSubMenu] ? 700 : 400,
+                    color:
+                      activeSubmenu ===
+                      TrainingSubMenu[key as keyof typeof TrainingSubMenu]
+                        ? menuColor
+                        : "#fff",
+                    fontWeight:
+                      activeSubmenu ===
+                      TrainingSubMenu[key as keyof typeof TrainingSubMenu]
+                        ? 700
+                        : 400,
                     fontSize: 16,
-                    '&:hover': { bgcolor: submenuHoverBg },
+                    "&:hover": { bgcolor: submenuHoverBg },
                   }}
                   onClick={() => handleNavigation(path)}
                 >
                   <ListItemText
-                    primary={t(`trainingSubMenu.${key.charAt(0).toLowerCase() + key.slice(1)}`)}
+                    primary={t(
+                      `trainingSubMenu.${
+                        key.charAt(0).toLowerCase() + key.slice(1)
+                      }`
+                    )}
                     sx={{
-                      color: activeSubmenu === TrainingSubMenu[key as keyof typeof TrainingSubMenu] ? menuColor : '#fff',
-                      fontWeight: activeSubmenu === TrainingSubMenu[key as keyof typeof TrainingSubMenu] ? 700 : 400,
+                      color:
+                        activeSubmenu ===
+                        TrainingSubMenu[key as keyof typeof TrainingSubMenu]
+                          ? menuColor
+                          : "#fff",
+                      fontWeight:
+                        activeSubmenu ===
+                        TrainingSubMenu[key as keyof typeof TrainingSubMenu]
+                          ? 700
+                          : 400,
                     }}
                   />
                 </ListItemButton>
@@ -420,21 +516,25 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
               color: activeMenu === ActiveMenu.Chat ? menuColor : undefined,
             }}
             onClick={() => handleNavigation(MenuPath.Chat)}
-            sx={{ '&:hover': { bgcolor: hoverBg } }}
+            sx={{ "&:hover": { bgcolor: hoverBg } }}
           >
             <ChatIcon
               style={{
                 ...styles.icon,
                 color: activeMenu === ActiveMenu.Chat ? menuColor : undefined,
-                filter: activeMenu === ActiveMenu.Chat ? activeIconFilter : undefined,
+                filter:
+                  activeMenu === ActiveMenu.Chat ? activeIconFilter : undefined,
               }}
             />
             {!miniDrawer && (
               <ListItemText
-                primary={t('mainMenu.chat')}
+                primary={t("mainMenu.chat")}
                 style={{
                   ...styles.listItemText,
-                  color: activeMenu === ActiveMenu.Chat ? menuColor : styles.listItemText.color,
+                  color:
+                    activeMenu === ActiveMenu.Chat
+                      ? menuColor
+                      : styles.listItemText.color,
                   fontWeight: activeMenu === ActiveMenu.Chat ? 600 : undefined,
                 }}
               />
@@ -449,22 +549,30 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
               color: activeMenu === ActiveMenu.Banners ? menuColor : undefined,
             }}
             onClick={() => handleNavigation(MenuPath.Banners)}
-            sx={{ '&:hover': { bgcolor: hoverBg } }}
+            sx={{ "&:hover": { bgcolor: hoverBg } }}
           >
             <BannersIcon
               style={{
                 ...styles.icon,
-                color: activeMenu === ActiveMenu.Banners ? menuColor : undefined,
-                filter: activeMenu === ActiveMenu.Banners ? activeIconFilter : undefined,
+                color:
+                  activeMenu === ActiveMenu.Banners ? menuColor : undefined,
+                filter:
+                  activeMenu === ActiveMenu.Banners
+                    ? activeIconFilter
+                    : undefined,
               }}
             />
             {!miniDrawer && (
               <ListItemText
-                primary={t('mainMenu.banners')}
+                primary={t("mainMenu.banners")}
                 style={{
                   ...styles.listItemText,
-                  color: activeMenu === ActiveMenu.Banners ? menuColor : styles.listItemText.color,
-                  fontWeight: activeMenu === ActiveMenu.Banners ? 600 : undefined,
+                  color:
+                    activeMenu === ActiveMenu.Banners
+                      ? menuColor
+                      : styles.listItemText.color,
+                  fontWeight:
+                    activeMenu === ActiveMenu.Banners ? 600 : undefined,
                 }}
               />
             )}
@@ -480,11 +588,11 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
           <ListItemButton
             style={styles.listItemButton}
             onClick={logout}
-            sx={{ '&:hover': { bgcolor: hoverBg } }}
+            sx={{ "&:hover": { bgcolor: hoverBg } }}
           >
             <LogoutIcon style={styles.icon} />
             <ListItemText
-              primary={t('mainMenu.logout')}
+              primary={t("mainMenu.logout")}
               style={styles.listItemText}
             />
           </ListItemButton>
@@ -498,28 +606,28 @@ export default SideDrawer;
 
 const styles = StyleSheet.create({
   drawerPaper: {
-    boxSizing: 'border-box',
-    overflowX: 'hidden',
-    backgroundColor: '#616160',
-    color: '#fff',
+    boxSizing: "border-box",
+    overflowX: "hidden",
+    backgroundColor: "#616160",
+    color: "#fff",
     borderRight: 0,
     paddingLeft: 0,
     paddingTop: 0,
-    scrollbarWidth: 'none',
-    '&::-webkit-scrollbar': {
-      display: 'none',
-    }
+    scrollbarWidth: "none",
+    "&::-webkit-scrollbar": {
+      display: "none",
+    },
   },
   toolbar: {
     minHeight: 88,
     paddingLeft: 0,
     paddingRight: 0,
-    justifyContent: 'center',
+    justifyContent: "center",
     marginTop: 24,
     marginBottom: 40,
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
   },
   icon: {
     width: 22,
@@ -529,7 +637,7 @@ const styles = StyleSheet.create({
     marginRight: 18,
   },
   activeMenuIndicator: {
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 10,
     width: 6,
@@ -543,20 +651,20 @@ const styles = StyleSheet.create({
     paddingTop: 9.6,
     paddingBottom: 9.6,
     borderRadius: 0,
-    position: 'relative',
+    position: "relative",
   },
   activeListItemButton: {
     color: menuColor,
   },
   listItemText: {
-    color: '#fff',
+    color: "#fff",
   },
   activeListItemText: {
     color: menuColor,
     marginRight: 120,
   },
   divider: {
-    backgroundColor: '#7B7B7B',
+    backgroundColor: "#7B7B7B",
     marginTop: 8,
     marginLeft: 32,
     marginRight: 48,

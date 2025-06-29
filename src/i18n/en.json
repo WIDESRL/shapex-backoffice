@@ -18,6 +18,22 @@
     "freeIntroCall": "Free Introductory Call",
     "mealPlan": "Meal Plan",
     "integrationPlan": "Integration Plan",
+    "albumFotografico": {
+      "loading": "Loading photos...",
+      "uploadDate": "Upload date",
+      "tableHeaders": {
+        "photo": "Photo",
+        "type": "Type",
+        "date": "Date",
+        "progress": "Progress Week",
+        "notes": "Notes"
+      },
+      "emptyState": {
+        "title": "No photos in album",
+        "description": "No progress photos have been uploaded yet. Photos will appear here as they are taken to track physical transformation.",
+        "subtitle": "Visual progress monitoring through photos"
+      }
+    },
     "trainingCard": "Training Card",
     "vip": "VIP",
     "actions": "Actions",
@@ -268,5 +284,410 @@
     "save": "Save",
     "saveSuccess": "Changes have been saved successfully.",
     "saveError": "An error occurred while saving assignments. Please try again."
+  },
+  "client": {
+    "main": {
+      "title": "Clients",
+      "searchPlaceholder": "Search here...",
+      "clientName": "Client Name",
+      "subscription": "Subscription",
+      "expiration": "Expiration",
+      "messages": "Messages",
+      "actions": "Actions",
+      "noClientsTitle": "No clients present",
+      "noClientsDescription": "Clients will appear here when they register through the application.",
+      "modalSections": {
+        "anagrafica": {
+          "title": "Personal Info",
+          "items": {
+            "information": "Information",
+            "contacts": "Contact Details"
+          }
+        },
+        "allenamenti": {
+          "title": "Training",
+          "items": {
+            "programs": "Training programs",
+            "completed": "Completed workouts",
+            "history": "Exercise history"
+          }
+        },
+        "diario": {
+          "title": "Diary",
+          "items": {
+            "anamnesis": "Initial anamnesis",
+            "measurements": "Measurements",
+            "photos": "Photo album"
+          }
+        },
+        "altro": {
+          "title": "Other",
+          "items": {
+            "nutrition": "Nutrition",
+            "subscription": "Subscription",
+            "notifications": "Notifications"
+          }
+        }
+      }
+    },
+    "anagrafica": {
+      "title": "Personal Info",
+      "searchPlaceholder": "Search here...",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "subscription": "Subscription",
+      "email": "E-mail",
+      "phone": "Phone",
+      "dateOfBirth": "Date of Birth",
+      "placeOfBirth": "Place",
+      "noClientsTitle": "No clients present",
+      "noClientsDescription": "Clients will appear here when they register through the application."
+    },
+    "anagraficapage": {
+      "title": "Personal Info",
+      "clientNotFound": "Client not found",
+      "tabs": {
+        "information": "Information",
+        "contacts": "Contact Details"
+      },
+      "fields": {
+        "firstName": "First Name:",
+        "lastName": "Last Name:",
+        "dateOfBirth": "Date of Birth:",
+        "placeOfBirth": "Place of Birth:",
+        "phone": "Phone:",
+        "email": "Email:"
+      }
+    },
+    "allenamenti": {
+      "title": "Training",
+      "clientNotFound": "Client not found",
+      "tabs": {
+        "programs": "Training programs",
+        "completed": "Completed workouts",
+        "history": "Exercise history"
+      },
+      "programmiAllenamento": {
+        "searchPlaceholder": "Search program here...",
+        "noSearchResults": "No programs found matching your search criteria.",
+        "loading": "Loading training programs...",
+        "tableHeaders": {
+          "program": "Program",
+          "type": "Type",
+          "level": "Level",
+          "category": "Category",
+          "weeks": "Weeks"
+        },
+        "emptyState": {
+          "title": "No training programs available",
+          "description": "There are no training programs created yet. Create your first program to start assigning it to clients and monitor their progress.",
+          "createButton": "Create Training Program"
+        }
+      },
+      "allenamentiCompletati": {
+        "loading": "Loading completed workouts...",
+        "tableHeaders": {
+          "workout": "Completed Workouts",
+          "date": "Date",
+          "type": "Type",
+          "level": "Level",
+          "category": "Category",
+          "weeks": "Weeks"
+        },
+        "emptyState": {
+          "title": "No completed workouts",
+          "description": "The client has not completed any workouts yet. Completed workouts will appear here once they are finished.",
+          "subtitle": "Start assigning programs to track progress"
+        }
+      },
+      "storicoEsercizi": {
+        "loading": "Loading exercise history...",
+        "tableHeaders": {
+          "exercise": "Exercises Performed",
+          "date": "Date",
+          "category": "Category",
+          "weeks": "Weeks",
+          "type": "Type",
+          "level": "Level",
+          "duration": "Duration"
+        },
+        "emptyState": {
+          "title": "No exercises in the record",
+          "description": "The client has not performed any exercises yet. Exercise history will appear here as they are recorded.",
+          "subtitle": "Exercises will accumulate during various workouts"
+        }
+      },
+      "confirmAssignDialog": {
+        "title": "Confirm Assignment",
+        "message": "Are you sure you want to assign the program {{programName}} to this client?",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      }
+    },
+    "diario": {
+      "title": "Diary",
+      "clientNotFound": "Client not found",
+      "tabs": {
+        "anamnesis": "Initial anamnesis",
+        "measurements": "Measurements",
+        "photos": "Photo album"
+      },
+      "anamnesiIniziale": {
+        "loading": "Loading initial anamnesis...",
+        "sections": {
+          "basicInfo": "Basic Information",
+          "photos": "Initial Photos",
+          "trainingInfo": "Training Information",
+          "measurements": "Body Measurements",
+          "medicalInfo": "Medical Information"
+        },
+        "fields": {
+          "gender": "Gender:",
+          "age": "Age:",
+          "height": "Height:",
+          "weight": "Weight:",
+          "physicalActivity": "Physical activity:",
+          "bodyFat": "Body fat:",
+          "goal": "Your goal:",
+          "motivation": "Motivation:",
+          "sittingHours": "Sitting hours per day:",
+          "workType": "Work type:",
+          "trainingExperience": "Training experience:",
+          "sessionsPerWeek": "Sessions per week:",
+          "desiredSessions": "Desired sessions:",
+          "trainingPlace": "Training place:",
+          "equipment": "Equipment:",
+          "weights": "Weights:",
+          "neck": "Neck:",
+          "chest": "Chest/Abdomen:",
+          "rightArm": "Right arm:",
+          "leftArm": "Left arm:",
+          "rightForearm": "Right forearm:",
+          "leftForearm": "Left forearm:",
+          "rightLeg": "Right leg:",
+          "leftLeg": "Left leg:",
+          "rightAnkle": "Right ankle:",
+          "leftAnkle": "Left ankle:",
+          "trainingHistory": "Training history:",
+          "drugs": "Medications/Drugs:",
+          "previousDiet": "Previous diet:",
+          "injuries": "Injuries:",
+          "allergies": "Allergies:"
+        },
+        "photos": {
+          "front": "Front View",
+          "side": "Side View",
+          "back": "Back View", 
+          "noImage": "No image available"
+        },
+        "tableHeaders": {
+          "question": "Question",
+          "answer": "Answer",
+          "date": "Date",
+          "notes": "Notes"
+        },
+        "emptyState": {
+          "title": "No initial anamnesis available",
+          "description": "The initial anamnesis has not been completed yet. The anamnesis data will appear here once it is filled out by the client.",
+          "subtitle": "Start by sending the anamnesis form to the client"
+        }
+      },
+      "misurazioni": {
+        "loading": "Loading measurements...",
+        "filters": {
+          "title": "Date Filters",
+          "startDate": "Start Date",
+          "endDate": "End Date",
+          "apply": "Apply",
+          "clear": "Clear"
+        },
+        "tableHeaders": {
+          "measurement": "Measurement",
+          "value": "Value",
+          "date": "Date",
+          "progress": "Progress",
+          "notes": "Notes"
+        },
+        "emptyState": {
+          "title": "No measurements recorded",
+          "description": "No body measurements have been recorded yet. Measurements will appear here as they are taken during check-ups.",
+          "subtitle": "Track progress through regular measurements"
+        }
+      },
+      "albumFotografico": {
+        "loading": "Loading photos...",
+        "uploadDate": "Upload date",
+        "filters": {
+          "title": "Filters",
+          "startDate": "Start date",
+          "endDate": "End date",
+          "apply": "Apply",
+          "clear": "Clear"
+        },
+        "tableHeaders": {
+          "photo": "Photo",
+          "type": "Type",
+          "date": "Date",
+          "progress": "Progress Week",
+          "notes": "Notes"
+        },
+        "emptyState": {
+          "title": "No photos in the album",
+          "description": "No progress photos have been uploaded yet. Photos will appear here as they are taken to track physical transformation.",
+          "subtitle": "Visual progress tracking through photos"
+        }
+      }
+    },
+    "alimentazione": {
+      "title": "Nutrition",
+      "clientNotFound": "Client not found",
+      "loading": "Loading...",
+      "sections": {
+        "mealPlan": "Meal Plan",
+        "supplementation": "Nutritional Supplementation"
+      },
+      "placeholders": {
+        "mealPlan": "Enter the meal plan...",
+        "supplementation": "Enter the nutritional supplementation..."
+      },
+      "buttons": {
+        "insert": "Insert",
+        "saving": "Saving..."
+      },
+      "messages": {
+        "mealPlanSuccess": "Meal plan updated successfully",
+        "mealPlanError": "Error updating meal plan",
+        "supplementationSuccess": "Nutritional supplementation updated successfully",
+        "supplementationError": "Error updating nutritional supplementation"
+      }
+    },
+    "altro": {
+      "title": "Other",
+      "clientNotFound": "Client not found",
+      "tabs": {
+        "subscription": "Subscription",
+        "notifications": "Notifications"
+      },
+      "abbonamento": {
+        "fields": {
+          "registrationDate": "Registration date:",
+          "startDate": "Start date:",
+          "endDate": "End date:",
+          "status": "Status:",
+          "plan": "Plan:"
+        },
+        "loading": "Loading subscription details...",
+        "tableHeaders": {
+          "subscription": "Subscription",
+          "status": "Status",
+          "startDate": "Start Date",
+          "endDate": "End Date",
+          "price": "Price",
+          "actions": "Actions"
+        },
+        "emptyState": {
+          "title": "No active subscription",
+          "description": "The client does not have an active subscription. Subscription details will appear here once a plan is assigned.",
+          "subtitle": "Assign a subscription plan to get started"
+        }
+      },
+      "notifiche": {
+        "tableHeaders": {
+          "notification": "Notification",
+          "type": "Type",
+          "date": "Date",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "emptyState": {
+          "title": "No notifications",
+          "description": "There are no notifications for this client. Notifications will appear here when they are sent or received.",
+          "subtitle": "Stay updated with client communications"
+        }
+      }
+    }
+  },
+  "completedTraining": {
+    "title": "Completed Training",
+    "subtitle": "Detailed completed training sessions",
+    "filters": {
+      "status": "Status",
+      "workoutDay": "Workout Day",
+      "completedBy": "Completed By",
+      "dateRange": "Workout Day",
+      "selectInterval": "Select an interval",
+      "searchClients": "Search Clients",
+      "clearAll": "Clear all filters",
+      "showResults": "Show results"
+    },
+    "table": {
+      "headers": {
+        "date": "Date",
+        "client": "Client",
+        "trainingPlan": "Training Plan",
+        "dayWeek": "Day/Week",
+        "exerciseDetail": "Exercise Detail"
+      }
+    },
+    "status": {
+      "completed": "Completed",
+      "expiring": "Expiring",
+      "inProgress": "In Progress"
+    },
+    "workoutOptions": {
+      "option1": "1 day / 1 set.",
+      "option2": "2 days / 1 set.",
+      "option3": "XX days / XX sets."
+    },
+    "emptyState": "No results found with the applied filters",
+    "autocomplete": {
+      "noClientsFound": "No clients found",
+      "clear": "Clear",
+      "open": "Open",
+      "close": "Close"
+    }
+  },
+  "dateRangePicker": {
+    "selectInterval": "Select an interval",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "weekDays": {
+      "monday": "Mo",
+      "tuesday": "Tu",
+      "wednesday": "We",
+      "thursday": "Th",
+      "friday": "Fr",
+      "saturday": "Sa",
+      "sunday": "Su"
+    }
+  },
+  "exerciseDetailModal": {
+    "title": "Exercise Detail",
+    "program": "Program",
+    "date": "Date",
+    "duration": "Workout Duration",
+    "series": "Series",
+    "repetitions": "Repetitions",
+    "weight": "Weight (Kg)",
+    "notes": "Notes",
+    "table": {
+      "headers": {
+        "series": "Series",
+        "weight": "Weight (Kg)",
+        "repetitions": "Repetitions"
+      }
+    }
   }
 }

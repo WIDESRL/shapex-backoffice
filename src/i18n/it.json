@@ -268,5 +268,410 @@
     "save": "Salva",
     "saveSuccess": "Le modifiche sono state salvate con successo.",
     "saveError": "Si è verificato un errore durante il salvataggio delle assegnazioni. Riprova."
+  },
+  "client": {
+    "main": {
+      "title": "Clienti",
+      "searchPlaceholder": "Cerca qui...",
+      "clientName": "Nome Cliente",
+      "subscription": "Abbonamento",
+      "expiration": "Scadenza",
+      "messages": "Messaggi",
+      "actions": "Azioni",
+      "noClientsTitle": "Nessun cliente presente",
+      "noClientsDescription": "I clienti appariranno qui quando si registreranno tramite l'applicazione.",
+      "modalSections": {
+        "anagrafica": {
+          "title": "Anagrafica",
+          "items": {
+            "information": "Informazioni",
+            "contacts": "Recapiti di Contatto"
+          }
+        },
+        "allenamenti": {
+          "title": "Allenamenti",
+          "items": {
+            "programs": "Programmi di allenamento",
+            "completed": "Allenamenti completati",
+            "history": "Storico esercizi"
+          }
+        },
+        "diario": {
+          "title": "Diario",
+          "items": {
+            "anamnesis": "Anamnesi iniziale",
+            "measurements": "Misurazioni",
+            "photos": "Album fotografico"
+          }
+        },
+        "altro": {
+          "title": "Altro",
+          "items": {
+            "nutrition": "Alimentazione",
+            "subscription": "Abbonamento",
+            "notifications": "Notifiche"
+          }
+        }
+      }
+    },
+    "anagrafica": {
+      "title": "Anagrafica",
+      "searchPlaceholder": "Cerca qui...",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "subscription": "Abbonamento",
+      "email": "E-mail",
+      "phone": "Telefono",
+      "dateOfBirth": "Data di nascita",
+      "placeOfBirth": "Luogo",
+      "noClientsTitle": "Nessun cliente presente",
+      "noClientsDescription": "I clienti appariranno qui quando si registreranno tramite l'applicazione."
+    },
+    "anagraficapage": {
+      "title": "Anagrafica",
+      "clientNotFound": "Cliente non trovato",
+      "tabs": {
+        "information": "Informazioni",
+        "contacts": "Recapiti di Contatto"
+      },
+      "fields": {
+        "firstName": "Nome:",
+        "lastName": "Cognome:",
+        "dateOfBirth": "Data di nascita:",
+        "placeOfBirth": "Luogo di nascita:",
+        "phone": "Telefono:",
+        "email": "Email:"
+      }
+    },
+    "allenamenti": {
+      "title": "Allenamenti",
+      "clientNotFound": "Cliente non trovato",
+      "tabs": {
+        "programs": "Programmi di allenamento",
+        "completed": "Allenamenti completati",
+        "history": "Storico esercizi"
+      },
+      "programmiAllenamento": {
+        "searchPlaceholder": "Cerca qui il programma...",
+        "noSearchResults": "Nessun programma trovato che corrisponda ai criteri di ricerca.",
+        "loading": "Caricamento programmi di allenamento...",
+        "tableHeaders": {
+          "program": "Programma",
+          "type": "Tipo",
+          "level": "Livello",
+          "category": "Tipologia",
+          "weeks": "Settimane"
+        },
+        "emptyState": {
+          "title": "Nessun programma di allenamento disponibile",
+          "description": "Non ci sono ancora programmi di allenamento creati. Crea il tuo primo programma per iniziare ad assegnarlo ai clienti e monitorare i loro progressi.",
+          "createButton": "Crea Programma di Allenamento"
+        }
+      },
+      "allenamentiCompletati": {
+        "loading": "Caricamento allenamenti completati...",
+        "tableHeaders": {
+          "workout": "Allenamenti completati",
+          "date": "Data",
+          "type": "Tipo",
+          "level": "Livello",
+          "category": "Tipologia",
+          "weeks": "Settimane"
+        },
+        "emptyState": {
+          "title": "Nessun allenamento completato",
+          "description": "Il cliente non ha ancora completato alcun allenamento. Gli allenamenti completati appariranno qui una volta terminati.",
+          "subtitle": "Inizia ad assegnare programmi per tracciare i progressi"
+        }
+      },
+      "storicoEsercizi": {
+        "loading": "Caricamento storico esercizi...",
+        "tableHeaders": {
+          "exercise": "Esercizi eseguiti",
+          "date": "Data",
+          "category": "Tipologia",
+          "weeks": "Settimane",
+          "type": "Tipo",
+          "level": "Livello",
+          "duration": "Durata"
+        },
+        "emptyState": {
+          "title": "Nessun esercizio nel registro",
+          "description": "Il cliente non ha ancora eseguito alcun esercizio. Lo storico degli esercizi completati apparirà qui man mano che vengono registrati.",
+          "subtitle": "Gli esercizi si accumuleranno durante i vari allenamenti"
+        }
+      },
+      "confirmAssignDialog": {
+        "title": "Conferma Assegnazione",
+        "message": "Sei sicuro di voler assegnare il programma {{programName}} a questo cliente?",
+        "cancel": "Annulla",
+        "confirm": "Conferma"
+      }
+    },
+    "diario": {
+      "title": "Diario",
+      "clientNotFound": "Cliente non trovato",
+      "tabs": {
+        "anamnesis": "Anamnesi iniziale",
+        "measurements": "Misurazioni",
+        "photos": "Album fotografico"
+      },
+      "anamnesiIniziale": {
+        "loading": "Caricamento anamnesi iniziale...",
+        "sections": {
+          "basicInfo": "Informazioni di Base",
+          "photos": "Foto Iniziali",
+          "trainingInfo": "Informazioni di Allenamento",
+          "measurements": "Misurazioni Corporee",
+          "medicalInfo": "Informazioni Mediche"
+        },
+        "fields": {
+          "gender": "Sesso:",
+          "age": "Età:",
+          "height": "Altezza:",
+          "weight": "Peso:",
+          "physicalActivity": "Attività fisica:",
+          "bodyFat": "Massa grassa:",
+          "goal": "Il tuo obiettivo:",
+          "motivation": "Motivazione:",
+          "sittingHours": "Ore sedentarie al giorno:",
+          "workType": "Tipo di lavoro:",
+          "trainingExperience": "Esperienza di allenamento:",
+          "sessionsPerWeek": "Sessioni a settimana:",
+          "desiredSessions": "Sessioni desiderate:",
+          "trainingPlace": "Luogo di allenamento:",
+          "equipment": "Attrezzatura:",
+          "weights": "Pesi:",
+          "neck": "Collo:",
+          "chest": "Petto/Addome:",
+          "rightArm": "Braccio destro:",
+          "leftArm": "Braccio sinistro:",
+          "rightForearm": "Avambraccio destro:",
+          "leftForearm": "Avambraccio sinistro:",
+          "rightLeg": "Gamba destra:",
+          "leftLeg": "Gamba sinistra:",
+          "rightAnkle": "Caviglia destra:",
+          "leftAnkle": "Caviglia sinistra:",
+          "trainingHistory": "Storico allenamenti:",
+          "drugs": "Farmaci/Droghe:",
+          "previousDiet": "Dieta precedente:",
+          "injuries": "Infortuni:",
+          "allergies": "Allergie:"
+        },
+        "photos": {
+          "front": "Vista Frontale",
+          "side": "Vista Laterale", 
+          "back": "Vista Posteriore",
+          "noImage": "Nessuna immagine disponibile"
+        },
+        "tableHeaders": {
+          "question": "Domanda",
+          "answer": "Risposta",
+          "date": "Data",
+          "notes": "Note"
+        },
+        "emptyState": {
+          "title": "Nessuna anamnesi iniziale disponibile",
+          "description": "L'anamnesi iniziale non è ancora stata completata. I dati dell'anamnesi appariranno qui una volta compilati dal cliente.",
+          "subtitle": "Inizia inviando il modulo di anamnesi al cliente"
+        }
+      },
+      "misurazioni": {
+        "loading": "Caricamento misurazioni...",
+        "filters": {
+          "title": "Filtri Data",
+          "startDate": "Data Inizio",
+          "endDate": "Data Fine",
+          "apply": "Applica",
+          "clear": "Pulisci"
+        },
+        "tableHeaders": {
+          "measurement": "Misurazione",
+          "value": "Valore",
+          "date": "Data",
+          "progress": "Progresso",
+          "notes": "Note"
+        },
+        "emptyState": {
+          "title": "Nessuna misurazione registrata",
+          "description": "Non sono ancora state registrate misurazioni corporee. Le misurazioni appariranno qui man mano che vengono effettuate durante i controlli.",
+          "subtitle": "Monitora i progressi attraverso misurazioni regolari"
+        }
+      },
+      "albumFotografico": {
+        "loading": "Caricamento foto...",
+        "uploadDate": "Data di upload",
+        "filters": {
+          "title": "Filtri",
+          "startDate": "Data inizio",
+          "endDate": "Data fine",
+          "apply": "Applica",
+          "clear": "Pulisci"
+        },
+        "tableHeaders": {
+          "photo": "Foto",
+          "type": "Tipo",
+          "date": "Data",
+          "progress": "Settimana Progresso",
+          "notes": "Note"
+        },
+        "emptyState": {
+          "title": "Nessuna foto nell'album",
+          "description": "Non sono ancora state caricate foto di progresso. Le foto appariranno qui man mano che vengono scattate per tracciare la trasformazione fisica.",
+          "subtitle": "Monitoraggio visivo dei progressi attraverso le foto"
+        }
+      }
+    },
+    "alimentazione": {
+      "title": "Alimentazione",
+      "clientNotFound": "Cliente non trovato",
+      "loading": "Caricamento...",
+      "sections": {
+        "mealPlan": "Piano alimentare",
+        "supplementation": "Integrazione alimentare"
+      },
+      "placeholders": {
+        "mealPlan": "Inserisci il piano alimentare...",
+        "supplementation": "Inserisci l'integrazione alimentare..."
+      },
+      "buttons": {
+        "insert": "Inserisci",
+        "saving": "Salvataggio..."
+      },
+      "messages": {
+        "mealPlanSuccess": "Piano alimentare aggiornato con successo",
+        "mealPlanError": "Errore nell'aggiornamento del piano alimentare",
+        "supplementationSuccess": "Integrazione alimentare aggiornata con successo",
+        "supplementationError": "Errore nell'aggiornamento dell'integrazione alimentare"
+      }
+    },
+    "altro": {
+      "title": "Altro",
+      "clientNotFound": "Cliente non trovato",
+      "tabs": {
+        "subscription": "Abbonamento",
+        "notifications": "Notifiche"
+      },
+      "abbonamento": {
+        "fields": {
+          "registrationDate": "Data iscrizione:",
+          "startDate": "Data inizio:",
+          "endDate": "Data fine:",
+          "status": "Status:",
+          "plan": "Piano:"
+        },
+        "loading": "Caricamento dettagli abbonamento...",
+        "tableHeaders": {
+          "subscription": "Abbonamento",
+          "status": "Stato",
+          "startDate": "Data Inizio",
+          "endDate": "Data Fine",
+          "price": "Prezzo",
+          "actions": "Azioni"
+        },
+        "emptyState": {
+          "title": "Nessun abbonamento attivo",
+          "description": "Il cliente non ha un abbonamento attivo. I dettagli dell'abbonamento appariranno qui una volta assegnato un piano.",
+          "subtitle": "Assegna un piano di abbonamento per iniziare"
+        }
+      },
+      "notifiche": {
+        "tableHeaders": {
+          "notification": "Notifica",
+          "type": "Tipo",
+          "date": "Data",
+          "status": "Stato",
+          "actions": "Azioni"
+        },
+        "emptyState": {
+          "title": "Nessuna notifica",
+          "description": "Non ci sono notifiche per questo cliente. Le notifiche appariranno qui quando vengono inviate o ricevute.",
+          "subtitle": "Rimani aggiornato con le comunicazioni del cliente"
+        }
+      }
+    }
+  },
+  "completedTraining": {
+    "title": "Allenamenti completati",
+    "subtitle": "Dettagliato allenamenti completati",
+    "filters": {
+      "status": "Stato",
+      "workoutDay": "Giorno Allenamento",
+      "completedBy": "Completato da",
+      "dateRange": "Giorno Allenamento",
+      "selectInterval": "Seleziona un intervallo",
+      "searchClients": "Cerca Clienti",
+      "clearAll": "Elimina tutti i filtri",
+      "showResults": "Mostra risultati"
+    },
+    "table": {
+      "headers": {
+        "date": "Data",
+        "client": "Cliente",
+        "trainingPlan": "Piano di allenamento",
+        "dayWeek": "Giorno/Settimana",
+        "exerciseDetail": "Dettaglio esercizio"
+      }
+    },
+    "status": {
+      "completed": "Terminato",
+      "expiring": "In scadenza",
+      "inProgress": "In corso"
+    },
+    "workoutOptions": {
+      "option1": "1 gg. / 1 set.",
+      "option2": "2 gg. / 1 set.",
+      "option3": "XX gg. / XX set."
+    },
+    "emptyState": "Nessun risultato trovato con i filtri applicati",
+    "autocomplete": {
+      "noClientsFound": "Nessun cliente trovato",
+      "clear": "Cancella",
+      "open": "Apri",
+      "close": "Chiudi"
+    }
+  },
+  "dateRangePicker": {
+    "selectInterval": "Seleziona un intervallo",
+    "months": {
+      "january": "Gennaio",
+      "february": "Febbraio",
+      "march": "Marzo",
+      "april": "Aprile",
+      "may": "Maggio",
+      "june": "Giugno",
+      "july": "Luglio",
+      "august": "Agosto",
+      "september": "Settembre",
+      "october": "Ottobre",
+      "november": "Novembre",
+      "december": "Dicembre"
+    },
+    "weekDays": {
+      "monday": "Lu",
+      "tuesday": "Ma",
+      "wednesday": "Me",
+      "thursday": "Gi",
+      "friday": "Ve",
+      "saturday": "Sa",
+      "sunday": "Do"
+    }
+  },
+  "exerciseDetailModal": {
+    "title": "Dettaglio esercizio",
+    "program": "Programma",
+    "date": "Data",
+    "duration": "Durata allenamento",
+    "series": "Serie",
+    "repetitions": "Ripetizioni",
+    "weight": "Peso (Kg)",
+    "notes": "Note",
+    "table": {
+      "headers": {
+        "series": "Serie",
+        "weight": "Peso (Kg)",
+        "repetitions": "Ripetizioni"
+      }
+    }
   }
 }

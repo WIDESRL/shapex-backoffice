@@ -32,7 +32,8 @@ const ImageCustom: React.FC<ImageCustomProps> = ({
     setError(true);
   };
 
-  const handleRetry = () => {
+  const handleRetry = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
     setLoading(true);
     setError(false);
     setRetryKey(prev => prev + 1);
