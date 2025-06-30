@@ -232,7 +232,8 @@ const AnamnesiInizialeTab: React.FC = () => {
     }
   };
 
-  const translateTrainingExperience = (experience: string): string => {
+  const translateTrainingExperience = (experience: string | undefined): string => {
+    if (!experience) return '--';
     switch (experience.toLowerCase()) {
       case 'beginner': return 'Principiante';
       case 'intermediate': return 'Intermedio';
@@ -241,7 +242,8 @@ const AnamnesiInizialeTab: React.FC = () => {
     }
   };
 
-  const translateTrainingPlace = (place: string): string => {
+  const translateTrainingPlace = (place: string | undefined): string => {
+    if (!place) return '--';
     switch (place.toLowerCase()) {
       case 'home': return 'Casa';
       case 'gym': return 'Palestra';
@@ -300,39 +302,39 @@ const AnamnesiInizialeTab: React.FC = () => {
       <Box sx={styles.fieldsGrid}>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.gender')}</Typography>
-          <Typography sx={styles.value}>{translateGender(initialHistory.sex)}</Typography>
+          <Typography sx={styles.value}>{translateGender(initialHistory?.sex)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.age')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.age}</Typography>
+          <Typography sx={styles.value}>{initialHistory?.age}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.height')}</Typography>
-          <Typography sx={styles.value}>{formatHeight(initialHistory.height)}</Typography>
+          <Typography sx={styles.value}>{formatHeight(initialHistory?.height)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.weight')}</Typography>
-          <Typography sx={styles.value}>{formatWeight(initialHistory.weight)}</Typography>
+          <Typography sx={styles.value}>{formatWeight(initialHistory?.weight)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.physicalActivity')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.physicalActivity}</Typography>
+          <Typography sx={styles.value}>{initialHistory?.physicalActivity}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.bodyFat')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.fatMass}</Typography>
+          <Typography sx={styles.value}>{initialHistory?.fatMass}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.goal')}</Typography>
-          <Typography sx={styles.value}>{translateGoals(initialHistory.goals)}</Typography>
+          <Typography sx={styles.value}>{translateGoals(initialHistory?.goals)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.sittingHours')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.sittingHours} ore</Typography>
+          <Typography sx={styles.value}>{initialHistory?.sittingHours} ore</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.workType')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.workType}</Typography>
+          <Typography sx={styles.value}>{initialHistory?.workType}</Typography>
         </Box>
       </Box>
 
@@ -343,27 +345,27 @@ const AnamnesiInizialeTab: React.FC = () => {
       <Box sx={styles.fieldsGrid}>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.trainingExperience')}</Typography>
-          <Typography sx={styles.value}>{translateTrainingExperience(initialHistory.trainingExperience)}</Typography>
+          <Typography sx={styles.value}>{translateTrainingExperience(initialHistory?.trainingExperience)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.sessionsPerWeek')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.sessionsPerWeek} sessioni</Typography>
+          <Typography sx={styles.value}>{initialHistory?.sessionsPerWeek} sessioni</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.desiredSessions')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.desiredSessions} sessioni</Typography>
+          <Typography sx={styles.value}>{initialHistory?.desiredSessions} sessioni</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.trainingPlace')}</Typography>
-          <Typography sx={styles.value}>{translateTrainingPlace(initialHistory.trainingPlace)}</Typography>
+          <Typography sx={styles.value}>{translateTrainingPlace(initialHistory?.trainingPlace)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.equipment')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.equipment}</Typography>
+          <Typography sx={styles.value}>{initialHistory?.equipment}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.weights')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.weights}</Typography>
+          <Typography sx={styles.value}>{initialHistory?.weights}</Typography>
         </Box>
       </Box>
 
@@ -374,39 +376,39 @@ const AnamnesiInizialeTab: React.FC = () => {
       <Box sx={styles.fieldsGrid}>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.neck')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.collo} cm</Typography>
+          <Typography sx={styles.value}>{initialHistory?.collo} cm</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.chest')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.addome} cm</Typography>
+          <Typography sx={styles.value}>{initialHistory?.addome} cm</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightArm')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.braccioDx} cm</Typography>
+          <Typography sx={styles.value}>{initialHistory?.braccioDx} cm</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftArm')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.braccioSx} cm</Typography>
+          <Typography sx={styles.value}>{initialHistory?.braccioSx} cm</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightForearm')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.avambraccioDx} cm</Typography>
+          <Typography sx={styles.value}>{initialHistory?.avambraccioDx} cm</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftForearm')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.avambraccioSx} cm</Typography>
+          <Typography sx={styles.value}>{initialHistory?.avambraccioSx} cm</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightLeg')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.gambaDx} cm</Typography>
+          <Typography sx={styles.value}>{initialHistory?.gambaDx} cm</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightAnkle')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.cavigliaDx} cm</Typography>
+          <Typography sx={styles.value}>{initialHistory?.cavigliaDx} cm</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftAnkle')}</Typography>
-          <Typography sx={styles.value}>{initialHistory.cavigliaSx} cm</Typography>
+          <Typography sx={styles.value}>{initialHistory?.cavigliaSx} cm</Typography>
         </Box>
       </Box>
 
