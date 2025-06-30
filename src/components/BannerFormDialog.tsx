@@ -7,7 +7,7 @@ import DialogCloseIcon from '../icons/DialogCloseIcon2';
 import ImageCropDialog from './ImageCropDialog';
 import ImageCustom from './ImageCustom';
 
-interface BannerForm {
+export interface BannerForm {
   title: string;
   description: string;
   size: string;

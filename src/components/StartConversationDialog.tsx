@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import SendIcon from '@mui/icons-material/Send';
-import { useMessages } from '../Context/MessagesContext';
+import { useMessages, UserWithoutConversation } from '../Context/MessagesContext';
 
 const StartConversationDialog: React.FC<{ open: boolean; onClose: () => void; onSend: (userId: number, message: string, file?: File) => Promise<void>; }> = ({ open, onClose, onSend }) => {
   const {
@@ -33,7 +33,7 @@ const StartConversationDialog: React.FC<{ open: boolean; onClose: () => void; on
     usersWithoutConversationHasMore,
     resetUsersWithoutConversation,
   } = useMessages();
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserWithoutConversation | null>(null);
   const [message, setMessage] = useState('');
   const [file, setFile] = useState<File | undefined>();
   const [sending, setSending] = useState(false);

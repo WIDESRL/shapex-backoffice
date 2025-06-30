@@ -2,7 +2,6 @@ import React, { createContext, useState, useContext, useEffect, ReactNode, useCa
 import axiosInstance from '../utils/axiosInstance';
 import { useAuth } from './AuthContext';
 import { uploadFileAndGetId } from '../utils/uploadFileAndGetId';
-import { User } from './TrainingContext';
 
 export interface Message {
     id: number;
@@ -54,6 +53,22 @@ export interface ApiConversation {
     };
 }
 
+export interface UserWithoutConversation {
+    id: number;
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+    type: string;
+    online: boolean;
+    profilePictureFile: {
+        id: number;
+        type: string;
+        fileName: string;
+        signedUrl: string;
+        signedUrlExpire: string;
+    } | null;
+}
+
 const MessagesContext = createContext<MessagesContextType | undefined>(undefined);
 
 export const useMessages = () => {
@@ -72,7 +87,7 @@ interface MessagesContextType {
     sendTextMessage: (convId: number | undefined, content: string, userId?: number) => Promise<void>;
     sendFileMessage: (convId: number | undefined, file: File, userId?: number) => Promise<void>;
     sendingMessage: boolean;
-    usersWithoutConversation: User[];
+    usersWithoutConversation: UserWithoutConversation[];
     loadingUsersWithoutConversation: boolean;
     fetchUsersWithoutConversation: () => Promise<void>;
     resetUsersWithoutConversation: () => void;
@@ -100,7 +115,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
     const [messagesByConversationId, setMessagesByConversationId] = useState<Record<number, Message[]>>({});
     const [sendingMessage, setSendingMessage] = useState(false); // <-- Initialize sendingMessage state
-    const [usersWithoutConversation, setUsersWithoutConversation] = useState<User[]>([]);
+    const [usersWithoutConversation, setUsersWithoutConversation] = useState<UserWithoutConversation[]>([]);
     const [loadingUsersWithoutConversation, setLoadingUsersWithoutConversation] = useState(false);
     const [usersWithoutConversationSearch, setUsersWithoutConversationSearch] = useState('');
     const [usersWithoutConversationPage, setUsersWithoutConversationPage] = useState(1);

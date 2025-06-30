@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Button, InputBase, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress } from '@mui/material';
 import FilterIcon from '../icons/FilterIcon';
 import MagnifierIcon from '../icons/MagnifierIcon';
-import BannerFormDialog from '../components/BannerFormDialog';
+import BannerFormDialog, { BannerForm } from '../components/BannerFormDialog';
 import DeleteConfirmationDialog from '../screens/Subscription/DeleteConfirmationDialog';
 import EditIcon from '../icons/EditIcon';
 import DeleteIcon from '../icons/DeleteIcon';
-import { useBanners } from '../Context/BannersContext';
+import { useBanners, Banner } from '../Context/BannersContext';
 import { useTranslation } from 'react-i18next';
 import FullscreenImageDialog from '../components/FullscreenImageDialog';
 import ImageCustom from '../components/ImageCustom';
@@ -16,30 +16,53 @@ const BannersPage: React.FC = () => {
 	const { banners, isLoading, addBanner, updateBanner, removeBanner, fetchBanners } = useBanners();
 	const [search, setSearch] = useState('');
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const [editBanner, setEditBanner] = useState<any | null>(null);
-	const [deleteBanner, setDeleteBanner] = useState<any | null>(null);
+	const [editBanner, setEditBanner] = useState<Banner | null>(null);
+	const [deleteBanner, setDeleteBanner] = useState<Banner | null>(null);
 	const [imageDialogOpen, setImageDialogOpen] = useState(false);
 	const [imageDialogUrl, setImageDialogUrl] = useState<string | null>(null);
 
 	// Filter banners by title
 	const filteredBanners = banners.filter(b => b.title.toLowerCase().includes(search.toLowerCase()));
 
-	const handleAddBanner = async (banner: any, file?: File) => {
+	// Helper function to convert Banner to BannerForm
+	const bannerToBannerForm = (banner: Banner): Partial<BannerForm> => ({
+		title: banner.title,
+		description: banner.description,
+		size: banner.size,
+		link: banner.link,
+		couponCode: banner.couponCode,
+		color: banner.color,
+		imageId: banner.imageId?.toString() || null,
+		image: banner.image || null
+	});
+
+	const handleAddBanner = async (banner: BannerForm, file: File | null) => {
+		// Convert BannerForm to Banner format
+		const bannerData = {
+			title: banner.title,
+			description: banner.description,
+			size: banner.size,
+			link: banner.link,
+			couponCode: banner.couponCode,
+			color: banner.color,
+			...(banner.imageId && { imageId: parseInt(banner.imageId) })
+		};
+
 		if (editBanner) {
-			await updateBanner(editBanner.id, banner, file);
+			await updateBanner(editBanner.id, bannerData, file || undefined);
 		} else {
-			await addBanner(banner, file);
+			await addBanner(bannerData, file || undefined);
 		}
 		setEditBanner(null);
 		setDialogOpen(false);
 	};
 
-	const handleEditClick = (banner: any) => {
+	const handleEditClick = (banner: Banner) => {
 		setEditBanner(banner);
 		setDialogOpen(true);
 	};
 
-	const handleDeleteClick = (banner: any) => {
+	const handleDeleteClick = (banner: Banner) => {
 		setDeleteBanner(banner);
 	};
 
@@ -199,7 +222,12 @@ const BannersPage: React.FC = () => {
 					</TableBody>
 				</Table>
 			</TableContainer>
-			<BannerFormDialog open={dialogOpen} onClose={handleDialogClose} onSubmit={handleAddBanner} initialValues={editBanner} t={t} />
+			<BannerFormDialog 
+				open={dialogOpen} 
+				onClose={handleDialogClose} 
+				onSubmit={handleAddBanner} 
+				initialValues={editBanner ? bannerToBannerForm(editBanner) : null} 
+			/>
 			<DeleteConfirmationDialog open={!!deleteBanner} onClose={() => setDeleteBanner(null)} onConfirm={handleDeleteConfirm} title={t('banners.delete')} description={t('banners.confirmDeletion')} />
 			<FullscreenImageDialog open={imageDialogOpen} imageUrl={imageDialogUrl || ''} onClose={() => setImageDialogOpen(false)} />
 		</Box>
