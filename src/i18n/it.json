@@ -576,6 +576,20 @@
         }
       },
       "notifiche": {
+        "loading": "Caricamento notifiche...",
+        "loadMore": "Carica altre notifiche",
+        "loadingMore": "Caricamento...",
+        "filters": {
+          "title": "Filtri",
+          "startDate": "Data inizio",
+          "endDate": "Data fine",
+          "type": "Tipo",
+          "allTypes": "Tutti",
+          "pushType": "Push",
+          "emailType": "Email",
+          "apply": "Applica",
+          "clear": "Pulisci"
+        },
         "tableHeaders": {
           "notification": "Notifica",
           "type": "Tipo",

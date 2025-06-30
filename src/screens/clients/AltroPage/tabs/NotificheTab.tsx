@@ -1,13 +1,111 @@
-import React, { useState } from 'react';
-import { Box, Typography, Paper } from '@mui/material';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Box, Typography, Paper, CircularProgress, TextField, Button, Collapse, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
+import { debounce } from 'lodash';
+import { useClientContext } from '../../../../Context/ClientContext';
 import NotificationCard from '../../../../components/NotificationCard';
+import FilterIcon from '../../../../icons/FilterIcon';
 
 const styles = {
   container: {
-    height: '80%',
+    height: '65%',
     display: 'flex',
     flexDirection: 'column',
+  },
+  filterHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    mb: 2,
+  },
+  filterButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+    padding: '8px 16px',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 2,
+    border: '1px solid #e0e0e0',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      backgroundColor: '#eeeeee',
+      borderColor: '#d0d0d0',
+    },
+  },
+  filterButtonText: {
+    fontSize: 14,
+    fontWeight: 500,
+    color: '#333',
+  },
+  filterIcon: {
+    color: '#616160',
+    fontSize: 20,
+  },
+  collapseContainer: {
+    mb: 2,
+  },
+  filterContent: {
+    backgroundColor: '#fafafa',
+    border: '1px solid #e0e0e0',
+    borderRadius: 2,
+    p: 3,
+  },
+  dateInputs: {
+    display: 'flex',
+    gap: 2,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    mb: 2,
+  },
+  dateField: {
+    minWidth: 200,
+    '& .MuiInputBase-root': {
+      borderRadius: 1,
+      backgroundColor: '#fff',
+    },
+    '& .MuiInputLabel-root': {
+      fontSize: 14,
+      color: '#757575',
+    },
+  },
+  typeField: {
+    minWidth: 150,
+    '& .MuiInputBase-root': {
+      borderRadius: 1,
+      backgroundColor: '#fff',
+    },
+    '& .MuiInputLabel-root': {
+      fontSize: 14,
+      color: '#757575',
+    },
+  },
+  filterButtons: {
+    display: 'flex',
+    gap: 1,
+    justifyContent: 'flex-end',
+  },
+  applyButton: {
+    backgroundColor: '#E6BB4A',
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: '#d4a537',
+    },
+    textTransform: 'none',
+    fontSize: 14,
+    px: 3,
+  },
+  clearButton: {
+    backgroundColor: 'transparent',
+    color: '#757575',
+    border: '1px solid #e0e0e0',
+    '&:hover': {
+      backgroundColor: '#f5f5f5',
+    },
+    textTransform: 'none',
+    fontSize: 14,
+    px: 3,
   },
   scrollContainer: {
     flex: 1,
@@ -34,6 +132,25 @@ const styles = {
     gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
     gap: 3,
     pb: 2,
+  },
+  loadMoreContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    p: 3,
+  },
+  loadingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '200px',
+    flexDirection: 'column',
+    gap: 2,
+  },
+  loadingText: {
+    color: '#757575',
+    fontSize: 16,
+    mt: 2,
   },
   emptyState: {
     display: 'flex',
@@ -78,97 +195,93 @@ const styles = {
 
 const NotificheTab: React.FC = () => {
   const { t } = useTranslation();
-  const [showEmptyState] = useState(false);
+  const { clientId } = useParams<{ clientId: string }>();
+  const { 
+    userNotifications, 
+    notificationsPagination, 
+    loadingUserNotifications, 
+    fetchUserNotifications 
+  } = useClientContext();
 
-  // Mock data for notifications - replace with real data later
-  const generateNotifications = () => {
-    const titles = [
-      'Titolo notifica',
-      'Titolo esteso notifica',
-      'Promemoria allenamento',
-      'Aggiornamento piano alimentare',
-      'Nuovo messaggio dal trainer',
-      'Scadenza abbonamento',
-      'Risultati misurazione',
-      'Obiettivo raggiunto',
-      'Nuova scheda di allenamento',
-      'Controllo periodico',
-      'Sessione completata',
-      'Invito evento speciale',
-      'Promozione attiva',
-      'Feedback richiesto',
-      'Backup dati completato',
-    ];
+  // Calculate default date range (1 year ago to today) - memoized to avoid recalculation
+  const { defaultStartDate, defaultEndDate } = useMemo(() => {
+    const today = new Date();
+    const oneYearAgo = new Date(today);
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
     
-    const descriptions = [
-      'Descrizione notifica, ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.',
-      'Promemoria per il tuo allenamento di oggi. Non dimenticare di completare la scheda assegnata dal trainer.',
-      'È stato aggiornato il tuo piano alimentare. Controlla le nuove indicazioni nella sezione dedicata.',
-      'Hai ricevuto un nuovo messaggio dal tuo personal trainer. Accedi alla chat per visualizzarlo.',
-      'Il tuo abbonamento scadrà tra 7 giorni. Rinnova per continuare ad accedere a tutti i servizi.',
-      'Sono disponibili i risultati delle tue ultime misurazioni corporee. Visualizzali nel diario.',
-      'Complimenti! Hai raggiunto un nuovo obiettivo di fitness. Continua così!',
-      'È disponibile una nuova scheda di allenamento personalizzata per te.',
-      'È il momento del controllo periodico con il tuo trainer. Prenota un appuntamento.',
-      'Ricordati di registrare i tuoi progressi nel diario dopo ogni allenamento.',
-      'Sessione di allenamento completata con successo. Ottimo lavoro!',
-      'Sei invitato al nostro evento speciale questo weekend. Partecipa per vincere premi esclusivi.',
-      'Approfitta della nostra promozione limitata su abbonamenti premium. Sconto del 20%!',
-      'Ci aiuteresti a migliorare? Lascia un feedback sulla tua esperienza.',
-      'Il backup dei tuoi dati è stato completato con successo. Tutti i progressi sono al sicuro.',
-    ];
+    return {
+      defaultStartDate: oneYearAgo.toISOString().split('T')[0],
+      defaultEndDate: today.toISOString().split('T')[0]
+    };
+  }, []);
+  
+  // Filter state
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [startDate, setStartDate] = useState<string>(defaultStartDate);
+  const [endDate, setEndDate] = useState<string>(defaultEndDate);
+  const [notificationType, setNotificationType] = useState<string>('all');
 
-    const altroValues = [
-      'Lorem ipsum',
-      'Parametro aggiuntivo',
-      'Valore extra',
-      'Info supplementare',
-      'Dettaglio importante',
-      'Nota speciale',
-      'Riferimento #12345',
-      'Codice promozione: FIT2025',
-      'Priorità alta',
-      'Azione richiesta',
-    ];
+  // Debounced fetch function to prevent excessive API calls
+  const debouncedFetchNotifications = useMemo(
+    () => debounce((clientId: string, page: number = 1, pageLimit: number = 20, startDate?: string, endDate?: string, type?: string, append: boolean = false) => {
+      fetchUserNotifications(clientId, page, pageLimit, startDate, endDate, type, append);
+    }, 200),
+    [fetchUserNotifications]
+  );
 
-    return Array.from({ length: showEmptyState ? 0 : 100 }, (_, index) => { // Toggle between 0 and 100 for empty state
-      const isPush = Math.random() > 0.6; // 40% push, 60% mail
-      const hasAltro = Math.random() > 0.7; // 30% chance of having "altro"
-      const isVisualized = Math.random() > 0.3; // 70% visualized
-      
-      // Generate random date in the last 90 days
-      const daysAgo = Math.floor(Math.random() * 90);
-      const date = new Date();
-      date.setDate(date.getDate() - daysAgo);
-      const formattedDate = date.toLocaleDateString('it-IT', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
+  // Fetch notifications when component mounts
+  useEffect(() => {
+    if (clientId) {
+      debouncedFetchNotifications(clientId, 1, 20, defaultStartDate, defaultEndDate, 'all', false);
+    }
+  }, [clientId, defaultStartDate, defaultEndDate, debouncedFetchNotifications]);
 
-      const titleIndex = Math.floor(Math.random() * titles.length);
-      const descIndex = Math.floor(Math.random() * descriptions.length);
-      const altroIndex = Math.floor(Math.random() * altroValues.length);
-      
-      return {
-        id: index + 1,
-        title: titles[titleIndex],
-        description: descriptions[descIndex],
-        dataInvio: formattedDate,
-        visualizzato: isVisualized ? 'Si' : 'No',
-        tipologia: isPush ? 'Notifica Push' : 'Mail',
-        type: isPush ? 'push' : 'mail',
-        ...(hasAltro && { altro: altroValues[altroIndex] }),
-      };
-    }).sort((a, b) => {
-      // Sort by date (most recent first)
-      const dateA = new Date(a.dataInvio.split('/').reverse().join('-'));
-      const dateB = new Date(b.dataInvio.split('/').reverse().join('-'));
-      return dateB.getTime() - dateA.getTime();
-    });
+  // Handle filter apply
+  const handleApplyFilter = () => {
+    if (clientId) {
+      const typeParam = notificationType === 'all' ? undefined : notificationType;
+      debouncedFetchNotifications(clientId, 1, 20, startDate || undefined, endDate || undefined, typeParam, false);
+      setFilterOpen(false); // Close the filter section after applying
+    }
   };
 
-  const notifications = generateNotifications();
+  // Handle filter clear
+  const handleClearFilter = () => {
+    setStartDate(defaultStartDate);
+    setEndDate(defaultEndDate);
+    setNotificationType('all');
+    if (clientId) {
+      debouncedFetchNotifications(clientId, 1, 20, defaultStartDate, defaultEndDate, undefined, false);
+    }
+  };
+
+  // Toggle filter section
+  const toggleFilter = () => {
+    setFilterOpen(!filterOpen);
+  };
+
+  // Handle load more notifications
+  const handleLoadMore = () => {
+    if (clientId && notificationsPagination?.hasNextPage) {
+      const nextPage = notificationsPagination.page + 1;
+      const typeParam = notificationType === 'all' ? undefined : notificationType;
+      debouncedFetchNotifications(clientId, nextPage, 20, startDate || undefined, endDate || undefined, typeParam, true);
+    }
+  };
+
+  // Check if should show load more button
+  const shouldShowLoadMore = notificationsPagination?.hasNextPage && 
+    userNotifications.length < (notificationsPagination?.total || 0);
+
+  // Loading component
+  const LoadingState = () => (
+    <Box sx={styles.loadingContainer}>
+      <CircularProgress size={40} sx={{ color: '#E6BB4A' }} />
+      <Typography sx={styles.loadingText}>
+        {t('client.altro.notifiche.loading')}
+      </Typography>
+    </Box>
+  );
 
   // Empty state component
   const EmptyState = () => (
@@ -192,15 +305,124 @@ const NotificheTab: React.FC = () => {
 
   return (
     <Box sx={styles.container}>
+      {/* Filter Header */}
+      <Box sx={styles.filterHeader}>
+        <Box 
+          component="div" 
+          sx={styles.filterButton}
+          onClick={toggleFilter}
+        >
+          <FilterIcon style={styles.filterIcon} />
+          <Typography sx={styles.filterButtonText}>
+            {t('client.altro.notifiche.filters.title')}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Collapsible Filter Section */}
+      <Collapse in={filterOpen} sx={styles.collapseContainer}>
+        <Box sx={styles.filterContent}>
+          <Box sx={styles.dateInputs}>
+            <TextField
+              label={t('client.altro.notifiche.filters.startDate')}
+              type="date"
+              size="small"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={styles.dateField}
+            />
+            <TextField
+              label={t('client.altro.notifiche.filters.endDate')}
+              type="date"
+              size="small"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={styles.dateField}
+            />
+            <FormControl size="small" sx={styles.typeField}>
+              <InputLabel id="notification-type-label">
+                {t('client.altro.notifiche.filters.type')}
+              </InputLabel>
+              <Select
+                labelId="notification-type-label"
+                value={notificationType}
+                label={t('client.altro.notifiche.filters.type')}
+                onChange={(e) => setNotificationType(e.target.value)}
+              >
+                <MenuItem value="all">{t('client.altro.notifiche.filters.allTypes')}</MenuItem>
+                <MenuItem value="push">{t('client.altro.notifiche.filters.pushType')}</MenuItem>
+                <MenuItem value="email">{t('client.altro.notifiche.filters.emailType')}</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={styles.filterButtons}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={handleClearFilter}
+              sx={styles.clearButton}
+            >
+              {t('client.altro.notifiche.filters.clear')}
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleApplyFilter}
+              sx={styles.applyButton}
+            >
+              {t('client.altro.notifiche.filters.apply')}
+            </Button>
+          </Box>
+        </Box>
+      </Collapse>
+
       <Box sx={styles.scrollContainer}>
-        {notifications.length === 0 ? (
+        {loadingUserNotifications && userNotifications.length === 0 ? (
+          <LoadingState />
+        ) : userNotifications.length === 0 ? (
           <EmptyState />
         ) : (
-          <Box sx={styles.notificationGrid}>
-            {notifications.map((notification) => (
-              <NotificationCard key={notification.id} notification={notification} />
-            ))}
-          </Box>
+          <>
+            <Box sx={styles.notificationGrid}>
+              {userNotifications.map((notification) => (
+                <NotificationCard key={notification.id} notification={notification} />
+              ))}
+            </Box>
+            
+            {/* Load More Section */}
+            {shouldShowLoadMore && (
+              <Box sx={styles.loadMoreContainer}>
+                <Button
+                  variant="outlined"
+                  onClick={handleLoadMore}
+                  disabled={loadingUserNotifications}
+                  sx={{
+                    textTransform: 'none',
+                    fontSize: 14,
+                    px: 4,
+                    py: 1,
+                    borderColor: '#E6BB4A',
+                    color: '#E6BB4A',
+                    '&:hover': {
+                      backgroundColor: '#E6BB4A',
+                      color: '#fff',
+                    },
+                  }}
+                >
+                  {loadingUserNotifications ? (
+                    <>
+                      <CircularProgress size={16} sx={{ mr: 1, color: 'inherit' }} />
+                      {t('client.altro.notifiche.loadingMore')}
+                    </>
+                  ) : (
+                    t('client.altro.notifiche.loadMore')
+                  )}
+                </Button>
+              </Box>
+            )}
+          </>
         )}
       </Box>
     </Box>

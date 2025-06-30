@@ -592,6 +592,20 @@
         }
       },
       "notifiche": {
+        "loading": "Loading notifications...",
+        "loadMore": "Load more notifications",
+        "loadingMore": "Loading...",
+        "filters": {
+          "title": "Filters",
+          "startDate": "Start date",
+          "endDate": "End date",
+          "type": "Type",
+          "allTypes": "All",
+          "pushType": "Push",
+          "emailType": "Email",
+          "apply": "Apply",
+          "clear": "Clear"
+        },
         "tableHeaders": {
           "notification": "Notification",
           "type": "Type",

@@ -173,6 +173,42 @@ export type ClientAnagrafica = {
 
 };
 
+// Type for notification data
+export type UserNotification = {
+  id: number;
+  title: string;
+  description: string;
+  type: 'push' | 'email';
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+};
+
+// Type for notification pagination
+export type NotificationPagination = {
+  page: number;
+  pageLimit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+};
+
+// Type for pagination
+export type Pagination = {
+  page: number;
+  pageLimit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+};
+
+// Type for notifications response
+export type NotificationsResponse = {
+  notifications: UserNotification[];
+  pagination: Pagination;
+};
+
 export type ClientContextType = {
   clients: Client[];
   clientAnagrafica: ClientAnagrafica | null;
@@ -182,6 +218,8 @@ export type ClientContextType = {
   initialHistory: InitialHistory | null;
   userChecks: UserCheck[];
   userImagesAlbum: UserAlbumImage[];
+  userNotifications: UserNotification[];
+  notificationsPagination: Pagination | null;
   loading: boolean;
   loadingClientAnagrafica: boolean;
   loadingTrainingPrograms: boolean;
@@ -190,6 +228,7 @@ export type ClientContextType = {
   loadingInitialHistory: boolean;
   loadingUserChecks: boolean;
   loadingUserImagesAlbum: boolean;
+  loadingUserNotifications: boolean;
   page: number;
   pageSize: number;
   total: number;
@@ -206,11 +245,10 @@ export type ClientContextType = {
   fetchInitialHistory: (userId: string) => Promise<void>;
   fetchUserChecks: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
   fetchUserImagesAlbum: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
+  fetchUserNotifications: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, type?: string, append?: boolean) => Promise<void>;
 };
 
 const ClientContext = createContext<ClientContextType | undefined>(undefined);
-
-
 
 export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -221,6 +259,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [initialHistory, setInitialHistory] = useState<InitialHistory | null>(null);
   const [userChecks, setUserChecks] = useState<UserCheck[]>([]);
   const [userImagesAlbum, setUserImagesAlbum] = useState<UserAlbumImage[]>([]);
+  const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
+  const [notificationsPagination, setNotificationsPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingClientAnagrafica, setLoadingClientAnagrafica] = useState(false);
   const [loadingTrainingPrograms, setLoadingTrainingPrograms] = useState(false);
@@ -229,6 +269,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingInitialHistory, setLoadingInitialHistory] = useState(false);
   const [loadingUserChecks, setLoadingUserChecks] = useState(false);
   const [loadingUserImagesAlbum, setLoadingUserImagesAlbum] = useState(false);
+  const [loadingUserNotifications, setLoadingUserNotifications] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -401,6 +442,44 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
+  const fetchUserNotifications = useCallback(async (
+    userId: string, 
+    page: number = 1, 
+    pageLimit: number = 20, 
+    startDate?: string, 
+    endDate?: string,
+    type?: string,
+    append: boolean = false
+  ): Promise<void> => {
+    try {
+      setLoadingUserNotifications(true);
+      
+      // Build query parameters
+      const params = new URLSearchParams();
+      params.append('page', page.toString());
+      params.append('pageLimit', pageLimit.toString());
+      if (startDate) params.append('startDate', startDate);
+      if (endDate) params.append('endDate', endDate);
+      if (type && type !== 'all') params.append('type', type);
+      
+      const queryString = params.toString();
+      const url = `/notification-logs/user/${userId}?${queryString}`;
+      
+      const response = await axiosInstance.get(url);
+      const data: NotificationsResponse = response.data;
+      
+      setUserNotifications(prev => append ? [...prev, ...data.notifications] : data.notifications);
+      setNotificationsPagination(data.pagination);
+    } catch (error) {
+      console.error('Error fetching user notifications:', error);
+      setUserNotifications([]);
+      setNotificationsPagination(null);
+      throw error;
+    } finally {
+      setLoadingUserNotifications(false);
+    }
+  }, []);
+
   return (
     <ClientContext.Provider
       value={{ 
@@ -412,6 +491,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         initialHistory,
         userChecks,
         userImagesAlbum,
+        userNotifications,
+        notificationsPagination,
         loading, 
         loadingClientAnagrafica,
         loadingTrainingPrograms,
@@ -420,6 +501,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingInitialHistory,
         loadingUserChecks,
         loadingUserImagesAlbum,
+        loadingUserNotifications,
         page, 
         pageSize, 
         total, 
@@ -435,7 +517,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         createOrUpdateDiet,
         fetchInitialHistory,
         fetchUserChecks,
-        fetchUserImagesAlbum
+        fetchUserImagesAlbum,
+        fetchUserNotifications
       }}
     >
       {children}

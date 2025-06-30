@@ -8,11 +8,9 @@ interface NotificationCardProps {
     id: number;
     title: string;
     description: string;
-    dataInvio: string;
-    visualizzato: string;
-    tipologia: string;
-    type: string;
-    altro?: string;
+    type: 'push' | 'email';
+    metadata: Record<string, unknown> | null;
+    createdAt: string;
   };
 }
 
@@ -69,15 +67,35 @@ const styles = {
 };
 
 const NotificationCard: React.FC<NotificationCardProps> = ({ notification }) => {
-  const getIcon = (type: string) => {
+  const getIcon = (type: 'push' | 'email') => {
     switch (type) {
-      case 'mail':
+      case 'email':
         return <MailIcon style={styles.actionIcon} />;
       case 'push':
         return <PushNotificationsIcon style={styles.actionIcon} />;
       default:
         return <PushNotificationsIcon style={styles.actionIcon} />;
     }
+  };
+
+  const getTypeName = (type: 'push' | 'email') => {
+    switch (type) {
+      case 'email':
+        return 'Mail';
+      case 'push':
+        return 'Notifica Push';
+      default:
+        return 'Notifica Push';
+    }
+  };
+
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
 
   return (
@@ -98,25 +116,13 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ notification }) => 
       <Box sx={styles.cardDetails}>
         <Box sx={styles.detailRow}>
           <Typography sx={styles.detailLabel}>Data invio:</Typography>
-          <Typography sx={styles.detailValue}>{notification.dataInvio}</Typography>
-        </Box>
-        
-        <Box sx={styles.detailRow}>
-          <Typography sx={styles.detailLabel}>Visualizzato:</Typography>
-          <Typography sx={styles.detailValue}>{notification.visualizzato}</Typography>
+          <Typography sx={styles.detailValue}>{formatDate(notification.createdAt)}</Typography>
         </Box>
         
         <Box sx={styles.detailRow}>
           <Typography sx={styles.detailLabel}>Tipologia:</Typography>
-          <Typography sx={styles.detailValue}>{notification.tipologia}</Typography>
+          <Typography sx={styles.detailValue}>{getTypeName(notification.type)}</Typography>
         </Box>
-
-        {notification.altro && (
-          <Box sx={styles.detailRow}>
-            <Typography sx={styles.detailLabel}>Altro:</Typography>
-            <Typography sx={styles.detailValue}>{notification.altro}</Typography>
-          </Box>
-        )}
       </Box>
     </Paper>
   );
