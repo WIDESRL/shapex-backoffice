@@ -276,6 +276,10 @@
       "clientName": "Nome Cliente",
       "subscription": "Abbonamento",
       "expiration": "Scadenza",
+      "expirationTooltips": {
+        "expired": "Questo abbonamento è scaduto",
+        "expiringSoon": "Questo abbonamento scade entro 7 giorni"
+      },
       "messages": "Messaggi",
       "actions": "Azioni",
       "noClientsTitle": "Nessun cliente presente",

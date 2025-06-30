@@ -151,6 +151,8 @@ export type Client = {
     name: string;
     color: string;
     expireDate: string;
+    startDate: string;
+    status: 'active' | 'expired' | 'pending';
   } | null;
   totalMessages: number;
 };

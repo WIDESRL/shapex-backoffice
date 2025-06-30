@@ -292,6 +292,10 @@
       "clientName": "Client Name",
       "subscription": "Subscription",
       "expiration": "Expiration",
+      "expirationTooltips": {
+        "expired": "This subscription has expired",
+        "expiringSoon": "This subscription expires within 7 days"
+      },
       "messages": "Messages",
       "actions": "Actions",
       "noClientsTitle": "No clients present",

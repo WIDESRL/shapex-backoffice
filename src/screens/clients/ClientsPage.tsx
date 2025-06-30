@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip } from '@mui/material';
 import EditIcon from '../../icons/EditIcon';
 import DeleteIcon from '../../icons/DeleteIcon';
 import FilterIcon from '../../icons/FilterIcon';
@@ -181,6 +181,42 @@ const styles = {
     fontWeight: 500,
     fontSize: 18,
   },
+  expiredDate: {
+    color: '#d32f2f',
+    fontWeight: 600,
+  },
+  expiringSoon: {
+    color: '#ed6c02',
+    fontWeight: 500,
+  },
+};
+
+// Helper function to check if a date is expired
+const isDateExpired = (dateString: string): boolean => {
+  const expireDate = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+  return expireDate < today;
+};
+
+// Helper function to check if a date is expiring soon (within 7 days)
+const isDateExpiringSoon = (dateString: string): boolean => {
+  const expireDate = new Date(dateString);
+  const today = new Date();
+  const sevenDaysFromNow = new Date(today);
+  sevenDaysFromNow.setDate(today.getDate() + 7);
+  
+  return expireDate >= today && expireDate <= sevenDaysFromNow;
+};
+
+// Helper function to get tooltip text for expiration date
+const getExpirationTooltip = (dateString: string, t: (key: string) => string): string => {
+  if (isDateExpired(dateString)) {
+    return t('client.main.expirationTooltips.expired');
+  } else if (isDateExpiringSoon(dateString)) {
+    return t('client.main.expirationTooltips.expiringSoon');
+  }
+  return '';
 };
 
 const ClientsPage: React.FC = () => {
@@ -339,9 +375,27 @@ const ClientsPage: React.FC = () => {
                     ) : '--'}
                   </TableCell>
                   <TableCell sx={styles.tableCell}>
-                    {client.activeSubscription && client.activeSubscription.expireDate
-                      ? new Date(client.activeSubscription.expireDate).toLocaleDateString()
-                      : '--'}
+                    {client.activeSubscription && client.activeSubscription.expireDate ? (
+                      <Tooltip 
+                        title={getExpirationTooltip(client.activeSubscription.expireDate, t)} 
+                        arrow
+                        placement="top"
+                        disableHoverListener={!isDateExpired(client.activeSubscription.expireDate) && !isDateExpiringSoon(client.activeSubscription.expireDate)}
+                      >
+                        <Typography
+                          sx={{
+                            ...styles.tableCell,
+                            ...(isDateExpired(client.activeSubscription.expireDate) && styles.expiredDate),
+                            ...(isDateExpiringSoon(client.activeSubscription.expireDate) && !isDateExpired(client.activeSubscription.expireDate) && styles.expiringSoon),
+                            cursor: (isDateExpired(client.activeSubscription.expireDate) || isDateExpiringSoon(client.activeSubscription.expireDate)) ? 'help' : 'default'
+                          }}
+                        >
+                          {new Date(client.activeSubscription.expireDate).toLocaleDateString()}
+                        </Typography>
+                      </Tooltip>
+                    ) : (
+                      '--'
+                    )}
                   </TableCell>
                   <TableCell sx={styles.tableCell}>{client.totalMessages}</TableCell>
                   <TableCell sx={styles.tableActionCell}>
