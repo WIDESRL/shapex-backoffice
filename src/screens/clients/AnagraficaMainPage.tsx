@@ -111,11 +111,13 @@ const AnagraficaPage: React.FC = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const loadMoreDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const [localSearch, setLocalSearch] = useState(search);
+  const [hasInitialFetch, setHasInitialFetch] = useState(false);
 
   // Debounced fetch on page/search change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
+      setHasInitialFetch(true);
       fetchClients({ page, pageSize, search, append: page > 1 });
     }, 500);
     return () => {
@@ -245,7 +247,7 @@ const AnagraficaPage: React.FC = () => {
                 <TableCell sx={styles.tableCell}>{client.placeOfBirth || '--'}</TableCell>
               </TableRow>
             ))}
-            {clients && clients.length === 0 && !loading && (
+            {clients && clients.length === 0 && !loading && hasInitialFetch && (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={styles.emptyTableCell}>
                   <Box sx={styles.emptyStateBox}>
@@ -258,7 +260,7 @@ const AnagraficaPage: React.FC = () => {
                 </TableCell>
               </TableRow>
             )}
-            {loading && (
+            {(loading || !hasInitialFetch) && (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={styles.loadingTableCell}>
                   <CircularProgress size={24} />

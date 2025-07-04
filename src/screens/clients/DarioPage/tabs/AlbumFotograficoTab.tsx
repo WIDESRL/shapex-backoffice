@@ -235,10 +235,12 @@ const AlbumFotograficoTab: React.FC = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [startDate, setStartDate] = useState<string>(defaultStartDate);
   const [endDate, setEndDate] = useState<string>(defaultEndDate);
+  const [hasInitialFetch, setHasInitialFetch] = useState(false);
 
   // Debounced fetch function
   const debouncedFetchUserImagesAlbum = useCallback((clientId: string, startDate?: string, endDate?: string) => {
     const timeoutId = setTimeout(() => {
+      setHasInitialFetch(true);
       fetchUserImagesAlbum(clientId, startDate, endDate);
     }, 200);
 
@@ -387,7 +389,7 @@ const AlbumFotograficoTab: React.FC = () => {
           </Box>
         </Collapse>
 
-        {loadingUserImagesAlbum ? (
+        {(loadingUserImagesAlbum || !hasInitialFetch) ? (
           <LoadingState />
         ) : userImagesAlbum.length === 0 ? (
           <EmptyState />

@@ -2,8 +2,6 @@ import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip } from '@mui/material';
-import EditIcon from '../../icons/EditIcon';
-import DeleteIcon from '../../icons/DeleteIcon';
 import FilterIcon from '../../icons/FilterIcon';
 import MagnifierIcon from '../../icons/MagnifierIcon';
 import UserIcon from '../../icons/UserIcon';
@@ -17,7 +15,6 @@ import DialogCloseIcon from '../../icons/DialogCloseIcon2';
 import AnagraficaIcon from '../../icons/AnagraficaIcon';
 import AllenamentiIcon from '../../icons/AllenamentiIcon';
 
-// --- Styles ---
 const styles = {
   modalSectionBox: {
     border: 1,
@@ -226,11 +223,13 @@ const ClientsPage: React.FC = () => {
   const [localSearch, setLocalSearch] = useState(search);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [hasInitialFetch, setHasInitialFetch] = useState(false);
 
   // Debounced fetch on page/search change (debounce only the fetch, not the state update)
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
+      setHasInitialFetch(true);
       fetchClients({ page, pageSize, search, append: page > 1 });
     }, 500);
     return () => {
@@ -353,7 +352,6 @@ const ClientsPage: React.FC = () => {
               <TableCell sx={styles.tableCellHeader}>{t('client.main.subscription')}</TableCell>
               <TableCell sx={styles.tableCellHeader}>{t('client.main.expiration')}</TableCell>
               <TableCell sx={styles.tableCellHeader}>{t('client.main.messages')}</TableCell>
-              <TableCell align="center" sx={styles.tableCellHeader}>{t('client.main.actions')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -395,18 +393,10 @@ const ClientsPage: React.FC = () => {
                     )}
                   </TableCell>
                   <TableCell sx={styles.tableCell}>{client.totalMessages}</TableCell>
-                  <TableCell sx={styles.tableActionCell}>
-                    <IconButton size="small">
-                      <EditIcon style={styles.editIcon} />
-                    </IconButton>
-                    <IconButton size="small">
-                      <DeleteIcon style={styles.deleteIcon} />
-                    </IconButton>
-                  </TableCell>
                 </TableRow>
               );
             })}
-            {clients && clients.length === 0 && !loading && (
+            {clients && clients.length === 0 && !loading && hasInitialFetch && (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={styles.emptyTableCell}>
                   <Box sx={styles.emptyStateBox}>
@@ -419,7 +409,7 @@ const ClientsPage: React.FC = () => {
                 </TableCell>
               </TableRow>
             )}
-            {loading && (
+            {(loading || !hasInitialFetch) && (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={styles.loadingTableCell}>
                   <CircularProgress size={24} />

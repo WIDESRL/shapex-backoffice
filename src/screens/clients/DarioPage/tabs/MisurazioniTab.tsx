@@ -286,11 +286,13 @@ const MisurazioniTab: React.FC = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [startDate, setStartDate] = useState<string>(defaultStartDate);
   const [endDate, setEndDate] = useState<string>(defaultEndDate);
+  const [hasInitialFetch, setHasInitialFetch] = useState(false);
 
   // Debounced fetch function to prevent excessive API calls
   const debouncedFetchUserChecks = useCallback(
     (clientId: string, startDate?: string, endDate?: string) => {
       const timeoutId = setTimeout(() => {
+        setHasInitialFetch(true);
         fetchUserChecks(clientId, startDate, endDate);
       }, 200);
       
@@ -446,7 +448,7 @@ const MisurazioniTab: React.FC = () => {
   );
 
   // Show loading state
-  if (loadingUserChecks) {
+  if (loadingUserChecks || !hasInitialFetch) {
     return (
       <Box sx={styles.container}>
         {/* Filter Header */}
@@ -513,7 +515,7 @@ const MisurazioniTab: React.FC = () => {
   }
 
   // Show empty state if no data
-  if (!userChecks || userChecks.length === 0 || measurementData.length === 0) {
+  if (hasInitialFetch && (!userChecks || userChecks.length === 0 || measurementData.length === 0)) {
     return (
       <Box sx={styles.container}>
         {/* Filter Header */}

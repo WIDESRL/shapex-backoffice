@@ -227,10 +227,12 @@ const NotificheTab: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(defaultStartDate);
   const [endDate, setEndDate] = useState<string>(defaultEndDate);
   const [notificationType, setNotificationType] = useState<string>('all');
+  const [hasInitialFetch, setHasInitialFetch] = useState(false);
 
   // Debounced fetch function to prevent excessive API calls
   const debouncedFetchNotifications = useMemo(
     () => debounce((clientId: string, page: number = 1, pageLimit: number = 20, startDate?: string, endDate?: string, type?: string, append: boolean = false) => {
+      setHasInitialFetch(true);
       fetchUserNotifications(clientId, page, pageLimit, startDate, endDate, type, append);
     }, 200),
     [fetchUserNotifications]
@@ -386,7 +388,7 @@ const NotificheTab: React.FC = () => {
       </Collapse>
 
       <Box sx={styles.scrollContainer}>
-        {loadingUserNotifications && userNotifications.length === 0 ? (
+        {(loadingUserNotifications && userNotifications.length === 0) || !hasInitialFetch ? (
           <LoadingState />
         ) : userNotifications.length === 0 ? (
           <EmptyState />

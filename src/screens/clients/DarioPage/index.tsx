@@ -47,11 +47,13 @@ const DiarioPage: React.FC = () => {
   const { clientId } = useParams<{ clientId: string }>();
   const { clientAnagrafica, loadingClientAnagrafica, fetchClientAnagrafica, fetchInitialHistory } = useClientContext();
   const [tabValue, setTabValue] = useState(0);
+  const [hasInitialFetch, setHasInitialFetch] = useState(false);
 
   // Debounced fetch function that calls both API functions together
   const debouncedFetchClientData = useCallback(
     (clientId: string) => {
       const timeoutId = setTimeout(() => {
+        setHasInitialFetch(true);
         fetchClientAnagrafica(clientId);
         fetchInitialHistory(clientId);
       }, 200);
@@ -72,7 +74,7 @@ const DiarioPage: React.FC = () => {
     navigate('/clients/anagrafica');
   };
 
-  if (loadingClientAnagrafica) {
+  if (loadingClientAnagrafica || !hasInitialFetch) {
     return (
       <Box sx={styles.container}>
         <Box sx={styles.loadingContainer}>
