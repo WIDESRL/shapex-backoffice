@@ -89,7 +89,7 @@ interface TrainingContextType {
   isLoading: boolean;
   loadingAvailableUsers: boolean;
   fetchExercises: (limit: number | undefined) => Promise<void>;
-  fetchExercisesWithoutLoading: (limit?: number) => Promise<void>;
+  fetchExercisesWithoutLoading: (limit?: number, search?: string, muscleGroups?: string[]) => Promise<void>;
   addExercise: (data: {
     title: string;
     muscleGroup: string;
@@ -243,10 +243,21 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, []);
 
-    const fetchExercisesWithoutLoading = React.useCallback(async (limit: number | undefined = undefined) => {
+  const fetchExercisesWithoutLoading = React.useCallback(async (limit: number | undefined = undefined, search?: string, muscleGroups?: string[]) => {
     try {
       let url = '/trainning/exercise';
-      if (limit) url += `?limit=${limit}`;
+      const params = new URLSearchParams();
+      
+      if (limit) params.append('limit', limit.toString());
+      if (search) params.append('search', search);
+      if (muscleGroups && muscleGroups.length > 0) {
+        muscleGroups.forEach(group => params.append('muscleGroup[]', group));
+      }
+      
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+      
       const res = await api.get(url);
       setExercises(res);
     } catch (error) {

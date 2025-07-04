@@ -135,11 +135,22 @@
       "Bicipiti": "Biceps",
       "Tricipiti": "Triceps",
       "Avambracci": "Forearms",
-      "Quadricipiti": "Quadriceps"
+      "Quadricipiti": "Quadriceps",
+      "Femorali": "Hamstrings",
+      "Adduttori": "Adductors",
+      "Abduttori": "Abductors",
+      "Glutei": "Glutes",
+      "Polpacci": "Calves",
+      "Addome": "Abs",
+      "Total Body": "Total Body",
+      "Cardio": "Cardio",
+      "Stretching": "Stretching"
     },
     "noExercisesTitle": "No exercises yet",
     "noExercisesDesc": "Start by adding your first exercise to the training section.",
     "addFirstExercise": "Add Exercise",
+    "exerciseEmptyStateTitle": "No exercises found",
+    "exerciseEmptyStateDesc": "No exercises match the current search criteria or muscle group filters. Try adjusting your filters or search terms.",
     "deleteExerciseTitle": "Are you sure you want to delete this exercise?",
     "deleteTrainingProgramTitle": "Are you sure you want to delete this training program?"
   },

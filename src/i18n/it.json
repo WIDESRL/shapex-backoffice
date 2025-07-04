@@ -119,11 +119,22 @@
       "Bicipiti": "Bicipiti",
       "Tricipiti": "Tricipiti",
       "Avambracci": "Avambracci",
-      "Quadricipiti": "Quadricipiti"
+      "Quadricipiti": "Quadricipiti",
+      "Femorali": "Femorali",
+      "Adduttori": "Adduttori",
+      "Abduttori": "Abduttori",
+      "Glutei": "Glutei",
+      "Polpacci": "Polpacci",
+      "Addome": "Addome",
+      "Total Body": "Total Body",
+      "Cardio": "Cardio",
+      "Stretching": "Stretching"
     },
     "noExercisesTitle": "Nessun esercizio ancora",
     "noExercisesDesc": "Inizia aggiungendo il tuo primo esercizio alla sezione allenamento.",
     "addFirstExercise": "Aggiungi esercizio",
+    "exerciseEmptyStateTitle": "Nessun esercizio trovato",
+    "exerciseEmptyStateDesc": "Nessun esercizio corrisponde ai criteri di ricerca o ai filtri del gruppo muscolare correnti. Prova a modificare i filtri o i termini di ricerca.",
     "deleteExerciseTitle": "Sei sicuro di voler eliminare questo esercizio?",
     "deleteTrainingProgramTitle": "Sei sicuro di voler eliminare questo programma di allenamento?"
   },

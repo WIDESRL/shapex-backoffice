@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Typography, TextField, MenuItem, Select, InputLabel, FormControl, IconButton
 } from '@mui/material';
@@ -70,9 +70,48 @@ const styles = {
   videoThumbImg: { width: 34, height: 34, borderRadius: 8, objectFit: 'cover' },
   videoOverlay: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.15)', borderRadius: 2, zIndex: 1 },
   videoIconBox: { position: 'absolute', top: 7, left: 8, width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 },
+  emptyStateBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
+    padding: 3,
+    textAlign: 'center',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 2,
+    border: '1px solid #e9ecef',
+    width: '100%',
+    flex: '1 1 100%'
+  },
+  emptyStateIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: '50%',
+    backgroundColor: '#dee2e6',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 2
+  },
+  emptyStateTitle: {
+    fontWeight: 600,
+    color: '#495057',
+    marginBottom: 1
+  },
+  emptyStateDescription: {
+    color: '#6c757d',
+    maxWidth: 500,
+    lineHeight: 1.5
+  }
 };
 
 const exerciseTypes = ['Ripetizioni', 'Tempo', 'Ramping'];
+
+const muscleGroups = [
+  'Pettorali', 'Dorsali', 'Spalle', 'Trapezi', 'Bicipiti', 'Tricipiti', 'Avambracci', 'Quadricipiti',
+  'Femorali', 'Adduttori', 'Abduttori', 'Glutei', 'Polpacci', 'Addome', 'Total Body', 'Cardio', 'Stretching'
+];
 
 export interface InitialData {
   selectedExercises?: number[];
@@ -95,6 +134,7 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
   const [search, setSearch] = useState('');
   const [selectedExercises, setSelectedExercises] = useState<number[]>(initialData?.selectedExercises || []);
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>([]);
   const { exercises, fetchExercisesWithoutLoading, selectedTrainingProgram, createWorkoutExercise, updateWorkoutExercise } = useTraining();
 
   // Find the day object from the context training program using dayId
@@ -126,9 +166,38 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
   const [note, setNote] = useState(initialData?.note || '');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  // Debounced fetch function for search and muscle group filtering
+  const debouncedFetchExercises = useCallback(() => {
+    const timeoutId = setTimeout(() => {
+      if (open) {
+        // Always pass current values, even if empty (to allow clearing filters)
+        const searchParam = search.trim() || undefined;
+        const muscleGroupsParam = selectedMuscleGroups.length > 0 ? selectedMuscleGroups : undefined;
+        fetchExercisesWithoutLoading(1000, searchParam, muscleGroupsParam);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [fetchExercisesWithoutLoading, open, search, selectedMuscleGroups]);
+
+  // Effect to trigger debounced search when search or selectedMuscleGroups change
   useEffect(() => {
-    if(open) fetchExercisesWithoutLoading();
-  }, [fetchExercisesWithoutLoading, open]);
+    if (open) {
+      const cleanup = debouncedFetchExercises();
+      return cleanup;
+    }
+  }, [search, selectedMuscleGroups, debouncedFetchExercises, open]);
+
+  // Handler for muscle group checkbox changes
+  const handleMuscleGroupChange = (group: string) => {
+    setSelectedMuscleGroups(prev => {
+      const newSelection = prev.includes(group)
+        ? prev.filter(g => g !== group)
+        : [...prev, group];
+      
+      return newSelection;
+    });
+  };
 
   // Reset all form values when modal is closed
   useEffect(() => {
@@ -143,11 +212,15 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
       setTut('');
       setNote(initialData?.note || '');
       setSelectedExercises(initialData?.selectedExercises || []);
+      setSelectedMuscleGroups([]);
       setErrors({});
       setSearch('');
       setShowFilters(false);
+    } else {
+      // When modal opens, fetch all exercises without filters initially
+      fetchExercisesWithoutLoading();
     }
-  }, [open, initialData]);
+  }, [open, initialData, fetchExercisesWithoutLoading]);
 
   // Populate form state when editing an exercise
   useEffect(() => {
@@ -321,12 +394,15 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
                 Gruppi muscolari
               </Typography>
               <Box sx={styles.filterGroupBox}>
-                {[
-                  'Pettorali', 'Dorsali', 'Spalle', 'Trapezi', 'Bicipiti', 'Tricipiti', 'Avambracci', 'Quadricipiti',
-                  'Femorali', 'Adduttori', 'Abduttori', 'Glutei', 'Polpacci', 'Addome', 'Total Body', 'Cardio', 'Stretching'
-                ].map((group) => (
+                {muscleGroups.map((group) => (
                   <Box key={group} sx={styles.filterCheckbox}>
-                    <input type="checkbox" id={group} style={styles.filterCheckboxInput} />
+                    <input 
+                      type="checkbox" 
+                      id={group} 
+                      checked={selectedMuscleGroups.includes(group)}
+                      onChange={() => handleMuscleGroupChange(group)}
+                      style={styles.filterCheckboxInput} 
+                    />
                     <label htmlFor={group} style={styles.filterCheckboxLabel}>{group}</label>
                   </Box>
                 ))}
@@ -335,47 +411,61 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
           )}
         </Box>
         <Box sx={styles.exerciseList}>
-          {exercises.map(ex => (
-            <Box
-              key={ex.id}
-              sx={{
-                ...styles.exerciseItem,
-                minHeight: 40,
-                height: 40,
-                minWidth: 220,
-                maxWidth: 320,
-                flex: '1 1 220px',
-                p: 0.5,
-                background: selectedExercises[0] === ex.id ? '#EFEFEF' : '#fff',
-                border: selectedExercises[0] === ex.id ? '2px solid #C3C3C3' : '2px solid #D9D9D9',
-                position: 'relative',
-                transition: 'background 0.2s, border 0.2s',
-              }}
-              onClick={() => setSelectedExercises([ex.id])}
-            >
-              {ex?.videoThumbnailFile?.signedUrl && (
-                <Box sx={styles.videoThumbBox}>
-                  <img
-                    src={ex.videoThumbnailFile.signedUrl}
-                    alt={ex.title}
-                    style={styles.videoThumbImg as React.CSSProperties}
-                  />
-                  <Box sx={styles.videoOverlay} />
-                  <Box sx={styles.videoIconBox}>
-                    <VideoIcon style={{ width: 16, height: 16 }} />
-                  </Box>
-                </Box>
-              )}
-              <span style={styles.exerciseTitle as React.CSSProperties}>{ex.title}</span>
-              <span style={{ flex: 1 }} />
-              <input
-                type="radio"
-                checked={selectedExercises[0] === ex.id}
-                readOnly
-                style={{ marginLeft: 8, accentColor: '#EDB528', width: 22, height: 22 }}
-              />
+          {exercises.length === 0 ? (
+            <Box sx={styles.emptyStateBox}>
+              <Box sx={styles.emptyStateIcon}>
+                <MagnifierIcon style={{ width: 24, height: 24, color: '#6c757d' }} />
+              </Box>
+              <Typography variant="h6" sx={styles.emptyStateTitle}>
+                {t('training.exerciseEmptyStateTitle', 'Nessun esercizio trovato')}
+              </Typography>
+              <Typography variant="body2" sx={styles.emptyStateDescription}>
+                {t('training.exerciseEmptyStateDesc', 'Nessun esercizio corrisponde ai criteri di ricerca o ai filtri del gruppo muscolare correnti. Prova a modificare i filtri o i termini di ricerca.')}
+              </Typography>
             </Box>
-          ))}
+          ) : (
+            exercises.map(ex => (
+              <Box
+                key={ex.id}
+                sx={{
+                  ...styles.exerciseItem,
+                  minHeight: 40,
+                  height: 40,
+                  minWidth: 220,
+                  maxWidth: 320,
+                  flex: '1 1 220px',
+                  p: 0.5,
+                  background: selectedExercises[0] === ex.id ? '#EFEFEF' : '#fff',
+                  border: selectedExercises[0] === ex.id ? '2px solid #C3C3C3' : '2px solid #D9D9D9',
+                  position: 'relative',
+                  transition: 'background 0.2s, border 0.2s',
+                }}
+                onClick={() => setSelectedExercises([ex.id])}
+              >
+                {ex?.videoThumbnailFile?.signedUrl && (
+                  <Box sx={styles.videoThumbBox}>
+                    <img
+                      src={ex.videoThumbnailFile.signedUrl}
+                      alt={ex.title}
+                      style={styles.videoThumbImg as React.CSSProperties}
+                    />
+                    <Box sx={styles.videoOverlay} />
+                    <Box sx={styles.videoIconBox}>
+                      <VideoIcon style={{ width: 16, height: 16 }} />
+                    </Box>
+                  </Box>
+                )}
+                <span style={styles.exerciseTitle as React.CSSProperties}>{ex.title}</span>
+                <span style={{ flex: 1 }} />
+                <input
+                  type="radio"
+                  checked={selectedExercises[0] === ex.id}
+                  readOnly
+                  style={{ marginLeft: 8, accentColor: '#EDB528', width: 22, height: 22 }}
+                />
+              </Box>
+            ))
+          )}
         </Box>
         <TextField
           label={t('trainingPage.notes', 'Note')}
