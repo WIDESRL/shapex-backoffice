@@ -360,7 +360,19 @@ const muscleGroups = [
   'Tricipiti',
   'Avambracci',
   'Quadricipiti',
+  "Femorali", 
+  "Adduttori", 
+  "Abduttori", 
+  "Glutei",
+  "Polpacci", 
+  "Addome", 
+  "Total Body", 
+  "Cardio", 
+  "Stretching"
 ];
+
+
+
 
 interface ExerciseModalProps {
   open: boolean;
