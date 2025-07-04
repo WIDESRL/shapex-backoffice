@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress } from '@mui/material';
 import FilterIcon from '../../icons/FilterIcon';
 import MagnifierIcon from '../../icons/MagnifierIcon';
+import UserIcon from '../../icons/UserIcon';
 import { useClientContext } from '../../Context/ClientContext';
 
 // --- Styles ---
@@ -19,10 +20,6 @@ const styles = {
     fontSize: 15,
     color: '#aaa',
     fontWeight: 300,
-  },
-  emptyStateImage: {
-    width: 60,
-    opacity: 0.4,
   },
   tableCellHeader: { background: '#EDEDED', fontWeight: 500 },
   tableCell: { py: 0.5 },
@@ -252,7 +249,7 @@ const AnagraficaPage: React.FC = () => {
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={styles.emptyTableCell}>
                   <Box sx={styles.emptyStateBox}>
-                    <img src="/public/icons/user.svg" alt={t('client.anagrafica.noClientsTitle')} style={styles.emptyStateImage} />
+                    <UserIcon />
                     <span>{t('client.anagrafica.noClientsTitle')}</span>
                     <span style={styles.emptyStateDesc}>
                       {t('client.anagrafica.noClientsDescription')}

@@ -6,6 +6,7 @@ import EditIcon from '../../icons/EditIcon';
 import DeleteIcon from '../../icons/DeleteIcon';
 import FilterIcon from '../../icons/FilterIcon';
 import MagnifierIcon from '../../icons/MagnifierIcon';
+import UserIcon from '../../icons/UserIcon';
 import { Client, useClientContext } from '../../Context/ClientContext';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -62,10 +63,6 @@ const styles = {
     fontSize: 15,
     color: '#aaa',
     fontWeight: 300,
-  },
-  emptyStateImage: {
-    width: 60,
-    opacity: 0.4,
   },
   tableCellHeader: { background: '#EDEDED', fontWeight: 500 },
   tableCell: { py: 0.5 },
@@ -413,7 +410,7 @@ const ClientsPage: React.FC = () => {
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={styles.emptyTableCell}>
                   <Box sx={styles.emptyStateBox}>
-                    <img src="/public/icons/user.svg" alt={t('client.main.noClientsTitle')} style={styles.emptyStateImage} />
+                    <UserIcon  />
                     <span>{t('client.main.noClientsTitle')}</span>
                     <span style={styles.emptyStateDesc}>
                       {t('client.main.noClientsDescription')}
