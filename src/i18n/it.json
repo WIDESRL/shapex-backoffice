@@ -421,6 +421,12 @@
         "message": "Sei sicuro di voler assegnare il programma {{programName}} a questo cliente?",
         "cancel": "Annulla",
         "confirm": "Conferma"
+      },
+      "confirmRemoveDialog": {
+        "title": "Conferma Rimozione",
+        "message": "Sei sicuro di voler rimuovere il programma {{programName}} da questo cliente?",
+        "cancel": "Annulla",
+        "confirm": "Rimuovi"
       }
     },
     "diario": {

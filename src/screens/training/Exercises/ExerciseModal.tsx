@@ -13,7 +13,8 @@ import {
   Select,
   InputLabel,
   FormControl,
-  Fade
+  Fade,
+  CircularProgress
 } from '@mui/material';
 import DialogCloseIcon from '../../../icons/DialogCloseIcon2';
 import VideoUploadIcon from '../../../icons/VideoUploadIcon';
@@ -318,16 +319,6 @@ const styles = {
     borderRadius: 8,
     minHeight: 100,
     marginBottom: 24,
-  },
-  loader: {
-    display: 'inline-block',
-    verticalAlign: 'middle',
-    width: 22,
-    height: 22,
-    border: '3px solid #fff',
-    borderTop: '3px solid #EDB528',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
   },
 };
 
@@ -723,7 +714,11 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ open, onClose, onSave, on
           sx={styles.saveButton}
           disabled={!title.trim() || !group.trim() || loading}
         >
-          {loading ? <span className="loader" style={styles.loader} /> : (initialData ? t('training.saveChanges') : t('training.save'))}
+          {loading ? (
+            <CircularProgress size={22} sx={{ color: '#fff' }} />
+          ) : (
+            initialData ? t('training.saveChanges') : t('training.save')
+          )}
         </Button>
       </DialogActions>
       {videoPreviewDialogOpen && videoPreview && (

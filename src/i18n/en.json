@@ -437,6 +437,12 @@
         "message": "Are you sure you want to assign the program {{programName}} to this client?",
         "cancel": "Cancel",
         "confirm": "Confirm"
+      },
+      "confirmRemoveDialog": {
+        "title": "Confirm Removal",
+        "message": "Are you sure you want to remove the program {{programName}} from this client?",
+        "cancel": "Cancel",
+        "confirm": "Remove"
       }
     },
     "diario": {

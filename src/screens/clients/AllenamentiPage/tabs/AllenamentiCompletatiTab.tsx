@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useClientContext } from '../../../../Context/ClientContext';
+import { useClientContext, TrainingProgramOfUser, TrainingProgramAssignment } from '../../../../Context/ClientContext';
 
 const styles = {
   tableContainer: {
@@ -77,14 +78,33 @@ const styles = {
 
 const AllenamentiCompletatiTab: React.FC = () => {
   const { t } = useTranslation();
+  const { clientId } = useParams<{ clientId: string }>();
   const { loadingTrainingPrograms, trainingProgramOfUser } = useClientContext();
 
-  // Filter training programs to show only completed ones
-  const completedPrograms = useMemo(() => {
-    return trainingProgramOfUser.filter(program => 
-    program.assignments.some(assignment => assignment.completed)
-  )
-  }, [trainingProgramOfUser]);
+  // Get all completed assignments for the current user with their program data
+  const completedAssignments = useMemo(() => {
+    if (!clientId) return [];
+    
+    const assignments: Array<{
+      program: TrainingProgramOfUser;
+      assignment: TrainingProgramAssignment;
+    }> = [];
+    
+    trainingProgramOfUser.forEach(program => {
+      program.assignments
+        .filter(assignment => assignment.completed && assignment.userId === parseInt(clientId))
+        .forEach(assignment => {
+          assignments.push({ program, assignment });
+        });
+    });
+    
+    // Sort by completion date (most recent first)
+    return assignments.sort((a, b) => {
+      const dateA = new Date(a.assignment.completedAt || 0);
+      const dateB = new Date(b.assignment.completedAt || 0);
+      return dateB.getTime() - dateA.getTime();
+    });
+  }, [trainingProgramOfUser, clientId]);
 
   // Format date helper function
   const formatDate = (dateString: string | null): string => {
@@ -132,7 +152,7 @@ const AllenamentiCompletatiTab: React.FC = () => {
     return <LoadingState />;
   }
 
-  if (completedPrograms.length === 0) {
+  if (completedAssignments.length === 0) {
     return <EmptyState />;
   }
 
@@ -149,13 +169,12 @@ const AllenamentiCompletatiTab: React.FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {completedPrograms.map((program) => {
-            // Get the first completed assignment to show the completion date
-            const completedAssignment = program.assignments.find(assignment => assignment.completed);
+          {completedAssignments.map((item, index) => {
+            const { program, assignment } = item;
             return (
-              <TableRow key={program.id} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+              <TableRow key={`${program.id}-${assignment.id}-${index}`} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
                 <TableCell sx={styles.tableCell}>{program.title}</TableCell>
-                <TableCell sx={styles.tableCell}>{formatDate(completedAssignment?.completedAt || null)}</TableCell>
+                <TableCell sx={styles.tableCell}>{formatDate(assignment.completedAt || null)}</TableCell>
                 <TableCell sx={styles.tableCell}>Programma</TableCell>
                 <TableCell sx={styles.tableCell}>{program.type}</TableCell>
                 <TableCell sx={styles.tableCell}>{program.weeks.length}</TableCell>

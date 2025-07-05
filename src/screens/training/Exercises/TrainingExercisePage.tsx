@@ -4,10 +4,10 @@ import EditIcon from '../../../icons/EditIcon';
 import DeleteIcon from '../../../icons/DeleteIcon';
 import VideoIcon from '../../../icons/VideoIcon';
 import PlusIcon from '../../../icons/PlusIcon';
-import ExerciseModal from './ExerciseModal';
+import ExerciseModal, { ExerciseModalSaveData, ExerciseModalUpdateData } from './ExerciseModal';
 import DeleteDialog from '../DeleteDialog';
 import VideoPreviewDialog from './VideoPreviewDialog';
-import { useTraining } from '../../../Context/TrainingContext';
+import { useTraining, Exercise } from '../../../Context/TrainingContext';
 import { useTranslation } from 'react-i18next';
 import OutlinedTextIconButton from '../../../components/OutlinedTextIconButton';
 
@@ -24,7 +24,7 @@ const styles = {
   tableRow: { background: '#fff', borderBottom: '1px solid #ededed' },
   tableCell: { fontSize: 18, color: '#616160', fontFamily: 'Montserrat, sans-serif', border: 0 },
   videoBox: { display: 'flex', alignItems: 'center', gap: 1 },
-  actionCell: { border: 0, textAlign: 'center' },
+  actionCell: { border: 0, textAlign: 'center', whiteSpace: 'nowrap' },
   editIcon: { fontSize: 22, color: '#E6BB4A' },
   deleteIcon: { fontSize: 22, color: '#E57373' },
   videoIcon: { width: 22, height: 22, color: '#616160' },
@@ -43,48 +43,65 @@ interface TrainingExercisePageProps {
 const TrainingExercisePage: React.FC<TrainingExercisePageProps> = ({ showHeader = true, rowLimit }) => {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [editData, setEditData] = React.useState<any | null>(null);
+  const [editData, setEditData] = React.useState<Exercise | null>(null);
   const [videoPreviewOpen, setVideoPreviewOpen] = React.useState(false);
   const [videoUrl, setVideoUrl] = React.useState<string>('');
-  const [deleteTarget, setDeleteTarget] = React.useState<any | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<Exercise | null>(null);
   const { addExercise, updateExercise, deleteExercise, exercises, fetchExercises, isLoading } = useTraining();
   const { t } = useTranslation();
 
   React.useEffect(() => {
     fetchExercises(rowLimit ?? undefined);
-  }, [fetchExercises]);
+  }, [fetchExercises, rowLimit]);
 
   const handleAdd = () => {
     setEditData(null);
     setModalOpen(true);
   };
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: Exercise) => {
     setEditData(row);
     setModalOpen(true);
   };
-  const handleDelete = (row: any) => {
+  const handleDelete = (row: Exercise) => {
     setDeleteTarget(row);
     setDeleteDialogOpen(true);
   };
-  const handleVideoPreview = (ex: any) => {
+  const handleVideoPreview = (ex: Exercise) => {
     const url = ex.videoFile?.signedUrl || '';
     setVideoUrl(url);
     setVideoPreviewOpen(true);
   };
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: ExerciseModalSaveData) => {
     try {
-      await addExercise(data);
+      const exerciseData = {
+        title: data.title,
+        muscleGroup: data.muscleGroup,
+        description: data.description,
+        videoFile: data.video || null,
+        videoThumbnailFile: data.videoThumbnail || null,
+        videoDuration: data.videoDuration || undefined,
+      };
+      await addExercise(exerciseData);
       setModalOpen(false);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleUpdate = async (data: any) => {
+  const handleUpdate = async (data: ExerciseModalUpdateData) => {
     try {
       if (!editData) return;
-      await updateExercise(editData.id, data);
+      const updateData = {
+        title: data.title,
+        muscleGroup: data.muscleGroup,
+        description: data.description,
+        video: data.video || null,
+        videoThumbnail: data.videoThumbnail || null,
+        videoDuration: data.videoDuration || undefined,
+        originalVideoFileName: data.originalVideoFileName,
+      };
+      await updateExercise(editData.id, updateData);
       setModalOpen(false);
     } catch (err) {
       console.error(err);
@@ -199,7 +216,7 @@ const TrainingExercisePage: React.FC<TrainingExercisePageProps> = ({ showHeader 
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         onUpdate={handleUpdate}
-        initialData={editData}
+        initialData={editData || undefined}
       />
       <DeleteDialog
         open={deleteDialogOpen}

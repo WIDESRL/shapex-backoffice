@@ -22,6 +22,7 @@ const styles = {
   tableRow: { background: '#fff', borderBottom: '1px solid #ededed' },
   tableCell: { fontSize: 18, color: '#616160', fontFamily: 'Montserrat, sans-serif', border: 0 },
   actionCell: { border: 0, textAlign: 'center' },
+  actionContainer: { whiteSpace: 'nowrap' },
   editIcon: { fontSize: 22, color: '#E6BB4A' },
   deleteIcon: { fontSize: 22, color: '#E57373' },
   emptyCell: { py: 8, background: '#fafafa' },
@@ -171,8 +172,10 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
                     <TableCell sx={styles.tableCell}>{stripHtml(pr?.description || "")}</TableCell>
                     <TableCell sx={styles.tableCell} align="center">{pr.type}</TableCell>
                     <TableCell sx={styles.actionCell}>
-                      <IconButton size="small" sx={{ mr: 1 }} onClick={e => { e.stopPropagation(); handleEdit(pr); }}><EditIcon style={styles.editIcon} /></IconButton>
-                      <IconButton size="small" onClick={e => { e.stopPropagation(); handleDelete(pr); }}><DeleteIcon style={styles.deleteIcon} /></IconButton>
+                      <Box sx={styles.actionContainer}>
+                        <IconButton size="small" sx={{ mr: 1 }} onClick={e => { e.stopPropagation(); handleEdit(pr); }}><EditIcon style={styles.editIcon} /></IconButton>
+                        <IconButton size="small" onClick={e => { e.stopPropagation(); handleDelete(pr); }}><DeleteIcon style={styles.deleteIcon} /></IconButton>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))

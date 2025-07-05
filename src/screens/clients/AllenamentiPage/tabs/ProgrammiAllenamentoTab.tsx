@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, InputAdornment, Typography, Button, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AssegnaButton from '../../../../components/AssegnaButton';
 import ConfirmAssignDialog from '../../../../components/ConfirmAssignDialog';
 import MagnifierIcon from '../../../../icons/MagnifierIcon';
 import { useClientContext } from '../../../../Context/ClientContext';
+import { useTraining } from '../../../../Context/TrainingContext';
+import { useSnackbar } from '../../../../Context/SnackbarContext';
 
 const styles = {
   searchContainer: {
@@ -107,15 +109,94 @@ const styles = {
   },
 };
 
+// Component to handle assignment/removal button logic
+interface AssignmentActionButtonProps {
+  programId: number;
+  programTitle: string;
+  assignments: Array<{ id: number; userId: number; completed: boolean; completedAt: string | null }>;
+  clientId: string;
+  userHasIncompleteProgram: boolean;
+  onAssignClick: (programId: number, programName: string) => void;
+  onRemoveClick: (programId: number, programName: string) => void;
+}
+
+const AssignmentActionButton: React.FC<AssignmentActionButtonProps> = ({
+  programId,
+  programTitle,
+  assignments,
+  clientId,
+  userHasIncompleteProgram,
+  onAssignClick,
+  onRemoveClick,
+}) => {
+  const { t } = useTranslation();
+  
+  const userAssignments = assignments.filter(a => a.userId === parseInt(clientId));
+  
+  if (userAssignments.length === 0) {
+    // No assignment for current user - can assign if no incomplete programs
+    return !userHasIncompleteProgram ? (
+      <AssegnaButton 
+        size="small"
+        onClick={() => onAssignClick(programId, programTitle)}
+      />
+    ) : null;
+  }
+  
+  // Check if user has any incomplete assignment for this program
+  const hasIncompleteAssignment = userAssignments.some(a => !a.completed);
+  
+  if (hasIncompleteAssignment) {
+    // User has an incomplete assignment - show remove button
+    return (
+      <Button
+        size="small"
+        sx={{
+          background: '#616160',
+          color: '#fff',
+          borderRadius: 2,
+          fontWeight: 500,
+          fontSize: 14,
+          px: 3,
+          py: 0.5,
+          minWidth: 90,
+          textTransform: 'none',
+          boxShadow: 'none',
+          '&:hover': {
+            background: '#444',
+          },
+        }}
+        onClick={() => onRemoveClick(programId, programTitle)}
+      >
+        {t('assignUsersModal.remove')}
+      </Button>
+    );
+  } else {
+    // All user's assignments are completed - can reassign if no incomplete programs
+    return !userHasIncompleteProgram ? (
+      <AssegnaButton 
+        size="small"
+        onClick={() => onAssignClick(programId, programTitle)}
+      />
+    ) : null;
+  }
+};
+
 const ProgrammiAllenamentoTab: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { clientId } = useParams<{ clientId: string }>();
   const [searchValue, setSearchValue] = useState('');
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmRemoveModalOpen, setConfirmRemoveModalOpen] = useState(false);
   const [selectedProgramId, setSelectedProgramId] = useState<number | null>(null);
   const [selectedProgramName, setSelectedProgramName] = useState<string>('');
-    const { loadingTrainingPrograms, trainingProgramOfUser } = useClientContext();
-  
-  const navigate = useNavigate();
+  const [selectedRemoveProgramId, setSelectedRemoveProgramId] = useState<number | null>(null);
+  const [selectedRemoveProgramName, setSelectedRemoveProgramName] = useState<string>('');
+  const [saving, setSaving] = useState(false);
+  const { loadingTrainingPrograms, trainingProgramOfUser, fetchTrainingProgramOfUser } = useClientContext();
+  const { removeUserAssignment, assignUserToProgram } = useTraining();
+  const { showSnackbar } = useSnackbar();
 
   const handleAssignClick = (programId: number, programName: string) => {
     setSelectedProgramId(programId);
@@ -123,13 +204,61 @@ const ProgrammiAllenamentoTab: React.FC = () => {
     setConfirmModalOpen(true);
   };
 
-  const handleConfirmAssign = () => {
-    if (selectedProgramId) {
-      console.log('Assigning program:', selectedProgramId);
-      // Add actual assignment logic here
-      setConfirmModalOpen(false);
-      setSelectedProgramId(null);
-      setSelectedProgramName('');
+  const handleRemoveClick = (programId: number, programName: string) => {
+    setSelectedRemoveProgramId(programId);
+    setSelectedRemoveProgramName(programName);
+    setConfirmRemoveModalOpen(true);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (selectedRemoveProgramId && clientId && !saving) {
+      setSaving(true);
+      try {
+        const program = trainingProgramOfUser.find(p => p.id === selectedRemoveProgramId);
+        // Find the incomplete assignment for the current user (the one we want to remove)
+        const incompleteAssignment = program?.assignments.find(a => 
+          a.userId === parseInt(clientId) && !a.completed
+        );
+        
+        if (incompleteAssignment) {
+          await removeUserAssignment(incompleteAssignment.id);
+          await fetchTrainingProgramOfUser(clientId);
+          showSnackbar(t('assignUsersModal.saveSuccess'), 'success');
+        }
+      } catch (error) {
+        console.error('Error removing assignment:', error);
+        showSnackbar(t('assignUsersModal.saveError'), 'error');
+      } finally {
+        setSaving(false);
+        setConfirmRemoveModalOpen(false);
+        setSelectedRemoveProgramId(null);
+        setSelectedRemoveProgramName('');
+      }
+    }
+  };
+
+  const handleCloseRemoveModal = () => {
+    setConfirmRemoveModalOpen(false);
+    setSelectedRemoveProgramId(null);
+    setSelectedRemoveProgramName('');
+  };
+
+  const handleConfirmAssign = async () => {
+    if (selectedProgramId && clientId && !saving) {
+      setSaving(true);
+      try {
+        await assignUserToProgram(parseInt(clientId), selectedProgramId);
+        await fetchTrainingProgramOfUser(clientId);
+        showSnackbar(t('assignUsersModal.saveSuccess'), 'success');
+      } catch (error) {
+        console.error('Error assigning program:', error);
+        showSnackbar(t('assignUsersModal.saveError'), 'error');
+      } finally {
+        setSaving(false);
+        setConfirmModalOpen(false);
+        setSelectedProgramId(null);
+        setSelectedProgramName('');
+      }
     }
   };
 
@@ -144,39 +273,25 @@ const ProgrammiAllenamentoTab: React.FC = () => {
     navigate('/training/training-program');
   };
 
-  // Mock data for the table - replace with real data later
-  // const mockData: { id: number; programma: string; tipo: string; livello: string; tipologia: string; settimane: number; }[] = [
-  //   {
-  //     id: 1,
-  //     programma: 'Nome Programma',
-  //     tipo: 'Programma',
-  //     livello: 'Intermedio',
-  //     tipologia: 'Body Building',
-  //     settimane: 1,
-  //   },
-  //   {
-  //     id: 2,
-  //     programma: 'Nome Programma',
-  //     tipo: 'Programma',
-  //     livello: 'Facile',
-  //     tipologia: 'Body Building',
-  //     settimane: 2,
-  //   },
-  //   {
-  //     id: 3,
-  //     programma: 'Nome Programma',
-  //     tipo: 'Programma',
-  //     livello: 'Difficile',
-  //     tipologia: 'Body Building',
-  //     settimane: 3,
-  //   },
-  // ];
+  // Filter training programs based on search with useMemo for performance optimization
+  const filteredPrograms = useMemo(() => {
+    return trainingProgramOfUser.filter(program => {
+      // Apply search filter only
+      return (
+        program.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+        program.type.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    });
+  }, [trainingProgramOfUser, searchValue]);
 
-  // Filter training programs based on search
-  const filteredPrograms = trainingProgramOfUser.filter(program =>
-    program.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-    program.type.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  // Check if user has any incomplete program assigned (user can only have one incomplete program at a time)
+  const userHasIncompleteProgram = useMemo(() => {
+    if (!clientId) return false;
+    return trainingProgramOfUser.some(program => {
+      const userAssignments = program.assignments.filter(a => a.userId === parseInt(clientId));
+      return userAssignments.some(assignment => !assignment.completed);
+    });
+  }, [trainingProgramOfUser, clientId]);
 
   // Check if there are no training programs at all (show empty state with create button)
   const hasNoDataAtAll = !loadingTrainingPrograms && trainingProgramOfUser.length === 0;
@@ -304,12 +419,15 @@ const ProgrammiAllenamentoTab: React.FC = () => {
                     {program?.weeks?.length}
                   </TableCell>
                   <TableCell sx={styles.tableCell} align="center">
-                    {program.assignments.length === 0 && (
-                      <AssegnaButton 
-                        size="small"
-                        onClick={() => handleAssignClick(program.id, program.title)}
-                      />
-                    )}
+                    <AssignmentActionButton
+                      programId={program.id}
+                      programTitle={program.title}
+                      assignments={program.assignments}
+                      clientId={clientId || '0'}
+                      userHasIncompleteProgram={userHasIncompleteProgram}
+                      onAssignClick={handleAssignClick}
+                      onRemoveClick={handleRemoveClick}
+                    />
                   </TableCell>
                 </TableRow>
               ))
@@ -318,12 +436,24 @@ const ProgrammiAllenamentoTab: React.FC = () => {
         </Table>
       </TableContainer>
 
-      {/* Confirmation Modal */}
+      {/* Assign Confirmation Modal */}
       <ConfirmAssignDialog
         open={confirmModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleConfirmAssign}
         programName={selectedProgramName}
+      />
+
+      {/* Remove Confirmation Modal */}
+      <ConfirmAssignDialog
+        open={confirmRemoveModalOpen}
+        onClose={handleCloseRemoveModal}
+        onConfirm={handleConfirmRemove}
+        programName={selectedRemoveProgramName}
+        title={t('client.allenamenti.confirmRemoveDialog.title')}
+        message={t('client.allenamenti.confirmRemoveDialog.message', { programName: selectedRemoveProgramName })}
+        confirmText={t('client.allenamenti.confirmRemoveDialog.confirm')}
+        cancelText={t('client.allenamenti.confirmRemoveDialog.cancel')}
       />
     </>
   );

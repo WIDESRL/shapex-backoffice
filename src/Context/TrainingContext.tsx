@@ -129,7 +129,7 @@ interface TrainingContextType {
   loadingAssignedUsers: boolean;
   fetchAssignedUsers: () => Promise<void>;
   removeUserAssignment: (assignmentId: number) => Promise<void>;
-  assignUserToProgram: (userId: number) => Promise<void>;
+  assignUserToProgram: (userId: number, trainingProgramId?: number) => Promise<void>;
   batchAssignAndRemoveUsers: (userIdsToAssign: number[], assignmentIdsToRemove: number[]) => Promise<void>;
 }
 
@@ -471,8 +471,8 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     await api.delete(`/trainning/program/assign/${assignmentId}`);
   };
 
-  const assignUserToProgram = async (userId: number) => {
-    await api.post('/trainning/program/assign', { userId, trainingProgramId: selectedTrainingProgram?.id });
+  const assignUserToProgram = async (userId: number, trainingProgramId?: number | undefined) => {
+    await api.post('/trainning/program/assign', { userId, trainingProgramId: trainingProgramId || selectedTrainingProgram?.id });
   };
 
   // Batch assign and remove users

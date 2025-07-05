@@ -8,6 +8,10 @@ interface ConfirmAssignDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   programName: string;
+  title?: string;
+  message?: string;
+  confirmText?: string;
+  cancelText?: string;
 }
 
 const styles = {
@@ -99,7 +103,11 @@ const ConfirmAssignDialog: React.FC<ConfirmAssignDialogProps> = ({
   open, 
   onClose, 
   onConfirm, 
-  programName 
+  programName,
+  title,
+  message,
+  confirmText,
+  cancelText
 }) => {
   const { t } = useTranslation();
   return (
@@ -124,11 +132,11 @@ const ConfirmAssignDialog: React.FC<ConfirmAssignDialogProps> = ({
         </Button>
       </Box>
       <DialogTitle sx={styles.dialogTitle}>
-        {t('client.allenamenti.confirmAssignDialog.title')}
+        {title || t('client.allenamenti.confirmAssignDialog.title')}
       </DialogTitle>
       <DialogContent sx={styles.dialogContent}>
         <Typography sx={styles.messageText}>
-          {t('client.allenamenti.confirmAssignDialog.message', { programName })}
+          {message || t('client.allenamenti.confirmAssignDialog.message', { programName })}
         </Typography>
       </DialogContent>
       <DialogActions sx={styles.dialogActions}>
@@ -137,14 +145,14 @@ const ConfirmAssignDialog: React.FC<ConfirmAssignDialogProps> = ({
           variant="outlined"
           sx={styles.cancelButton}
         >
-          {t('client.allenamenti.confirmAssignDialog.cancel')}
+          {cancelText || t('client.allenamenti.confirmAssignDialog.cancel')}
         </Button>
         <Button
           onClick={onConfirm}
           variant="contained"
           sx={styles.confirmButton}
         >
-          {t('client.allenamenti.confirmAssignDialog.confirm')}
+          {confirmText || t('client.allenamenti.confirmAssignDialog.confirm')}
         </Button>
       </DialogActions>
     </Dialog>
