@@ -724,5 +724,15 @@
         "repetitions": "Repetitions"
       }
     }
+  },
+  "serverErrors": {
+    "USER_NOT_FOUND": "User not found.",
+    "INVALID_USER_TYPE": "Invalid user type for this operation.",
+    "TRAINING_PROGRAM_NOT_FOUND": "Training program not found.",
+    "PROGRAM_ALREADY_ASSIGNED": "This program is already assigned to the user.",
+    "ASSIGNMENT_NOT_FOUND": "Assignment not found.",
+    "CANNOT_UNASSIGN_COMPLETED_PROGRAM": "Cannot remove assignment for a completed program.",
+    "USER_HAS_INCOMPLETE_PROGRAM": "User already has an incomplete program assigned.",
+    "defaultError": "An error occurred. Please try again."
   }
 }

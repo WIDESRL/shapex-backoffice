@@ -708,5 +708,15 @@
         "repetitions": "Ripetizioni"
       }
     }
+  },
+  "serverErrors": {
+    "USER_NOT_FOUND": "Utente non trovato.",
+    "INVALID_USER_TYPE": "Tipo di utente non valido per questa operazione.",
+    "TRAINING_PROGRAM_NOT_FOUND": "Programma di allenamento non trovato.",
+    "PROGRAM_ALREADY_ASSIGNED": "Questo programma è già assegnato all'utente.",
+    "ASSIGNMENT_NOT_FOUND": "Assegnazione non trovata.",
+    "CANNOT_UNASSIGN_COMPLETED_PROGRAM": "Impossibile rimuovere l'assegnazione di un programma completato.",
+    "USER_HAS_INCOMPLETE_PROGRAM": "L'utente ha già un programma incompleto assegnato.",
+    "defaultError": "Si è verificato un errore. Riprova."
   }
 }

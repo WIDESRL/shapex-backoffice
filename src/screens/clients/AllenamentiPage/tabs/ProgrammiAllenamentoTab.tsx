@@ -2,12 +2,14 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, InputAdornment, Typography, Button, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { AxiosError } from 'axios';
 import AssegnaButton from '../../../../components/AssegnaButton';
 import ConfirmAssignDialog from '../../../../components/ConfirmAssignDialog';
 import MagnifierIcon from '../../../../icons/MagnifierIcon';
 import { useClientContext } from '../../../../Context/ClientContext';
 import { useTraining } from '../../../../Context/TrainingContext';
 import { useSnackbar } from '../../../../Context/SnackbarContext';
+import { getServerErrorMessage } from '../../../../utils/errorUtils';
 
 const styles = {
   searchContainer: {
@@ -226,8 +228,10 @@ const ProgrammiAllenamentoTab: React.FC = () => {
           showSnackbar(t('assignUsersModal.saveSuccess'), 'success');
         }
       } catch (error) {
-        console.error('Error removing assignment:', error);
-        showSnackbar(t('assignUsersModal.saveError'), 'error');
+        const axiosError = error as AxiosError<{ errorCode?: string }>;
+        const errorCode = axiosError?.response?.data?.errorCode;
+        const errorMessage = getServerErrorMessage(errorCode, t, t("assignUsersModal.saveError"));
+        showSnackbar(errorMessage, 'error');
       } finally {
         setSaving(false);
         setConfirmRemoveModalOpen(false);
@@ -251,8 +255,12 @@ const ProgrammiAllenamentoTab: React.FC = () => {
         await fetchTrainingProgramOfUser(clientId);
         showSnackbar(t('assignUsersModal.saveSuccess'), 'success');
       } catch (error) {
-        console.error('Error assigning program:', error);
-        showSnackbar(t('assignUsersModal.saveError'), 'error');
+        const axiosError = error as AxiosError<{ errorCode?: string }>;
+        const errorCode = axiosError?.response?.data?.errorCode;
+        
+        // Show translated error message
+        const errorMessage = getServerErrorMessage(errorCode, t);
+        showSnackbar(errorMessage, 'error');
       } finally {
         setSaving(false);
         setConfirmModalOpen(false);
