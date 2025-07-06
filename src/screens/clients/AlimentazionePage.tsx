@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useClientContext } from '../../Context/ClientContext';
 import { useSnackbar } from '../../Context/SnackbarContext';
@@ -181,7 +181,7 @@ const AlimentazionePage: React.FC = () => {
     return (
       <Box sx={styles.container}>
         <Box sx={styles.loadingContainer}>
-          <Typography>{t('client.alimentazione.loading')}</Typography>
+            <CircularProgress />
         </Box>
       </Box>
     );
