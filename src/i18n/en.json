@@ -94,6 +94,14 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "dashboard": {
+    "stats": {
+      "totalClients": "Total Clients",
+      "deactivatedClients": "Deactivated Clients",
+      "totalPrograms": "Total Programs",
+      "completedTrainings": "Completed Trainings"
+    }
+  },
   "clientiSubMenu": {
     "Anagrafica": "Profile",
     "Allenamenti": "Trainings",

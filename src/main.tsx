@@ -12,6 +12,7 @@ import { requestNotificationPermission, listenForMessages } from './notification
 import './splash.css';
 import './global-font.css';
 import { ClientProvider } from './Context/ClientContext';
+import { StatsProvider } from './Context/StatsContext';
 
 const queryClient = new QueryClient();
 
@@ -32,9 +33,11 @@ const renderApp = () => {
           <BannersProvider>
             <MessagesProvider>
               <TrainingProvider>
-                <ClientProvider>
-                  <App />
-                </ClientProvider>
+                 <StatsProvider>
+                  <ClientProvider>
+                    <App />
+                  </ClientProvider>
+                </StatsProvider>
               </TrainingProvider>
             </MessagesProvider>
           </BannersProvider>

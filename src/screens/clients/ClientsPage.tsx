@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip } from '@mui/material';
-import FilterIcon from '../../icons/FilterIcon';
 import MagnifierIcon from '../../icons/MagnifierIcon';
 import UserIcon from '../../icons/UserIcon';
 import { Client, useClientContext } from '../../Context/ClientContext';
@@ -138,9 +137,9 @@ const styles = {
     mb: 3,
   },
   pageTitle: {
-    variant: 'h5',
     fontWeight: 300,
     color: '#616160',
+    fontSize: '40px'
   },
   searchContainer: {
     display: 'flex',
@@ -335,9 +334,6 @@ const ClientsPage: React.FC = () => {
             InputProps={styles.searchInputProps}
             sx={styles.searchInput}
           />
-          <IconButton sx={styles.filterButton}>
-            <FilterIcon style={styles.filterIcon} />
-          </IconButton>
         </Box>
       </Box>
       <TableContainer

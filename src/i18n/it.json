@@ -78,6 +78,14 @@
     "settings": "Impostazioni",
     "logout": "Disconnettersi"
   },
+  "dashboard": {
+    "stats": {
+      "totalClients": "Clienti Totali",
+      "deactivatedClients": "Clienti Disattivati",
+      "totalPrograms": "Programmi Complessivi",
+      "completedTrainings": "Allenamenti Completati"
+    }
+  },
   "clientiSubMenu": {
     "Anagrafica": "Anagrafica",
     "Allenamenti": "Allenamenti",
