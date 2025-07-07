@@ -816,5 +816,17 @@
       "optionalImage4": "Optional Image 4",
       "optionalImage5": "Optional Image 5"
     }
+  },
+  "startConversation": {
+    "title": "Start New Conversation",
+    "searchPlaceholder": "Search users...",
+    "messageePlaceholder": "Type a message...",
+    "noUsersAvailable": "No users available",
+    "loadMore": "Load more",
+    "selectedFile": "Selected file",
+    "back": "Back",
+    "send": "Send",
+    "close": "Close",
+    "user": "User"
   }
 }

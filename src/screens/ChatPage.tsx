@@ -13,8 +13,7 @@ import StartConversationDialog from '../components/StartConversationDialog';
 import AddIcon from '@mui/icons-material/Add';
 import ImageCustom from '../components/ImageCustom';
 import AvatarCustom from '../components/AvatarCustom';
-import { AxiosError } from 'axios';
-import { getServerErrorMessage } from '../utils/errorUtils';
+import { handleApiError } from '../utils/errorUtils';
 import { useSnackbar } from '../Context/SnackbarContext';
 
 // --- Styled Components ---
@@ -323,10 +322,7 @@ const ChatPageContent: React.FC = () => {
 			justSentMessageRef.current = true;
 		}
 		catch (error) {
-			const axiosError = error as AxiosError<{ errorCode?: string }>;
-			const errorCode = axiosError?.response?.data?.errorCode;
-			const errorMessage = getServerErrorMessage(errorCode, t);
-			showSnackbar(errorMessage, 'error');
+			handleApiError(error, showSnackbar, t);
 			console.error('Error sending message');
 		}
 	};
@@ -341,10 +337,7 @@ const ChatPageContent: React.FC = () => {
 			await sendFileMessage(selectedConversationId, file);
 			justSentMessageRef.current = true;
 		} catch (error) {
-			const axiosError = error as AxiosError<{ errorCode?: string }>;
-			const errorCode = axiosError?.response?.data?.errorCode;
-			const errorMessage = getServerErrorMessage(errorCode, t);
-			showSnackbar(errorMessage, 'error');
+			handleApiError(error, showSnackbar, t);
 			console.error('Error sending message');
 		} finally {
 			e.target.value = '';
@@ -632,11 +625,17 @@ const ChatPageContent: React.FC = () => {
 					open={startDialogOpen}
 					onClose={() => setStartDialogOpen(false)}
 					onSend={async (userId, message, file) => {
-						if (file) {
-							await sendFileMessage(undefined, file, userId);
-						} else if (message.trim()) {
-							await sendTextMessage(undefined, message, userId);
+						try{
+							if (file) {
+								await sendFileMessage(undefined, file, userId);
+							} else if (message.trim()) {
+								await sendTextMessage(undefined, message, userId);
+							}
 						}
+						catch (error) {
+							handleApiError(error, showSnackbar, t);
+						}	
+						
 					}}
 				/>
 			</MainSection>

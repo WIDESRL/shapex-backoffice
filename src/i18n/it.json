@@ -800,5 +800,17 @@
       "optionalImage4": "Immagine Opzionale 4",
       "optionalImage5": "Immagine Opzionale 5"
     }
+  },
+  "startConversation": {
+    "title": "Inizia Nuova Conversazione",
+    "searchPlaceholder": "Cerca utenti...",
+    "messageePlaceholder": "Scrivi un messaggio...",
+    "noUsersAvailable": "Nessun utente disponibile",
+    "loadMore": "Carica altro",
+    "selectedFile": "File selezionato",
+    "back": "Indietro",
+    "send": "Invia",
+    "close": "Chiudi",
+    "user": "Utente"
   }
 }

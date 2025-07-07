@@ -318,7 +318,6 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         },
       }
     );
-      console.log('Fetched Clients:', response.data);
       setClients((prev) => append ? [...prev, ...response.data] : response.data);
       setTotal(response.data.total);
       setLoading(false);
