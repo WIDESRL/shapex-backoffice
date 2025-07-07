@@ -22,8 +22,8 @@ const SubscriptionsScreen: React.FC = () => {
     chat: false,
     freeIntroductoryCall: false,
     mealPlan: false,
-    integrationPlan: false,
-    trainingCard: false,
+    integrationPlan: true,
+    trainingCard: true,
     vip: false,
     price: 0,
   });
@@ -57,8 +57,8 @@ const SubscriptionsScreen: React.FC = () => {
         chat: false,
         freeIntroductoryCall: false,
         mealPlan: false,
-        integrationPlan: false,
-        trainingCard: false,
+        integrationPlan: true,
+        trainingCard: true,
         vip: false,
         price: 0,
       });

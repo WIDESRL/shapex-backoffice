@@ -43,17 +43,6 @@ const colorOptions = [
   // ...add more if needed
 ];
 
-const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
-  open,
-  formData,
-  errors,
-  onClose,
-  onSubmit,
-  onInputChange,
-  editMode,
-}) => {
-  const { t } = useTranslation();
-  
   const styles = {
     dialog: {
       borderRadius: 4,
@@ -273,6 +262,17 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
     },
   };
 
+const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
+  open,
+  formData,
+  errors,
+  onClose,
+  onSubmit,
+  onInputChange,
+  editMode,
+}) => {
+  const { t } = useTranslation();
+  
   const [colorMenuAnchor, setColorMenuAnchor] = React.useState<null | HTMLElement>(null);
 
   // Add a ref for the color dropdown
