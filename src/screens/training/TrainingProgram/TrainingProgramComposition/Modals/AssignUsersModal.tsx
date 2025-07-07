@@ -7,6 +7,8 @@ import type { User } from '../../../../../Context/TrainingContext';
 import PendingIcon from '@mui/icons-material/Pending';
 import { useSnackbar } from '../../../../../Context/SnackbarContext';
 import { useTranslation } from 'react-i18next';
+import { AxiosError } from 'axios';
+import { getServerErrorMessage } from '../../../../../utils/errorUtils';
 
 // --- Styles ---
 const styles = {
@@ -201,8 +203,11 @@ const AssignUsersModal: React.FC<AssignUsersModalProps> = ({ open, onClose }) =>
           setTimeout(onClose, 1000);
       }
       else onClose();
-    } catch {
-      showSnackbar(t('assignUsersModal.saveError'), 'error');
+    } catch(error) {
+      const axiosError = error as AxiosError<{ errorCode?: string }>;
+      const errorCode = axiosError?.response?.data?.errorCode;
+      const errorMessage = getServerErrorMessage(errorCode, t);
+      showSnackbar(errorMessage, 'error');
       console.error('Error saving assignments');
     } finally {
       setSaving(false);
