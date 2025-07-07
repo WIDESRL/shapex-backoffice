@@ -107,7 +107,8 @@
     "Allenamenti": "Trainings",
     "Diario": "Diary",
     "Alimentazione": "Nutrition",
-    "Altro": "Other"
+    "Altro": "Other",
+    "pleaseSelectClient": "Please select a client"
   },
   "trainingSubMenu": {
     "exercise": "Exercise",

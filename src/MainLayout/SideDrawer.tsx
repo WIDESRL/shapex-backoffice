@@ -9,6 +9,7 @@ import {
   ListItemText,
   ListItemButton,
   Collapse,
+  Tooltip,
 } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -383,28 +384,60 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
           unmountOnExit
         >
           <List component="div" disablePadding sx={{ pl: 9 }}>
-            {Object.values(ClientiSubMenu).map((label) => (
-              <ListItem disablePadding key={label}>
-                <ListItemButton
-                  sx={{
-                    py: 0.7,
-                    color: activeSubmenu === label ? menuColor : "#fff",
-                    fontWeight: activeSubmenu === label ? 700 : 400,
-                    fontSize: 16,
-                    "&:hover": { bgcolor: submenuHoverBg },
-                  }}
-                  onClick={() => handleClientSubmenuNavigation(label)}
-                >
-                  <ListItemText
-                    primary={t(`clientiSubMenu.${label}`)}
+            {Object.values(ClientiSubMenu).map((label) => {
+              const isDisabled = !clientId && label !== ClientiSubMenu.Anagrafica;
+              const isActive = activeSubmenu === label;
+              
+              const menuItem = (
+                <ListItem disablePadding key={label}>
+                  <ListItemButton
+                    disabled={isDisabled}
                     sx={{
-                      color: activeSubmenu === label ? menuColor : "#fff",
-                      fontWeight: activeSubmenu === label ? 700 : 400,
+                      py: 0.7,
+                      color: isDisabled 
+                        ? "rgba(255, 255, 255, 0.9)" 
+                        : isActive 
+                          ? menuColor 
+                          : "#fff",
+                      fontWeight: isActive ? 700 : 400,
+                      fontSize: 16,
+                      cursor: isDisabled ? "not-allowed" : "pointer",
+                      "&:hover": { 
+                        bgcolor: isDisabled ? "transparent" : submenuHoverBg 
+                      },
+                      "&.Mui-disabled": {
+                        color: "rgba(255, 255, 255, 0.9)",
+                        cursor: "not-allowed",
+                      },
                     }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))}
+                    onClick={isDisabled ? undefined : () => handleClientSubmenuNavigation(label)}
+                  >
+                    <ListItemText
+                      primary={t(`clientiSubMenu.${label}`)}
+                      sx={{
+                        color: isDisabled 
+                          ? "rgba(255, 255, 255, 0.9)" 
+                          : isActive 
+                            ? menuColor 
+                            : "#fff",
+                        fontWeight: isActive ? 700 : 400,
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+
+              return isDisabled ? (
+                <Tooltip 
+                  key={label}
+                  title={t("clientiSubMenu.pleaseSelectClient")}
+                  placement="right"
+                  arrow
+                >
+                  <span>{menuItem}</span>
+                </Tooltip>
+              ) : menuItem;
+            })}
           </List>
         </Collapse>
         {/* Allenamento with submenu */}
