@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { useAuth } from './AuthContext';
-import { uploadFileAndGetId } from '../utils/uploadFileAndGetId';
+import { deleteFileById, uploadFileAndGetId } from '../utils/uploadFileAndGetId';
 
 export interface Message {
     id: number;
@@ -278,8 +278,9 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     const sendFileMessage = async (convId: number | undefined, file: File, userId?: number) => {
         setSendingMessage(true);
+        let fileId: number | null = null;
         try {
-            const fileId = await uploadFileAndGetId(file);
+            fileId = await uploadFileAndGetId(file);
             let url: string;
             if (userId) {
                 url = `/messages/admin/${userId}`;
@@ -294,6 +295,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             });
         } catch (e) {
             console.error("Error sending file message:", e);
+            if (fileId !== null) await deleteFileById(fileId);
             throw e;
         } finally {
             setSendingMessage(false);

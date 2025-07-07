@@ -11,3 +11,7 @@ export const uploadFileAndGetId = async (file: File): Promise<number> => {
   });
   return fileObj.id;
 };
+
+export const deleteFileById = async (fileId: number): Promise<void> => {
+  return api.delete(`/storage/file/${fileId}`);
+};
