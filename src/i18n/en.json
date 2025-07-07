@@ -773,5 +773,45 @@
       "cancel": "Cancel",
       "change": "Change Password"
     }
+  },
+  "checkImages": {
+    "checkDate": "Check Date:",
+    "checkDetails": "Check Details",
+    "loadingDetails": "Loading check details...",
+    "measurementsTitle": "Measurements",
+    "imagesTitle": "Images",
+    "noImageAvailable": "No image available",
+    "noDataAvailable": "No data available",
+    "close": "Close",
+    "measurementsTable": {
+      "metricHeader": "Metric"
+    },
+    "measurements": {
+      "addome": "Abdomen",
+      "altezza": "Height",
+      "peso": "Weight",
+      "avambraccioDx": "Right Forearm",
+      "avambraccioSx": "Left Forearm",
+      "braccioDx": "Right Arm",
+      "braccioContrattoDx": "Right Arm (Flexed)",
+      "braccioSx": "Left Arm",
+      "braccioContrattoSx": "Left Arm (Flexed)",
+      "cavigliaDx": "Right Ankle",
+      "cavigliaSx": "Left Ankle",
+      "collo": "Neck",
+      "gambaDx": "Right Leg",
+      "gambaMedialeDx": "Right Medial Leg",
+      "gambaSx": "Left Leg"
+    },
+    "images": {
+      "frontImage": "Front View",
+      "sideImage": "Side View",
+      "backImage": "Back View",
+      "optionalImage1": "Optional Image 1",
+      "optionalImage2": "Optional Image 2",
+      "optionalImage3": "Optional Image 3",
+      "optionalImage4": "Optional Image 4",
+      "optionalImage5": "Optional Image 5"
+    }
   }
 }

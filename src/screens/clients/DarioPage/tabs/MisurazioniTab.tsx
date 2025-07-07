@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useClientContext } from '../../../../Context/ClientContext';
 import { useParams } from 'react-router-dom';
 import FilterIcon from '../../../../icons/FilterIcon';
+import InfoIcon from '../../../../icons/InfoIcon';
+import CheckImagesDialog from '../../../../components/CheckImagesDialog';
 
 const styles = {
   container: {
@@ -263,6 +265,34 @@ const styles = {
     fontSize: 16,
     mt: 2,
   },
+  dateHeaderContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 0.5,
+  },
+  imageIconInHeader: {
+    fontSize: 16,
+    color: '#1976d2',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      color: '#1565c0',
+      transform: 'scale(1.1)',
+    },
+  },
+  dialogTitle: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    py: 2,
+    px: 3,
+  },
+  dialogContent: {
+    p: 3,
+    minHeight: '200px',
+  },
 };
 
 const MisurazioniTab: React.FC = () => {
@@ -282,13 +312,24 @@ const MisurazioniTab: React.FC = () => {
     };
   }, []);
   
-  // Filter state
   const [filterOpen, setFilterOpen] = useState(false);
   const [startDate, setStartDate] = useState<string>(defaultStartDate);
   const [endDate, setEndDate] = useState<string>(defaultEndDate);
   const [hasInitialFetch, setHasInitialFetch] = useState(false);
 
-  // Debounced fetch function to prevent excessive API calls
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [selectedCheckId, setSelectedCheckId] = useState<number | null>(null);
+
+  const handleImageClick = (checkId: number) => {
+    setSelectedCheckId(checkId);
+    setImageDialogOpen(true);
+  };
+
+  const handleCloseImageDialog = () => {
+    setImageDialogOpen(false);
+    setSelectedCheckId(null);
+  };
+
   const debouncedFetchUserChecks = useCallback(
     (clientId: string, startDate?: string, endDate?: string) => {
       const timeoutId = setTimeout(() => {
@@ -301,7 +342,6 @@ const MisurazioniTab: React.FC = () => {
     [fetchUserChecks]
   );
 
-  // Fetch user checks when component mounts
   useEffect(() => {
     if (clientId) {
       const cleanup = debouncedFetchUserChecks(clientId, defaultStartDate, defaultEndDate);
@@ -309,14 +349,12 @@ const MisurazioniTab: React.FC = () => {
     }
   }, [clientId, defaultStartDate, defaultEndDate, debouncedFetchUserChecks]);
 
-  // Handle filter apply
   const handleApplyFilter = () => {
     if (clientId) {
       debouncedFetchUserChecks(clientId, startDate || undefined, endDate || undefined);
     }
   };
 
-  // Handle filter clear
   const handleClearFilter = () => {
     setStartDate(defaultStartDate);
     setEndDate(defaultEndDate);
@@ -325,23 +363,19 @@ const MisurazioniTab: React.FC = () => {
     }
   };
 
-  // Toggle filter section
   const toggleFilter = () => {
     setFilterOpen(!filterOpen);
   };
 
-  // Process the API data to create the table structure
-  const { measurementDates, measurementData, fullDateTimes } = useMemo(() => {
+  const { measurementDates, measurementData, fullDateTimes, sortedChecks } = useMemo(() => {
     if (!userChecks || userChecks.length === 0) {
-      return { measurementDates: [], measurementData: [], fullDateTimes: [] };
+      return { measurementDates: [], measurementData: [], fullDateTimes: [], sortedChecks: [] };
     }
 
-    // Sort checks by date (most recent first)
     const sortedChecks = [...userChecks].sort((a, b) => 
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
-    // Format dates for column headers and full datetimes for tooltips
     const dates = sortedChecks.map(check => {
       const date = new Date(check.createdAt);
       return date.toLocaleDateString('it-IT', {
@@ -363,27 +397,19 @@ const MisurazioniTab: React.FC = () => {
       });
     });
 
-    // Define metric mappings (API field name to display name)
-    const metricMappings = {
-      addome: 'Addome',
-      altezza: 'Altezza', 
-      avambraccioDx: 'Avambraccio dx',
-      avambraccioSx: 'Avambraccio sx',
-      braccioDx: 'Braccio dx',
-      braccioContrattoDx: 'Braccio contratto dx',
-      braccioSx: 'Braccio sx',
-      braccioContrattoSx: 'Braccio contratto sx',
-      cavigliaDx: 'Caviglia dx',
-      cavigliaSx: 'Caviglia sx',
-      collo: 'Collo',
-      gambaDx: 'Gamba dx',
-      gambaMedialeDx: 'Gamba mediale dx',
-      gambaSx: 'Gamba sx',
-      peso: 'Peso'
+    const getMeasurementLabel = (field: string) => {
+      const labelKey = `checkImages.measurements.${field}`;
+      return t(labelKey, field); 
     };
 
-    // Create measurement data structure
-    const data = Object.entries(metricMappings).map(([apiField, displayName]) => {
+    const measurementFields = [
+      'addome', 'altezza', 'avambraccioDx', 'avambraccioSx',
+      'braccioDx', 'braccioContrattoDx', 'braccioSx', 'braccioContrattoSx',
+      'cavigliaDx', 'cavigliaSx', 'collo', 'gambaDx', 'gambaMedialeDx', 'gambaSx', 'peso'
+    ];
+
+    const data = measurementFields.map((apiField) => {
+      const displayName = getMeasurementLabel(apiField);
       const values = sortedChecks.map(check => {
         const value = check[apiField];
         if (!value) return '-';
@@ -403,21 +429,19 @@ const MisurazioniTab: React.FC = () => {
         values
       };
     }).filter(item => 
-      // Only include metrics that have at least one non-empty value
       item.values.some(value => value !== '-')
     );
 
     return {
       measurementDates: dates,
       measurementData: data,
-      fullDateTimes
+      fullDateTimes,
+      sortedChecks
     };
-  }, [userChecks]);
+  }, [userChecks, t]);
 
-  // Calculate table width based on columns
   const tableWidth = 180 + (measurementDates.length * 120);
 
-  // Loading component
   const LoadingState = () => (
     <Box sx={styles.loadingContainer}>
       <CircularProgress size={40} sx={{ color: '#E6BB4A' }} />
@@ -427,7 +451,6 @@ const MisurazioniTab: React.FC = () => {
     </Box>
   );
 
-  // Empty state component
   const EmptyState = () => (
     <Box sx={styles.emptyState}>
       <Paper sx={styles.emptyStateCard} elevation={0}>
@@ -447,7 +470,6 @@ const MisurazioniTab: React.FC = () => {
     </Box>
   );
 
-  // Show loading state
   if (loadingUserChecks || !hasInitialFetch) {
     return (
       <Box sx={styles.container}>
@@ -514,7 +536,6 @@ const MisurazioniTab: React.FC = () => {
     );
   }
 
-  // Show empty state if no data
   if (hasInitialFetch && (!userChecks || userChecks.length === 0 || measurementData.length === 0)) {
     return (
       <Box sx={styles.container}>
@@ -653,14 +674,22 @@ const MisurazioniTab: React.FC = () => {
       >
         <TableHead>
           <TableRow>
-            <TableCell sx={styles.tableCellHeaderFixed}>Metrica</TableCell>
+            <TableCell sx={styles.tableCellHeaderFixed}>{t('checkImages.measurementsTable.metricHeader')}</TableCell>
             {measurementDates.map((date, index) => (
               <TableCell 
                 key={index} 
                 sx={styles.tableCellHeader}
                 title={fullDateTimes[index]}
               >
-                {date}
+                <Box sx={styles.dateHeaderContainer}>
+                  <Typography variant="body2" sx={{ fontSize: 14 }}>
+                    {date}
+                  </Typography>
+                  <InfoIcon 
+                    style={styles.imageIconInHeader}
+                    onClick={() => handleImageClick(sortedChecks[index].id)}
+                  />
+                </Box>
               </TableCell>
             ))}
           </TableRow>
@@ -677,6 +706,13 @@ const MisurazioniTab: React.FC = () => {
         </TableBody>
       </Table>
     </TableContainer>
+
+    {/* Image Preview Dialog */}
+    <CheckImagesDialog
+      open={imageDialogOpen}
+      onClose={handleCloseImageDialog}
+      checkId={selectedCheckId}
+    />
     </Box>
   );
 };

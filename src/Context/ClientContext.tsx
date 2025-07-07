@@ -123,7 +123,26 @@ export type UserCheck = {
   gambaMedialeDx?: string;
   gambaSx?: string;
   peso?: string;
-  [key: string]: string | number | undefined; // For any additional measurement fields
+  [key: string]: string | number | undefined | null; // For any additional measurement fields
+};
+
+export type UserCheckDetailed = UserCheck & {
+  optionalImageId1: number | null;
+  optionalImageId2: number | null;
+  optionalImageId3: number | null;
+  optionalImageId4: number | null;
+  optionalImageId5: number | null;
+  frontImageId: number | null;
+  sideImageId: number | null;
+  backImageId: number | null;
+  frontImage?: FileData | null;
+  backImage?: FileData | null;
+  sideImage?: FileData | null;
+  optionalImage1?: FileData | null;
+  optionalImage2?: FileData | null;
+  optionalImage3?: FileData | null;
+  optionalImage4?: FileData | null;
+  optionalImage5?: FileData | null;
 };
 
 export type TrainingProgramOfUser = {
@@ -222,6 +241,7 @@ export type ClientContextType = {
   userImagesAlbum: UserAlbumImage[];
   userNotifications: UserNotification[];
   notificationsPagination: Pagination | null;
+  selectedCheckDetailed: UserCheckDetailed | null;
   loading: boolean;
   loadingClientAnagrafica: boolean;
   loadingTrainingPrograms: boolean;
@@ -231,6 +251,7 @@ export type ClientContextType = {
   loadingUserChecks: boolean;
   loadingUserImagesAlbum: boolean;
   loadingUserNotifications: boolean;
+  loadingSelectedCheck: boolean;
   page: number;
   pageSize: number;
   total: number;
@@ -248,6 +269,7 @@ export type ClientContextType = {
   fetchUserChecks: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
   fetchUserImagesAlbum: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
   fetchUserNotifications: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, type?: string, append?: boolean) => Promise<void>;
+  fetchCheckById: (checkId: number) => Promise<void>;
 };
 
 const ClientContext = createContext<ClientContextType | undefined>(undefined);
@@ -263,6 +285,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [userImagesAlbum, setUserImagesAlbum] = useState<UserAlbumImage[]>([]);
   const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
   const [notificationsPagination, setNotificationsPagination] = useState<Pagination | null>(null);
+  const [selectedCheckDetailed, setSelectedCheckDetailed] = useState<UserCheckDetailed | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingClientAnagrafica, setLoadingClientAnagrafica] = useState(false);
   const [loadingTrainingPrograms, setLoadingTrainingPrograms] = useState(false);
@@ -272,6 +295,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingUserChecks, setLoadingUserChecks] = useState(false);
   const [loadingUserImagesAlbum, setLoadingUserImagesAlbum] = useState(false);
   const [loadingUserNotifications, setLoadingUserNotifications] = useState(false);
+  const [loadingSelectedCheck, setLoadingSelectedCheck] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -482,6 +506,20 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
+  const fetchCheckById = useCallback(async (checkId: number): Promise<void> => {
+    try {
+      setLoadingSelectedCheck(true);
+      const response = await axiosInstance.get(`/checks/admin/${checkId}`);
+      setSelectedCheckDetailed(response.data || null);
+    } catch (error) {
+      console.error('Error fetching check by ID:', error);
+      setSelectedCheckDetailed(null);
+      throw error;
+    } finally {
+      setLoadingSelectedCheck(false);
+    }
+  }, []);
+
   return (
     <ClientContext.Provider
       value={{ 
@@ -495,6 +533,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         userImagesAlbum,
         userNotifications,
         notificationsPagination,
+        selectedCheckDetailed,
         loading, 
         loadingClientAnagrafica,
         loadingTrainingPrograms,
@@ -504,6 +543,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingUserChecks,
         loadingUserImagesAlbum,
         loadingUserNotifications,
+        loadingSelectedCheck,
         page, 
         pageSize, 
         total, 
@@ -520,7 +560,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchInitialHistory,
         fetchUserChecks,
         fetchUserImagesAlbum,
-        fetchUserNotifications
+        fetchUserNotifications,
+        fetchCheckById
       }}
     >
       {children}

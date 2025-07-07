@@ -757,5 +757,45 @@
       "cancel": "Annulla",
       "change": "Cambia Password"
     }
+  },
+  "checkImages": {
+    "checkDate": "Data Controllo:",
+    "checkDetails": "Dettagli Controllo",
+    "loadingDetails": "Caricamento dettagli controllo...",
+    "measurementsTitle": "Misurazioni",
+    "imagesTitle": "Immagini",
+    "noImageAvailable": "Nessuna immagine disponibile",
+    "noDataAvailable": "Nessun dato disponibile",
+    "close": "Chiudi",
+    "measurementsTable": {
+      "metricHeader": "Metrica"
+    },
+    "measurements": {
+      "addome": "Addome",
+      "altezza": "Altezza",
+      "peso": "Peso",
+      "avambraccioDx": "Avambraccio Destro",
+      "avambraccioSx": "Avambraccio Sinistro",
+      "braccioDx": "Braccio Destro",
+      "braccioContrattoDx": "Braccio Destro (Contratto)",
+      "braccioSx": "Braccio Sinistro",
+      "braccioContrattoSx": "Braccio Sinistro (Contratto)",
+      "cavigliaDx": "Caviglia Destra",
+      "cavigliaSx": "Caviglia Sinistra",
+      "collo": "Collo",
+      "gambaDx": "Gamba Destra",
+      "gambaMedialeDx": "Gamba Mediale Destra",
+      "gambaSx": "Gamba Sinistra"
+    },
+    "images": {
+      "frontImage": "Vista Frontale",
+      "sideImage": "Vista Laterale",
+      "backImage": "Vista Posteriore",
+      "optionalImage1": "Immagine Opzionale 1",
+      "optionalImage2": "Immagine Opzionale 2",
+      "optionalImage3": "Immagine Opzionale 3",
+      "optionalImage4": "Immagine Opzionale 4",
+      "optionalImage5": "Immagine Opzionale 5"
+    }
   }
 }
