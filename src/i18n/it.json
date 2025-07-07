@@ -75,6 +75,7 @@
     "training": "Allenamento",
     "chat": "Chat",
     "banners": "Banners pubblicitari",
+    "settings": "Impostazioni",
     "logout": "Disconnettersi"
   },
   "clientiSubMenu": {
@@ -718,5 +719,34 @@
     "CANNOT_UNASSIGN_COMPLETED_PROGRAM": "Impossibile rimuovere l'assegnazione di un programma completato.",
     "USER_HAS_INCOMPLETE_PROGRAM": "L'utente ha già un programma incompleto assegnato.",
     "defaultError": "Si è verificato un errore. Riprova."
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "profileInformation": "Informazioni Profilo",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "saveChanges": "Salva Modifiche",
+    "changePassword": "Cambia Password",
+    "uploadProfilePicture": "Clicca per caricare foto profilo",
+    "languageRegion": "Lingua e Regione",
+    "language": "Lingua",
+    "languageChangeEffect": "Le modifiche avranno effetto immediatamente",
+    "messages": {
+      "profileUpdatedSuccess": "Profilo aggiornato con successo",
+      "profileUpdateFailed": "Errore nell'aggiornamento del profilo",
+      "passwordTooShort": "La password deve contenere almeno 8 caratteri",
+      "passwordMismatch": "Le password non corrispondono",
+      "passwordChangedSuccess": "Password cambiata con successo",
+      "passwordChangeError": "Errore durante il cambio password"
+    },
+    "passwordDialog": {
+      "title": "Cambia Password",
+      "newPassword": "Nuova Password",
+      "confirmPassword": "Conferma Nuova Password",
+      "passwordMismatch": "Le password non corrispondono",
+      "passwordTooShort": "La password deve essere di almeno 8 caratteri",
+      "cancel": "Annulla",
+      "change": "Cambia Password"
+    }
   }
 }

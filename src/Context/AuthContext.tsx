@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 // import axios from 'axios';
 import { api } from '../utils/axiosInstance'; // Import the reusable API methods
@@ -16,14 +16,50 @@ const getDeviceId = () => {
   return deviceId;
 };
 
+interface ProfilePictureFile {
+  id: number;
+  type: string;
+  fileName: string;
+  signedUrl: string;
+  signedUrlExpire: string;
+}
+
+interface UserData {
+  id: number;
+  username: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+  type: string;
+  verified: boolean;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string | null;
+  placeOfBirth: string | null;
+  address: string | null;
+  phoneNumber: string | null;
+  profilePicture: number | null;
+  initialHistoryCompleted: boolean;
+  profileInformationCompleted: boolean;
+  online: boolean;
+  lastOnline: string;
+  lastLogin: string;
+  subscriptions: unknown[];
+  profilePictureFile: ProfilePictureFile | null;
+}
 
 interface AuthContextType {
   isAuth: boolean;
   token: string | null;
   refreshToken: string | null;
+  userData: UserData | null;
+  userDataLoading: boolean;
   login: (credentials: { username: string; password: string }) => Promise<void>;
   logout: () => void;
   socketInstance: Socket | null;
+  getMyUserData: () => Promise<void>;
+  changePassword: (newPassword: string) => Promise<void>;
+  updateUserProfile: (profileData: { firstName: string; lastName: string; profilePicture?: number }) => Promise<void>;
 }
 
 interface LoginResponse {
@@ -43,6 +79,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [token, setToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [socketInstance, setSocketInstance] = useState<Socket | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userDataLoading, setUserDataLoading] = useState(false);
+  
+
+  // Debounced function to get user data
+  const getMyUserData = useCallback(async () => {
+    if (userDataLoading) return; // Prevent multiple calls
+    
+    setUserDataLoading(true);
+    try {
+      const data = await api.get('/users/me');
+      setUserData(data);
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+    } finally {
+      setUserDataLoading(false);
+    }
+  }, [userDataLoading]);
+
+  // Change password function
+  const changePassword = async (newPassword: string) => {
+    return api.put('/users/set-password', { newPassword });
+  };
+
+  // Update user profile function
+  const updateUserProfile = async (profileData: { firstName: string; lastName: string; profilePicture?: number }) => {
+    return api.put('/users/profile', profileData);
+  };
+
 
 
   useEffect(() => {
@@ -105,7 +170,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ isAuth, token, login, logout, refreshToken, socketInstance }}>
+    <AuthContext.Provider value={{ 
+      isAuth, 
+      token, 
+      login, 
+      logout, 
+      refreshToken, 
+      socketInstance,
+      userData,
+      userDataLoading,
+      getMyUserData,
+      changePassword,
+      updateUserProfile,
+    }}>
       {children}
     </AuthContext.Provider>
   );

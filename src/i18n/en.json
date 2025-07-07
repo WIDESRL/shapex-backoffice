@@ -91,6 +91,7 @@
     "training": "Training",
     "chat": "Chat",
     "banners": "Banners",
+    "settings": "Settings",
     "logout": "Logout"
   },
   "clientiSubMenu": {
@@ -734,5 +735,34 @@
     "CANNOT_UNASSIGN_COMPLETED_PROGRAM": "Cannot remove assignment for a completed program.",
     "USER_HAS_INCOMPLETE_PROGRAM": "User already has an incomplete program assigned.",
     "defaultError": "An error occurred. Please try again."
+  },
+  "settings": {
+    "title": "Settings",
+    "profileInformation": "Profile Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "saveChanges": "Save Changes",
+    "changePassword": "Change Password",
+    "uploadProfilePicture": "Click to upload profile picture",
+    "languageRegion": "Language & Region",
+    "language": "Language",
+    "languageChangeEffect": "Changes will take effect immediately",
+    "messages": {
+      "profileUpdatedSuccess": "Profile updated successfully",
+      "profileUpdateFailed": "Failed to update profile",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "passwordMismatch": "Passwords do not match",
+      "passwordChangedSuccess": "Password changed successfully",
+      "passwordChangeError": "Error while changing password"
+    },
+    "passwordDialog": {
+      "title": "Change Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "cancel": "Cancel",
+      "change": "Change Password"
+    }
   }
 }

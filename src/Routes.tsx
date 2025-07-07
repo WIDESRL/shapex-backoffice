@@ -19,6 +19,7 @@ import TrainingProgramPage from './screens/training/TrainingProgram/TrainingProg
 import TrainingProgramDetailPage from './screens/training/TrainingProgram/TrainingProgramDetailPage';
 import CompletedTrainingPage from './screens/training/CompletedTrainingPage';
 import AnagraficaMainPage from './screens/clients/AnagraficaMainPage';
+import SettingsPage from './screens/SettingsPage';
 
 const AppRoutes: React.FC = () => {
   const { isAuth } = useAuth();
@@ -45,6 +46,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/training/completed-training" element={<CompletedTrainingPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/banners" element={<BannersPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/" element={<DashboardPage />} />
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </>

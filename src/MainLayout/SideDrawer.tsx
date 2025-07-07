@@ -22,6 +22,7 @@ import TrainingIcon from "../icons/Training";
 import ChatIcon from "../icons/Chat";
 import BannersIcon from "../icons/Banners";
 import LogoutIcon from "../icons/Logout";
+import SettingsIcon from "../icons/SettingsIcon";
 import { useAuth } from "../Context/AuthContext";
 
 const menuColor = "#EDB528";
@@ -57,6 +58,7 @@ export enum MainMenu {
   Allenamento = "training",
   Chat = "chat",
   Banners = "banners",
+  Settings = "settings",
   Logout = "logout",
 }
 
@@ -90,6 +92,7 @@ export enum MenuPath {
   CompletedTraining = "/training/completed-training",
   Chat = "/chat",
   Banners = "/banners",
+  Settings = "/settings",
 }
 
 export enum ActiveMenu {
@@ -99,6 +102,7 @@ export enum ActiveMenu {
   Training = MainMenu.Allenamento,
   Chat = MainMenu.Chat,
   Banners = MainMenu.Banners,
+  Settings = MainMenu.Settings,
   None = "",
 }
 
@@ -161,6 +165,8 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       activeMenu = ActiveMenu.Chat;
     } else if (path.startsWith(MenuPath.Banners)) {
       activeMenu = ActiveMenu.Banners;
+    } else if (path.startsWith(MenuPath.Settings)) {
+      activeMenu = ActiveMenu.Settings;
     }
 
     return { activeMenu, activeSubmenu };
@@ -573,6 +579,44 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
                       : styles.listItemText.color,
                   fontWeight:
                     activeMenu === ActiveMenu.Banners ? 600 : undefined,
+                }}
+              />
+            )}
+          </ListItemButton>
+        </ListItem>
+        {/* Settings */}
+        <ListItem disablePadding sx={{ mb: 1 }}>
+          <ListItemButton
+            style={{
+              ...styles.listItemButton,
+              color:
+                activeMenu === ActiveMenu.Settings ? menuColor : undefined,
+            }}
+            onClick={() => handleNavigation(MenuPath.Settings)}
+            sx={{ "&:hover": { bgcolor: hoverBg } }}
+          >
+            <SettingsIcon
+              style={{
+                ...styles.icon,
+                color:
+                  activeMenu === ActiveMenu.Settings ? menuColor : undefined,
+                filter:
+                  activeMenu === ActiveMenu.Settings
+                    ? activeIconFilter
+                    : undefined,
+              }}
+            />
+            {!miniDrawer && (
+              <ListItemText
+                primary={t("mainMenu.settings")}
+                style={{
+                  ...styles.listItemText,
+                  color:
+                    activeMenu === ActiveMenu.Settings
+                      ? menuColor
+                      : styles.listItemText.color,
+                  fontWeight:
+                    activeMenu === ActiveMenu.Settings ? 600 : undefined,
                 }}
               />
             )}
