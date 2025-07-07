@@ -5,11 +5,22 @@ import { uploadFileAndGetId } from '../utils/uploadFileAndGetId';
 
 export interface Message {
     id: number;
+    conversationId: number | null;
+    userId: number;
+    fromAdminId: number | null;
     sender: string;
     type: 'text' | 'image' | 'file';
     content: string;
+    fileId?: number;
     fileName?: string;
     date: string;
+    file?: {
+        id: number;
+        type: string;
+        fileName: string;
+        signedUrl: string;
+        signedUrlExpire: string;
+    };
 }
 
 export interface ApiConversation {
@@ -259,6 +270,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             });
         } catch (e) {
             console.error("Error sending text message:", e);
+            throw e;
         } finally {
             setSendingMessage(false);
         }
@@ -282,6 +294,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             });
         } catch (e) {
             console.error("Error sending file message:", e);
+            throw e;
         } finally {
             setSendingMessage(false);
         }

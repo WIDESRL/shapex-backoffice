@@ -743,6 +743,9 @@
     "ASSIGNMENT_NOT_FOUND": "Assignment not found.",
     "CANNOT_UNASSIGN_COMPLETED_PROGRAM": "Cannot remove assignment for a completed program.",
     "USER_HAS_INCOMPLETE_PROGRAM": "User already has an incomplete program assigned.",
+    "NO_ACTIVE_SUBSCRIPTION": "User does not have an active subscription.",
+    "CHAT_NOT_ENABLED": "Chat is not enabled for the subscription that this user has.",
+    "SUBSCRIPTION_EXPIRED": "User subscription has expired.",
     "defaultError": "An error occurred. Please try again."
   },
   "settings": {

@@ -727,6 +727,9 @@
     "ASSIGNMENT_NOT_FOUND": "Assegnazione non trovata.",
     "CANNOT_UNASSIGN_COMPLETED_PROGRAM": "Impossibile rimuovere l'assegnazione di un programma completato.",
     "USER_HAS_INCOMPLETE_PROGRAM": "L'utente ha già un programma incompleto assegnato.",
+    "NO_ACTIVE_SUBSCRIPTION": "L'utente non ha un abbonamento attivo.",
+    "CHAT_NOT_ENABLED": "La chat non è abilitata per l'abbonamento che ha questo utente.",
+    "SUBSCRIPTION_EXPIRED": "L'abbonamento dell'utente è scaduto.",
     "defaultError": "Si è verificato un errore. Riprova."
   },
   "settings": {

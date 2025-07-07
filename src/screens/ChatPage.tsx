@@ -13,6 +13,9 @@ import StartConversationDialog from '../components/StartConversationDialog';
 import AddIcon from '@mui/icons-material/Add';
 import ImageCustom from '../components/ImageCustom';
 import AvatarCustom from '../components/AvatarCustom';
+import { AxiosError } from 'axios';
+import { getServerErrorMessage } from '../utils/errorUtils';
+import { useSnackbar } from '../Context/SnackbarContext';
 
 // --- Styled Components ---
 const ChatContainer = styled(Box)({
@@ -198,6 +201,7 @@ const ChatPageContent: React.FC = () => {
 	const justSentMessageRef = useRef(false);
 	const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
 	const firstVisibleMsgRef = useRef<{ id: number; offset: number } | null>(null);
+  const { showSnackbar } = useSnackbar();
 
     // Debounce search input for conversations
     useEffect(() => {
@@ -211,8 +215,7 @@ const ChatPageContent: React.FC = () => {
     // Fetch conversations on mount, search, or page change
     useEffect(() => {
         fetchConversations({ append: conversationPage > 1 });
-        // eslint-disable-next-line
-    }, [conversationSearch, conversationPage]);
+    }, [conversationSearch, conversationPage, fetchConversations]);
 
     // Reset conversation search state on sidebar close (unmount)
     useEffect(() => {
@@ -227,7 +230,7 @@ const ChatPageContent: React.FC = () => {
 		: null;
 
 	// Infinite scroll: load more messages when scrolled to top
-	const handleMessagesScroll = async () => {
+	const handleMessagesScroll = React.useCallback(async () => {
 		const container = messagesContainerRef.current;
 		if (container && selectedConversation) {
 			const msgs = messages as { id: number }[];
@@ -266,7 +269,7 @@ const ChatPageContent: React.FC = () => {
 			const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
 			setShowScrollToBottom(!atBottom);
 		}
-	};
+	}, [selectedConversation, messages, loadingMoreMessages, loadMoreMessages]);
 
 	// Adjust scroll position after loading more messages
 	useEffect(() => {
@@ -306,25 +309,45 @@ const ChatPageContent: React.FC = () => {
                 if(messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
             }, 100); // Small delay to ensure UI updates
 		}
-		// eslint-disable-next-line
 	}, [sendingMessage]);
 
+		useEffect(() => {
+			setMessage(''); // Clear message input when conversation changes
+		}, [selectedConversationId]);
+
 	const handleSend = async () => {
-		if (!message.trim() || !selectedConversationId) return;
-		await sendTextMessage(selectedConversationId, message);
-		setMessage('');
-		justSentMessageRef.current = true;
+		try{
+			if (!message.trim() || !selectedConversationId) return;
+			await sendTextMessage(selectedConversationId, message);
+			setMessage('');
+			justSentMessageRef.current = true;
+		}
+		catch (error) {
+			const axiosError = error as AxiosError<{ errorCode?: string }>;
+			const errorCode = axiosError?.response?.data?.errorCode;
+			const errorMessage = getServerErrorMessage(errorCode, t);
+			showSnackbar(errorMessage, 'error');
+			console.error('Error sending message');
+		}
 	};
 
 	const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-		if (!file || !selectedConversationId) return;
+		if (!file || !selectedConversationId) {
+			e.target.value = '';
+			return;
+		}
 		try {
 			await sendFileMessage(selectedConversationId, file);
 			justSentMessageRef.current = true;
 		} catch (error) {
-			console.error('Error sending file message:', error);
-			// Optionally handle error
+			const axiosError = error as AxiosError<{ errorCode?: string }>;
+			const errorCode = axiosError?.response?.data?.errorCode;
+			const errorMessage = getServerErrorMessage(errorCode, t);
+			showSnackbar(errorMessage, 'error');
+			console.error('Error sending message');
+		} finally {
+			e.target.value = '';
 		}
 	};
 
@@ -336,16 +359,16 @@ const ChatPageContent: React.FC = () => {
 	};
 
 	// Group messages by date
-	const groupedMessages = messages.reduce((acc: Record<string, unknown[]>, msg: Message) => {
+	const groupedMessages = messages.reduce((acc: Record<string, Message[]>, msg: Message) => {
 		const dateKey = format(parseISO(msg.date), 'dd/MM/yyyy');
 		if (!acc[dateKey]) acc[dateKey] = [];
 		acc[dateKey].push(msg);
 		return acc;
 	}, {});
-	const dateSections: [string, unknown[]][] = Object.entries(groupedMessages);
+	const dateSections: [string, Message[]][] = Object.entries(groupedMessages);
 
-	const debouncedHandleMessagesScroll = React.useCallback(
-		debounce(handleMessagesScroll, 500),
+	const debouncedHandleMessagesScroll = React.useMemo(
+		() => debounce(handleMessagesScroll, 500),
 		[handleMessagesScroll]
 	);
 
@@ -532,7 +555,7 @@ const ChatPageContent: React.FC = () => {
 										{date}
 									</Box>
 								</Box>
-								{msgs.map((msg: any, idx: number) => (
+								{msgs.map((msg: Message, idx: number) => (
 									<MessageRow key={msg.id} isMe={msg.fromAdminId != null} data-msg-id={msg.id}>
 										<MessageBubble isMe={msg.fromAdminId != null}>
 											{msg.type === 'text' && (
@@ -543,7 +566,7 @@ const ChatPageContent: React.FC = () => {
 													src={msg.file.signedUrl}
 													alt={msg.file.fileName || 'image'}
 													style={{ maxWidth: 180, maxHeight: 180, borderRadius: 8, cursor: 'pointer', margin: 2 }}
-													onClick={() => setFullscreenImage(msg.file.signedUrl)}
+													onClick={() => msg.file && setFullscreenImage(msg.file.signedUrl)}
 												/>
 											)}
 											{msg.type === 'file' && msg.file && (!msg.file.type || !msg.file.type.startsWith('image/')) && (
@@ -623,4 +646,6 @@ const ChatPageContent: React.FC = () => {
 	);
 };
 
-export default () => <ChatPageContent />
+const ChatPage = () => <ChatPageContent />;
+
+export default ChatPage;
