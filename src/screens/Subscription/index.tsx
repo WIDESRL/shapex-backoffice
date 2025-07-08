@@ -120,6 +120,15 @@ const SubscriptionsScreen: React.FC = () => {
     }));
   };
 
+  useEffect(() => {
+    if(formData.freeIntroductoryCall && !formData.chat){
+      setFormData((prev) => ({
+        ...prev,
+        chat: true,
+      }));
+    }
+  }, [formData]);
+
   return (
     <Box
       sx={{
