@@ -102,6 +102,23 @@ const styles = {
       overflow: 'auto',
     },
   },
+  featureDisabledContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fafafa',
+    borderRadius: 2,
+    border: '1px solid #e0e0e0',
+    minHeight: 200,
+    p: 4,
+  },
+  featureDisabledText: {
+    color: '#757575',
+    fontSize: 16,
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
 };
 
 const AlimentazionePage: React.FC = () => {
@@ -132,10 +149,10 @@ const AlimentazionePage: React.FC = () => {
   useEffect(() => {
     console.log('Diet data loaded:', diet);
     if (diet) {
-      console.log('Setting mealPlan to:', diet.mealPlan);
-      console.log('Setting foodSupplements to:', diet.foodSupplements);
-      setPianoAlimentare(diet.mealPlan || '');
-      setIntegrazioneAlimentare(diet.foodSupplements || '');
+      setTimeout(() => {
+        setPianoAlimentare(diet.mealPlan || '');
+        setIntegrazioneAlimentare(diet.foodSupplements || '');
+      }, 100)
     }
   }, [diet]);
 
@@ -218,26 +235,36 @@ const AlimentazionePage: React.FC = () => {
             {t('client.alimentazione.sections.mealPlan')}
           </Typography>
           
-          <Box sx={styles.editorContainer}>
-            <Box sx={styles.quillEditor}>
-              <ReactQuill
-                key={`meal-plan-${diet?.id || 'new'}`}
-                theme="snow"
-                value={pianoAlimentare}
-                onChange={setPianoAlimentare}
-                placeholder={t('client.alimentazione.placeholders.mealPlan')}
-              />
-            </Box>
-          </Box>
+          {clientAnagrafica?.activeSubscription?.mealPlan ? (
+            <>
+              <Box sx={styles.editorContainer}>
+                <Box sx={styles.quillEditor}>
+                  <ReactQuill
+                    key={`meal-plan-${diet?.id || 'new'}`}
+                    theme="snow"
+                    value={pianoAlimentare}
+                    onChange={setPianoAlimentare}
+                    placeholder={t('client.alimentazione.placeholders.mealPlan')}
+                  />
+                </Box>
+              </Box>
 
-          <Button
-            variant="contained"
-            sx={styles.insertButton}
-            onClick={handleInsertPiano}
-            disabled={loadingDiet}
-          >
-            {loadingDiet ? t('client.alimentazione.buttons.saving') : t('client.alimentazione.buttons.insert')}
-          </Button>
+              <Button
+                variant="contained"
+                sx={styles.insertButton}
+                onClick={handleInsertPiano}
+                disabled={loadingDiet}
+              >
+                {loadingDiet ? t('client.alimentazione.buttons.saving') : t('client.alimentazione.buttons.insert')}
+              </Button>
+            </>
+          ) : (
+            <Box sx={styles.featureDisabledContainer}>
+              <Typography sx={styles.featureDisabledText}>
+                {t('client.alimentazione.featureNotEnabled.mealPlan')}
+              </Typography>
+            </Box>
+          )}
         </Box>
 
         {/* Integrazione alimentare section */}
@@ -246,26 +273,36 @@ const AlimentazionePage: React.FC = () => {
             {t('client.alimentazione.sections.supplementation')}
           </Typography>
           
-          <Box sx={styles.editorContainer}>
-            <Box sx={styles.quillEditor}>
-              <ReactQuill
-                key={`food-supplements-${diet?.id || 'new'}`}
-                theme="snow"
-                value={integrazioneAlimentare}
-                onChange={setIntegrazioneAlimentare}
-                placeholder={t('client.alimentazione.placeholders.supplementation')}
-              />
-            </Box>
-          </Box>
+          {clientAnagrafica?.activeSubscription?.integrationPlan ? (
+            <>
+              <Box sx={styles.editorContainer}>
+                <Box sx={styles.quillEditor}>
+                  <ReactQuill
+                    key={`food-supplements-${diet?.id || 'new'}`}
+                    theme="snow"
+                    value={integrazioneAlimentare}
+                    onChange={setIntegrazioneAlimentare}
+                    placeholder={t('client.alimentazione.placeholders.supplementation')}
+                  />
+                </Box>
+              </Box>
 
-          <Button
-            variant="contained"
-            sx={styles.insertButton}
-            onClick={handleInsertIntegrazione}
-            disabled={loadingDiet}
-          >
-            {loadingDiet ? t('client.alimentazione.buttons.saving') : t('client.alimentazione.buttons.insert')}
-          </Button>
+              <Button
+                variant="contained"
+                sx={styles.insertButton}
+                onClick={handleInsertIntegrazione}
+                disabled={loadingDiet}
+              >
+                {loadingDiet ? t('client.alimentazione.buttons.saving') : t('client.alimentazione.buttons.insert')}
+              </Button>
+            </>
+          ) : (
+            <Box sx={styles.featureDisabledContainer}>
+              <Typography sx={styles.featureDisabledText}>
+                {t('client.alimentazione.featureNotEnabled.supplementation')}
+              </Typography>
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>

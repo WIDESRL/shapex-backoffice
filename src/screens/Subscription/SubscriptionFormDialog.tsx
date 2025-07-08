@@ -466,9 +466,9 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
             { label: t('subscriptions.trainingCard'), name: 'trainingCard', checked: formData.trainingCard },
             { label: t('subscriptions.integrationPlan'), name: 'integrationPlan', checked: formData.integrationPlan },
             { label: t('subscriptions.mealPlan'), name: 'mealPlan', checked: formData.mealPlan },
-            { label: t('subscriptions.freeIntroCall'), name: 'freeIntroductoryCall', checked: formData.freeIntroductoryCall },
+            { label: t('subscriptions.freeIntroCall'), name: 'freeIntroductoryCall', checked: formData.freeIntroductoryCall, title: t('subscriptions.freeIntroCallTooltip') },
           ].map((toggle) => (
-            <Box key={toggle.name} sx={styles.toggleBox}>
+            <Box key={toggle.name} sx={styles.toggleBox} title={toggle.title}>
               <Box sx={styles.toggleInner}>
                 <Typography sx={styles.toggleLabel}>{toggle.label}</Typography>
                 <Switch

@@ -16,6 +16,7 @@
     "order": "Order",
     "chat": "Chat",
     "freeIntroCall": "Free Introductory Call",
+    "freeIntroCallTooltip": "Enabling this will also automatically enable chat functionality",
     "mealPlan": "Meal Plan",
     "integrationPlan": "Integration Plan",
     "albumFotografico": {
@@ -590,6 +591,10 @@
         "mealPlanError": "Error updating meal plan",
         "supplementationSuccess": "Nutritional supplementation updated successfully",
         "supplementationError": "Error updating nutritional supplementation"
+      },
+      "featureNotEnabled": {
+        "mealPlan": "Meal Plan feature is not enabled in this user's subscription",
+        "supplementation": "Nutritional Supplementation feature is not enabled in this user's subscription"
       }
     },
     "altro": {

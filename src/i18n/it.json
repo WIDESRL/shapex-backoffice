@@ -16,6 +16,7 @@
     "order": "Ordine",
     "chat": "Chat",
     "freeIntroCall": "Chiamata Introduttiva Gratuita",
+    "freeIntroCallTooltip": "Abilitando questa opzione verrà automaticamente abilitata anche la funzionalità chat",
     "mealPlan": "Piano Alimentare",
     "integrationPlan": "Piano Integratori",
     "trainingCard": "Piano Allenamento",
@@ -574,6 +575,10 @@
         "mealPlanError": "Errore nell'aggiornamento del piano alimentare",
         "supplementationSuccess": "Integrazione alimentare aggiornata con successo",
         "supplementationError": "Errore nell'aggiornamento dell'integrazione alimentare"
+      },
+      "featureNotEnabled": {
+        "mealPlan": "La funzionalità Piano Alimentare non è abilitata nell'abbonamento di questo utente",
+        "supplementation": "La funzionalità Integrazione Alimentare non è abilitata nell'abbonamento di questo utente"
       }
     },
     "altro": {

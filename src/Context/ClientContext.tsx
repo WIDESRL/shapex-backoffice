@@ -189,7 +189,9 @@ export type ClientAnagrafica = {
     color: string,
     startDate: string,
     endDate: string,
-    status: string
+    status: string,
+    integrationPlan: boolean,
+    mealPlan: boolean,
   } | null;
 
 };
