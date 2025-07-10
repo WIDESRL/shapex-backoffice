@@ -495,7 +495,9 @@
         },
         "photos": {
           "front": "Vista Frontale",
-          "side": "Vista Laterale", 
+          "leftSide": "Vista Laterale Sinistra", 
+          "rightSide": "Vista Laterale Destra", 
+
           "back": "Vista Posteriore",
           "noImage": "Nessuna immagine disponibile"
         },
@@ -800,7 +802,8 @@
     },
     "images": {
       "frontImage": "Vista Frontale",
-      "sideImage": "Vista Laterale",
+      "leftSideImage": "Vista Laterale Sinistra",
+      "rightSideImage": "Vista Laterale Destra",
       "backImage": "Vista Posteriore",
       "optionalImage1": "Immagine Opzionale 1",
       "optionalImage2": "Immagine Opzionale 2",

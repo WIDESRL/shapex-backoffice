@@ -128,9 +128,9 @@ const styles = {
   imageSection: {
     display: 'grid',
     gridTemplateColumns: {
-      xs: '1fr', // 1 column on mobile
-      sm: 'repeat(2, 1fr)', // 2 columns on small screens
-      md: 'repeat(3, 1fr)', // 3 columns on medium+ screens
+      xs: '1fr',
+      sm: 'repeat(2, 1fr)', 
+      md: 'repeat(3, 1fr)',
     },
     gap: 3,
     mb: 4,
@@ -482,21 +482,50 @@ const AnamnesiInizialeTab: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Side Image */}
+        {/* Left Side Image */}
         <Box sx={styles.imageCard}>
           <Typography sx={styles.imageTitle}>
-            {t('client.diario.anamnesiIniziale.photos.side')}
+            {t('client.diario.anamnesiIniziale.photos.leftSide')}
           </Typography>
           <Box 
             sx={styles.imageContainer}
-            onClick={() => initialHistory.sideImage?.signedUrl && handleImageClick(
-              initialHistory.sideImage.signedUrl
+            onClick={() => initialHistory.leftSideImage?.signedUrl && handleImageClick(
+              initialHistory.leftSideImage.signedUrl
             )}
           >
-            {initialHistory.sideImage?.signedUrl ? (
+            {initialHistory.leftSideImage?.signedUrl ? (
               <ImageCustom
-                src={initialHistory.sideImage.signedUrl}
-                alt={t('client.diario.anamnesiIniziale.photos.side')}
+                src={initialHistory.leftSideImage.signedUrl}
+                alt={t('client.diario.anamnesiIniziale.photos.leftSide')}
+                style={styles.image}
+              />
+            ) : (
+              <Box sx={styles.noImagePlaceholder}>
+                <Typography sx={styles.noImageIcon}>📸</Typography>
+                <Typography sx={styles.noImageText}>
+                  {t('client.diario.anamnesiIniziale.photos.noImage')}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+
+        {/* Right Side Image */}
+        <Box sx={styles.imageCard}>
+          <Typography sx={styles.imageTitle}>
+            {t('client.diario.anamnesiIniziale.photos.rightSide')}
+          </Typography>
+          <Box 
+            sx={styles.imageContainer}
+            onClick={() => initialHistory.rightSideImage?.signedUrl && handleImageClick(
+              initialHistory.rightSideImage.signedUrl
+            )}
+          >
+            {initialHistory.rightSideImage?.signedUrl ? (
+              <ImageCustom
+                src={initialHistory.rightSideImage.signedUrl}
+                alt={t('client.diario.anamnesiIniziale.photos.rightSide ')}
                 style={styles.image}
               />
             ) : (

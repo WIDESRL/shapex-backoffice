@@ -95,10 +95,12 @@ export type InitialHistory = {
   injuries: string;
   allergies: string;
   frontImageId: number | null;
-  sideImageId: number | null;
+  leftSideImageId: number | null;
+  rightSideImageId: number | null;
   backImageId: number | null;
   frontImage?: FileData | null;
-  sideImage?: FileData | null;
+  leftSideImage?: FileData | null;
+  rightSideImage?: FileData | null;
   backImage?: FileData | null;
 };
 

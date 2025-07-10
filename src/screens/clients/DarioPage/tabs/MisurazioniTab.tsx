@@ -5,7 +5,7 @@ import { useClientContext } from '../../../../Context/ClientContext';
 import { useParams } from 'react-router-dom';
 import FilterIcon from '../../../../icons/FilterIcon';
 import InfoIcon from '../../../../icons/InfoIcon';
-import CheckImagesDialog from '../../../../components/CheckImagesDialog';
+import CheckImagesDialog from '../../../../components/CheckDetailsDialog';
 
 const styles = {
   container: {

@@ -511,7 +511,8 @@
         },
         "photos": {
           "front": "Front View",
-          "side": "Side View",
+          "leftSide": "Left Side View",
+          "rightSide": "Right Side View",
           "back": "Back View", 
           "noImage": "No image available"
         },
@@ -816,7 +817,8 @@
     },
     "images": {
       "frontImage": "Front View",
-      "sideImage": "Side View",
+      "leftSideImage": "Left Side View",
+      "rightSideImage": "Right Side View",
       "backImage": "Back View",
       "optionalImage1": "Optional Image 1",
       "optionalImage2": "Optional Image 2",

@@ -19,7 +19,7 @@ import DialogCloseIcon from '../icons/DialogCloseIcon2';
 import ImageCustom from './ImageCustom';
 import FullscreenImageDialog from './FullscreenImageDialog';
 
-interface CheckImagesDialogProps {
+interface CheckDetailsDialogProps {
   open: boolean;
   onClose: () => void;
   checkId: number | null;
@@ -187,8 +187,8 @@ const styles = {
   },
   imageCustomStyle: {
     width: '100%',
-    height: '200px',
-    objectFit: 'cover' as const,
+    height: '100%',
+    objectFit: 'contain' as const,
     borderRadius: '8px',
   },
   dialogCloseIcon: {
@@ -196,7 +196,7 @@ const styles = {
   },
 };
 
-const CheckImagesDialog: React.FC<CheckImagesDialogProps> = ({ 
+const CheckDetailsDialog: React.FC<CheckDetailsDialogProps> = ({ 
   open, 
   onClose, 
   checkId
@@ -272,7 +272,8 @@ const CheckImagesDialog: React.FC<CheckImagesDialogProps> = ({
 
   const imageFields = [
     { field: 'frontImage', label: t('checkImages.images.frontImage') },
-    { field: 'sideImage', label: t('checkImages.images.sideImage') },
+    { field: 'leftSideImage', label: t('checkImages.images.leftSideImage') },
+    { field: 'rightSideImage', label: t('checkImages.images.rightSideImage') },
     { field: 'backImage', label: t('checkImages.images.backImage') },
     { field: 'optionalImage1', label: t('checkImages.images.optionalImage1') },
     { field: 'optionalImage2', label: t('checkImages.images.optionalImage2') },
@@ -418,4 +419,4 @@ const CheckImagesDialog: React.FC<CheckImagesDialogProps> = ({
   );
 };
 
-export default CheckImagesDialog;
+export default CheckDetailsDialog;
