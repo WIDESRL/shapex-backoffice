@@ -210,16 +210,41 @@ const styles = {
     color: '#666',
     fontWeight: 500,
   },
+  loadMoreContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    p: 3,
+  },
+  scrollContainer: {
+    flex: 1,
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    pr: 1,
+    '&::-webkit-scrollbar': {
+      width: 4,
+    },
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: '#f1f1f1',
+      borderRadius: 4,
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#c1c1c1',
+      borderRadius: 4,
+      '&:hover': {
+        backgroundColor: '#a8a8a8',
+      },
+    },
+  },
 };
 
 const AlbumFotograficoTab: React.FC = () => {
   const { t } = useTranslation();
   const { clientId } = useParams<{ clientId: string }>();
-  const { userImagesAlbum, loadingUserImagesAlbum, fetchUserImagesAlbum } = useClientContext();
+  const { userImagesAlbum, userImagesAlbumPagination, loadingUserImagesAlbum, fetchUserImagesAlbum } = useClientContext();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
 
-  // Calculate default date range (1 year ago to today) - memoized to avoid recalculation
   const { defaultStartDate, defaultEndDate } = useMemo(() => {
     const today = new Date();
     const oneYearAgo = new Date(today);
@@ -231,45 +256,50 @@ const AlbumFotograficoTab: React.FC = () => {
     };
   }, []);
   
-  // Filter state
   const [filterOpen, setFilterOpen] = useState(false);
   const [startDate, setStartDate] = useState<string>(defaultStartDate);
   const [endDate, setEndDate] = useState<string>(defaultEndDate);
   const [hasInitialFetch, setHasInitialFetch] = useState(false);
 
-  // Debounced fetch function
-  const debouncedFetchUserImagesAlbum = useCallback((clientId: string, startDate?: string, endDate?: string) => {
+  const debouncedFetchUserImagesAlbum = useCallback((clientId: string, page: number = 1, pageLimit: number = 20, startDate?: string, endDate?: string, append: boolean = false) => {
     const timeoutId = setTimeout(() => {
       setHasInitialFetch(true);
-      fetchUserImagesAlbum(clientId, startDate, endDate);
+      fetchUserImagesAlbum(clientId, page, pageLimit, startDate, endDate, append);
     }, 200);
 
     return () => clearTimeout(timeoutId);
   }, [fetchUserImagesAlbum]);
 
-  // Fetch user images when component mounts
   useEffect(() => {
     if (clientId) {
-      const cleanup = debouncedFetchUserImagesAlbum(clientId, defaultStartDate, defaultEndDate);
+      const cleanup = debouncedFetchUserImagesAlbum(clientId, 1, 20, defaultStartDate, defaultEndDate, false);
       return cleanup;
     }
   }, [clientId, defaultStartDate, defaultEndDate, debouncedFetchUserImagesAlbum]);
 
-  // Handle filter apply
   const handleApplyFilter = () => {
     if (clientId) {
-      debouncedFetchUserImagesAlbum(clientId, startDate || undefined, endDate || undefined);
+      debouncedFetchUserImagesAlbum(clientId, 1, 20, startDate || undefined, endDate || undefined, false);
     }
   };
 
-  // Handle filter clear
   const handleClearFilter = () => {
     setStartDate(defaultStartDate);
     setEndDate(defaultEndDate);
     if (clientId) {
-      debouncedFetchUserImagesAlbum(clientId, defaultStartDate, defaultEndDate);
+      debouncedFetchUserImagesAlbum(clientId, 1, 20, defaultStartDate, defaultEndDate, false);
     }
   };
+
+  const handleLoadMore = () => {
+    if (clientId && userImagesAlbumPagination?.hasNextPage) {
+      const nextPage = userImagesAlbumPagination.page + 1;
+      debouncedFetchUserImagesAlbum(clientId, nextPage, 20, startDate || undefined, endDate || undefined, true);
+    }
+  };
+
+  const shouldShowLoadMore = userImagesAlbumPagination?.hasNextPage && 
+    userImagesAlbum.length < (userImagesAlbumPagination?.total || 0);
 
   // Toggle filter section
   const toggleFilter = () => {
@@ -389,41 +419,75 @@ const AlbumFotograficoTab: React.FC = () => {
           </Box>
         </Collapse>
 
-        {(loadingUserImagesAlbum || !hasInitialFetch) ? (
+        {(loadingUserImagesAlbum && userImagesAlbum.length === 0) || !hasInitialFetch ? (
           <LoadingState />
         ) : userImagesAlbum.length === 0 ? (
           <EmptyState />
         ) : (
-          <Box sx={styles.imageGrid}>
-            {userImagesAlbum.map((image) => (
-              <Box
-                key={image.id}
-                sx={styles.photoCard}
-                onClick={() => handleImageClick(image.signedUrl)}
-              >
-                <Box sx={{ 
-                  height: '220px', 
-                  overflow: 'hidden', 
-                  width: '100%', 
-                  position: 'relative',
-                  backgroundColor: '#f5f5f5',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <ImageCustom
-                    src={image.signedUrl}
-                    alt={`Photo ${image.id}`}
-                    style={styles.photoImage}
-                  />
+          <Box sx={styles.scrollContainer}>
+            <Box sx={styles.imageGrid}>
+              {userImagesAlbum.map((image) => (
+                <Box
+                  key={image.id}
+                  sx={styles.photoCard}
+                  onClick={() => handleImageClick(image.signedUrl)}
+                >
+                  <Box sx={{ 
+                    height: '220px', 
+                    overflow: 'hidden', 
+                    width: '100%', 
+                    position: 'relative',
+                    backgroundColor: '#f5f5f5',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <ImageCustom
+                      src={image.signedUrl}
+                      alt={`Photo ${image.id}`}
+                      style={styles.photoImage}
+                    />
+                  </Box>
+                  <Box sx={styles.photoLabel}>
+                    <Typography sx={styles.photoLabelText}>
+                      {t('client.diario.albumFotografico.uploadDate')}: {formatDate(image.createdAt)}
+                    </Typography>
+                  </Box>
                 </Box>
-                <Box sx={styles.photoLabel}>
-                  <Typography sx={styles.photoLabelText}>
-                    {t('client.diario.albumFotografico.uploadDate')}: {formatDate(image.createdAt)}
-                  </Typography>
-                </Box>
+              ))}
+            </Box>
+            
+            {/* Load More Section */}
+            {shouldShowLoadMore && (
+              <Box sx={styles.loadMoreContainer}>
+                <Button
+                  variant="outlined"
+                  onClick={handleLoadMore}
+                  disabled={loadingUserImagesAlbum}
+                  sx={{
+                    textTransform: 'none',
+                    fontSize: 14,
+                    px: 4,
+                    py: 1,
+                    borderColor: '#E6BB4A',
+                    color: '#E6BB4A',
+                    '&:hover': {
+                      backgroundColor: '#E6BB4A',
+                      color: '#fff',
+                    },
+                  }}
+                >
+                  {loadingUserImagesAlbum ? (
+                    <>
+                      <CircularProgress size={16} sx={{ mr: 1, color: 'inherit' }} />
+                      {t('client.diario.albumFotografico.loadingMore')}
+                    </>
+                  ) : (
+                    t('client.diario.albumFotografico.loadMore')
+                  )}
+                </Button>
               </Box>
-            ))}
+            )}
           </Box>
         )}
       </Box>

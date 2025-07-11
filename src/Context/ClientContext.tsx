@@ -245,6 +245,7 @@ export type ClientContextType = {
   userImagesAlbum: UserAlbumImage[];
   userNotifications: UserNotification[];
   notificationsPagination: Pagination | null;
+  userImagesAlbumPagination: Pagination | null;
   selectedCheckDetailed: UserCheckDetailed | null;
   loading: boolean;
   loadingClientAnagrafica: boolean;
@@ -271,7 +272,7 @@ export type ClientContextType = {
   createOrUpdateDiet: (userId: string, mealPlan?: string, foodSupplements?: string) => Promise<void>;
   fetchInitialHistory: (userId: string) => Promise<void>;
   fetchUserChecks: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
-  fetchUserImagesAlbum: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
+  fetchUserImagesAlbum: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, append?: boolean) => Promise<void>;
   fetchUserNotifications: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, type?: string, append?: boolean) => Promise<void>;
   fetchCheckById: (checkId: number) => Promise<void>;
 };
@@ -289,6 +290,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [userImagesAlbum, setUserImagesAlbum] = useState<UserAlbumImage[]>([]);
   const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
   const [notificationsPagination, setNotificationsPagination] = useState<Pagination | null>(null);
+  const [userImagesAlbumPagination, setUserImagesAlbumPagination] = useState<Pagination | null>(null);
   const [selectedCheckDetailed, setSelectedCheckDetailed] = useState<UserCheckDetailed | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingClientAnagrafica, setLoadingClientAnagrafica] = useState(false);
@@ -447,24 +449,42 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
-  const fetchUserImagesAlbum = useCallback(async (userId: string, startDate?: string, endDate?: string): Promise<void> => {
+  const fetchUserImagesAlbum = useCallback(async (
+    userId: string, 
+    page: number = 1, 
+    pageLimit: number = 20, 
+    startDate?: string, 
+    endDate?: string,
+    append: boolean = false
+  ): Promise<void> => {
     try {
       setLoadingUserImagesAlbum(true);
       
-      // Build query parameters
       const params = new URLSearchParams();
+      params.append('page', page.toString());
+      params.append('pageLimit', pageLimit.toString());
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
       
       const queryString = params.toString();
-      const url = `/storage/images/${userId}${queryString ? `?${queryString}` : ''}`;
+      const url = `/storage/images/${userId}?${queryString}`;
       
       const response = await axiosInstance.get(url);
+      const data = response.data;
       
-      setUserImagesAlbum(response.data || []);
+      // Check if response has pagination structure
+      if (data.images && data.pagination) {
+        setUserImagesAlbum(prev => append ? [...prev, ...data.images] : data.images);
+        setUserImagesAlbumPagination(data.pagination);
+      } else {
+        // Fallback for legacy response format
+        setUserImagesAlbum(prev => append ? [...prev, ...(data || [])] : (data || []));
+        setUserImagesAlbumPagination(null);
+      }
     } catch (error) {
       console.error('Error fetching user images album:', error);
       setUserImagesAlbum([]);
+      setUserImagesAlbumPagination(null);
       throw error;
     } finally {
       setLoadingUserImagesAlbum(false);
@@ -536,6 +556,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         userImagesAlbum,
         userNotifications,
         notificationsPagination,
+        userImagesAlbumPagination,
         selectedCheckDetailed,
         loading, 
         loadingClientAnagrafica,
