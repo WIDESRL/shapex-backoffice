@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress } from '@mui/material';
-import FilterIcon from '../../icons/FilterIcon';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, InputAdornment, Typography, Box, Chip, CircularProgress } from '@mui/material';
 import MagnifierIcon from '../../icons/MagnifierIcon';
 import UserIcon from '../../icons/UserIcon';
 import { useClientContext } from '../../Context/ClientContext';
@@ -198,9 +197,6 @@ const AnagraficaPage: React.FC = () => {
             InputProps={styles.searchInputProps}
             sx={styles.searchInput}
           />
-          <IconButton sx={styles.filterButton}>
-            <FilterIcon style={styles.filterIcon} />
-          </IconButton>
         </Box>
       </Box>
       <TableContainer

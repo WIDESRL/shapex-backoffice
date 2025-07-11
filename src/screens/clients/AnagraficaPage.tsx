@@ -128,13 +128,13 @@ const AnagraficaPage: React.FC = () => {
             <Box sx={styles.fieldRow}>
               <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.firstName')}</Typography>
               <Typography sx={styles.fieldValue}>
-                {clientAnagrafica.firstName || 'Sara'}
+                {clientAnagrafica.firstName}
               </Typography>
             </Box>
             <Box sx={styles.fieldRow}>
               <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastName')}</Typography>
               <Typography sx={styles.fieldValue}>
-                {clientAnagrafica.lastName || 'Rossi'}
+                {clientAnagrafica.lastName}
               </Typography>
             </Box>
             <Box sx={styles.fieldRow}>
@@ -142,13 +142,13 @@ const AnagraficaPage: React.FC = () => {
               <Typography sx={styles.fieldValue}>
                 {clientAnagrafica.dateOfBirth 
                   ? new Date(clientAnagrafica.dateOfBirth).toLocaleDateString('it-IT') 
-                  : '8 - 04 - 1999'}
+                  : ''}
               </Typography>
             </Box>
             <Box sx={styles.fieldRow}>
               <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.placeOfBirth')}</Typography>
               <Typography sx={styles.fieldValue}>
-                {clientAnagrafica.placeOfBirth || 'Milano'}
+                {clientAnagrafica.placeOfBirth }
               </Typography>
             </Box>
           </Box>
@@ -159,13 +159,13 @@ const AnagraficaPage: React.FC = () => {
             <Box sx={styles.fieldRow}>
               <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.phone')}</Typography>
               <Typography sx={styles.fieldValue}>
-                {clientAnagrafica.phoneNumber || '+039 333 66 67'}
+                {clientAnagrafica.phoneNumber || ''}
               </Typography>
             </Box>
             <Box sx={styles.fieldRow}>
               <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.email')}</Typography>
               <Typography sx={styles.fieldValue}>
-                {clientAnagrafica.email || 'saramail@email.it'}
+                {clientAnagrafica.email || ''}
               </Typography>
             </Box>
           </Box>
