@@ -537,6 +537,8 @@
       },
       "albumFotografico": {
         "loading": "Caricamento foto...",
+        "loadMore": "Carica Altri",
+        "loadingMore": "Caricamento altri...",
         "uploadDate": "Data di upload",
         "filters": {
           "title": "Filtri",

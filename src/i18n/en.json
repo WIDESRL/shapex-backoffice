@@ -552,6 +552,8 @@
       },
       "albumFotografico": {
         "loading": "Loading photos...",
+        "loadMore": "Load More",
+        "loadingMore": "Loading more...",
         "uploadDate": "Upload date",
         "filters": {
           "title": "Filters",
