@@ -693,7 +693,8 @@
     "status": {
       "completed": "Completed",
       "expiring": "Expiring",
-      "inProgress": "In Progress"
+      "inProgress": "In Progress",
+      "expired": "Expired"
     },
     "workoutOptions": {
       "option1": "1 day / 1 set.",

@@ -173,7 +173,7 @@ export interface CompletedTraining {
   trainingProgramType: string;
   weekCount: number;
   dayCount: number;
-  status: 'completed' | 'expiringSoon' | 'inProgress';
+  status: 'completed' | 'expiringSoon' | 'inProgress' | 'expired';
   createdAt: string;
   completedAt: string;
   expiresAt: string;
@@ -183,7 +183,7 @@ export interface CompletedTrainingParams {
   page?: number;
   itemsPerPage?: number;
   clientId?: number;
-  status?: 'completed' | 'expiringSoon' | 'inProgress';
+  status?: 'completed' | 'expiringSoon' | 'inProgress' | 'expired';
   startDate?: string;
   endDate?: string;
 }

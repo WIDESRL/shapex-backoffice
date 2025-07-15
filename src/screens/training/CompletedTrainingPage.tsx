@@ -184,6 +184,10 @@ const styles = {
     backgroundColor: '#d4edda',
     color: '#155724',
   },
+  statusExpired: {
+    backgroundColor: '#f8d7da',
+    color: '#721c24',
+  },
 };
 
 // ===============================
@@ -253,6 +257,10 @@ const CompletedTrainingPage: React.FC = () => {
         dateLabel = t('completedTraining.dateLabels.completed');
         break;
       case 'expiringSoon':
+        dateValue = training.expiresAt;
+        dateLabel = t('completedTraining.dateLabels.expired');
+        break;
+      case 'expired':
         dateValue = training.expiresAt;
         dateLabel = t('completedTraining.dateLabels.expired');
         break;
@@ -341,7 +349,7 @@ const CompletedTrainingPage: React.FC = () => {
     const params = {
       page: 1, // Reset to first page when applying filters
       clientId: filters.clientId || undefined,
-      status: filters.status ? filters.status as 'completed' | 'expiringSoon' | 'inProgress' : undefined,
+      status: filters.status ? filters.status as 'completed' | 'expiringSoon' | 'inProgress' | 'expired' : undefined,
       startDate: filters.dateFrom || undefined,
       endDate: filters.dateTo || undefined,
     };
@@ -371,7 +379,7 @@ const CompletedTrainingPage: React.FC = () => {
   const handleLoadMore = () => {
     const params = {
       clientId: currentFilters.clientId || undefined,
-      status: currentFilters.status ? currentFilters.status as 'completed' | 'expiringSoon' | 'inProgress' : undefined,
+      status: currentFilters.status ? currentFilters.status as 'completed' | 'expiringSoon' | 'inProgress' | 'expired' : undefined,
       startDate: currentFilters.dateFrom || undefined,
       endDate: currentFilters.dateTo || undefined,
     };
@@ -443,6 +451,13 @@ const CompletedTrainingPage: React.FC = () => {
                     label={t('completedTraining.status.inProgress')}
                     size="small" 
                     sx={{ ...styles.statusChip, ...styles.statusInProgress }}
+                  />
+                </MenuItem>
+                <MenuItem value="expired">
+                  <Chip 
+                    label={t('completedTraining.status.expired')}
+                    size="small" 
+                    sx={{ ...styles.statusChip, ...styles.statusExpired }}
                   />
                 </MenuItem>
               </Select>

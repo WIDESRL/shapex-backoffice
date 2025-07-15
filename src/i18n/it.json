@@ -678,7 +678,8 @@
     "status": {
       "completed": "Terminato",
       "expiring": "In scadenza",
-      "inProgress": "In corso"
+      "inProgress": "In corso",
+      "expired": "Scaduto"
     },
     "workoutOptions": {
       "option1": "1 gg. / 1 set.",
