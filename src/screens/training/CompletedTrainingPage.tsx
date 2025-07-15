@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -22,55 +22,16 @@ import {
   TextField,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useTraining } from '../../Context/TrainingContext';
+import { CompletedTraining } from '../../types/trainingProgram.types';
 import FilterIcon from '../../icons/FilterIcon';
 import InfoIcon from '../../icons/InfoIcon';
 import DateRangePicker from '../../components/DateRangePicker';
 import ExerciseDetailModal from './ExerciseDetailModal';
-import WarningDummyDataBanner from '../../components/WarningDummyDataBanner';
-
-interface ExerciseSet {
-  serie: number;
-  peso: number;
-  ripetizioni: number;
-}
-
-interface Exercise {
-  id: number;
-  name: string;
-  series: number;
-  repetitions: number;
-  sets: ExerciseSet[];
-  note: string;
-}
-
-interface ExerciseDetailData {
-  programma: string;
-  data: string;
-  durataAllenamento: string;
-  exercises: Exercise[];
-}
-
-interface CompletedTraining {
-  id: number;
-  data: string;
-  cliente: string;
-  pianoAllenamento: string;
-  giornoSettimana: string;
-  exerciseDetails: ExerciseDetailData;
-}
 
 interface FilterState {
   status: string;
-  client: string;
-  workout: string;
-  dateFrom: string;
-  dateTo: string;
-}
-
-interface AppliedFilterState {
-  status: string;
-  client: string;
-  workout: string;
+  clientId: number | null;
   dateFrom: string;
   dateTo: string;
 }
@@ -169,6 +130,8 @@ const styles = {
     background: '#fff',
     overflow: 'auto',
     maxHeight: 'calc(100vh - 300px)',
+    display: 'flex',
+    flexDirection: 'column',
   },
   tableHeader: {
     backgroundColor: '#F6F6F6',
@@ -224,81 +187,22 @@ const styles = {
 };
 
 // ===============================
-// MOCK DATA AND OPTIONS
+// COMPONENT
 // ===============================
-const generateCompletedTrainings = (): CompletedTraining[] => {
-  const clients = ['Sara Rossi', 'Mario Bianchi', 'Francesca Verdi', 'Luca Gialli', 'Anna Neri'];
-  const programs = ['Lorem ipsum dolor', 'Strength Training', 'Cardio Blast', 'Full Body', 'Upper Body'];
-  
-  return Array.from({ length: 50 }, (_, index) => {
-    // Generate random date in the last 90 days
-    const daysAgo = Math.floor(Math.random() * 90);
-    const date = new Date();
-    date.setDate(date.getDate() - daysAgo);
-    const formattedDate = date.toLocaleDateString('it-IT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-
-    const weekDays = ['XX gg. / XX set.', '1 gg. / 1 set.', '2 gg. / 1 set.', '3 gg. / 1 set.', '1 gg. / 2 set.'];
-    
-    return {
-      id: index + 1,
-      data: formattedDate,
-      cliente: clients[Math.floor(Math.random() * clients.length)],
-      pianoAllenamento: programs[Math.floor(Math.random() * programs.length)],
-      giornoSettimana: weekDays[Math.floor(Math.random() * weekDays.length)],
-      // Mock exercise details for the modal
-      exerciseDetails: {
-        programma: `Programma ${index + 1} - Workout ${index + 2}`,
-        data: `${date.getDate()} Giugno 2025`,
-        durataAllenamento: `00:0${Math.floor(Math.random() * 6) + 2}`,
-        exercises: Array.from({ length: 3 }, (_, i) => ({
-          id: i + 1,
-          name: `Nome Esercizio ${String.fromCharCode(65 + i)}`,
-          series: 4,
-          repetitions: 2,
-          sets: Array.from({ length: 3 }, (_, setIndex) => ({
-            serie: setIndex + 1,
-            peso: 10,
-            ripetizioni: 2
-          })),
-          note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-        }))
-      }
-    };
-  }).sort((a, b) => {
-    // Sort by date (most recent first)
-    const dateA = new Date(a.data.split('/').reverse().join('-'));
-    const dateB = new Date(b.data.split('/').reverse().join('-'));
-    return dateB.getTime() - dateA.getTime();
-  });
-};
-
-// Client options for the searchable dropdown
-const clientOptions = [
-  'Sara Rossi',
-  'Mario Bianchi', 
-  'Francesca Verdi',
-  'Luca Gialli',
-  'Anna Neri',
-  'Giuseppe Romano',
-  'Maria Esposito',
-  'Antonio Ferrari',
-  'Giulia Russo',
-  'Marco Conti',
-  'Elena Marino',
-  'Roberto De Luca',
-  'Chiara Fontana',
-  'Andrea Ricci',
-  'Valentina Greco'
-];
 
 const CompletedTrainingPage: React.FC = () => {
   const { t } = useTranslation();
+  const { 
+    availableUsers, 
+    loadingAvailableUsers, 
+    fetchAllUsers,
+    completedTrainings,
+    loadingCompletedTrainings,
+    fetchCompletedTrainings,
+    loadMoreCompletedTrainings
+  } = useTraining();
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<ExerciseDetailData | null>(null);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({ 
     startDate: null, 
@@ -308,61 +212,69 @@ const CompletedTrainingPage: React.FC = () => {
   // Filter state (what user is currently selecting)
   const [filters, setFilters] = useState<FilterState>({
     status: '',
-    client: '',
-    workout: '',
+    clientId: null,
     dateFrom: '',
     dateTo: ''
   });
 
-  // Applied filters state (what is actually being used to filter the table)
-  const [appliedFilters, setAppliedFilters] = useState<AppliedFilterState>({
+  // Store current filters for load more functionality
+  const [currentFilters, setCurrentFilters] = useState<FilterState>({
     status: '',
-    client: '',
-    workout: '',
+    clientId: null,
     dateFrom: '',
     dateTo: ''
   });
 
-  const completedTrainings = generateCompletedTrainings();
+  // Fetch data when component mounts
+  useEffect(() => {
+    fetchAllUsers();
+    fetchCompletedTrainings();
+  }, [fetchAllUsers, fetchCompletedTrainings]);
 
-  // Filter the trainings based on applied filters
-  const filteredTrainings = completedTrainings.filter(training => {
-    // Status filter
-    if (appliedFilters.status && appliedFilters.status !== '') {
-      // Since we only have "Terminato" status in our mock data, we can add this logic when needed
-    }
+  // Get users formatted for autocomplete
+  const clientOptions = availableUsers.map(user => ({
+    id: user.id,
+    name: user.firstName && user.lastName 
+      ? `${user.firstName} ${user.lastName}` 
+      : user.username
+  }));
 
-    // Client filter
-    if (appliedFilters.client && appliedFilters.client !== '') {
-      if (!training.cliente.toLowerCase().includes(appliedFilters.client.toLowerCase())) {
-        return false;
-      }
-    }
+  // Get trainings data
+  const trainingsData = completedTrainings?.assignments || [];
 
-    // Workout filter
-    if (appliedFilters.workout && appliedFilters.workout !== '') {
-      if (!training.giornoSettimana.includes(appliedFilters.workout)) {
-        return false;
-      }
-    }
-
-    // Date range filter
-    if (appliedFilters.dateFrom || appliedFilters.dateTo) {
-      const trainingDate = new Date(training.data.split('/').reverse().join('-'));
-      
-      if (appliedFilters.dateFrom) {
-        const fromDate = new Date(appliedFilters.dateFrom);
-        if (trainingDate < fromDate) return false;
-      }
-      
-      if (appliedFilters.dateTo) {
-        const toDate = new Date(appliedFilters.dateTo);
-        if (trainingDate > toDate) return false;
-      }
-    }
-
-    return true;
+  // Debug logging
+  console.log('CompletedTrainingPage Debug:', {
+    completedTrainings,
+    trainingsData,
+    trainingsDataLength: trainingsData.length,
+    loadingCompletedTrainings
   });
+
+  // Format date helper function
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  // Format training type helper function
+  const formatTrainingType = (type: string) => {
+    switch (type) {
+      case 'FunctionalTraining':
+        return 'Functional Training';
+      case 'BodyBuilding':
+        return 'Body Building';
+      case 'HomeWorkout':
+        return 'Home Workout';
+      case 'Crossfit':
+        return 'Crossfit';
+      default:
+        return type;
+    }
+  };
 
   // Handler for date range changes (only updates local state, not applied filters)
   const handleDateRangeChange = (newDateRange: { startDate: Date | null; endDate: Date | null }) => {
@@ -382,44 +294,67 @@ const CompletedTrainingPage: React.FC = () => {
     }));
   };
 
-  const handleClientChange = (value: string | null) => {
+  const handleClientChange = (_: React.SyntheticEvent, newValue: { id: number; name: string } | null) => {
     setFilters(prev => ({
       ...prev,
-      client: value || ''
+      clientId: newValue ? newValue.id : null
     }));
   };
 
   const handleApplyFilters = () => {
-    setAppliedFilters({
-      status: filters.status,
-      client: filters.client,
-      workout: filters.workout,
-      dateFrom: filters.dateFrom,
-      dateTo: filters.dateTo
-    });
+    const params = {
+      page: 1, // Reset to first page when applying filters
+      clientId: filters.clientId || undefined,
+      status: filters.status ? filters.status as 'completed' | 'expiringSoon' | 'inProgress' : undefined,
+      startDate: filters.dateFrom || undefined,
+      endDate: filters.dateTo || undefined,
+    };
+    
+    // Store current filters for load more functionality
+    setCurrentFilters(filters);
+    
+    // Fetch with new filters (this will reset to page 1)
+    fetchCompletedTrainings(params);
   };
 
   const handleClearFilters = () => {
     const clearedFilters = {
       status: '',
-      client: '',
-      workout: '',
+      clientId: null,
       dateFrom: '',
       dateTo: ''
     };
     setFilters(clearedFilters);
-    setAppliedFilters(clearedFilters);
+    setCurrentFilters(clearedFilters);
     setDateRange({ startDate: null, endDate: null });
+    
+    // Fetch without filters (this will reset to page 1)
+    fetchCompletedTrainings({ page: 1 });
   };
 
+  const handleLoadMore = () => {
+    const params = {
+      clientId: currentFilters.clientId || undefined,
+      status: currentFilters.status ? currentFilters.status as 'completed' | 'expiringSoon' | 'inProgress' : undefined,
+      startDate: currentFilters.dateFrom || undefined,
+      endDate: currentFilters.dateTo || undefined,
+    };
+    
+    // loadMoreCompletedTrainings will automatically use the next page from context
+    loadMoreCompletedTrainings(params);
+  };
+
+  // Check if there are more pages to load using context data
+  const hasMorePages = completedTrainings ? completedTrainings.page < completedTrainings.totalPages : false;
+
   const handleShowDetail = (training: CompletedTraining) => {
-    setSelectedExercise(training.exerciseDetails);
+    setSelectedAssignmentId(training.id);
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
-    setSelectedExercise(null);
+    setSelectedAssignmentId(null);
   };
 
   return (
@@ -427,7 +362,7 @@ const CompletedTrainingPage: React.FC = () => {
       <Typography sx={styles.title}>
         Allenamenti completati
       </Typography>
-      <WarningDummyDataBanner />
+
 
       <Box sx={styles.headerContainer}>
         <Typography sx={styles.subtitle}>
@@ -452,21 +387,22 @@ const CompletedTrainingPage: React.FC = () => {
                 onChange={handleSelectChange('status')}
                 label={t('completedTraining.filters.status')}
               >
-                <MenuItem value="">
+                <MenuItem value="">All</MenuItem>
+                <MenuItem value="completed">
                   <Chip 
                     label={t('completedTraining.status.completed')}
                     size="small" 
                     sx={{ ...styles.statusChip, ...styles.statusCompleted }}
                   />
                 </MenuItem>
-                <MenuItem value="in-corso">
+                <MenuItem value="expiringSoon">
                   <Chip 
                     label={t('completedTraining.status.expiring')}
                     size="small" 
                     sx={{ ...styles.statusChip, ...styles.statusExpiring }}
                   />
                 </MenuItem>
-                <MenuItem value="in-corso">
+                <MenuItem value="inProgress">
                   <Chip 
                     label={t('completedTraining.status.inProgress')}
                     size="small" 
@@ -476,26 +412,14 @@ const CompletedTrainingPage: React.FC = () => {
               </Select>
             </FormControl>
 
-            <FormControl sx={styles.filterControl} size="small">
-              <InputLabel>{t('completedTraining.filters.workoutDay')}</InputLabel>
-              <Select
-                value={filters.workout}
-                onChange={handleSelectChange('workout')}
-                label={t('completedTraining.filters.workoutDay')}
-              >
-                <MenuItem value="">{t('completedTraining.filters.selectInterval')}</MenuItem>
-                <MenuItem value="1">{t('completedTraining.workoutOptions.option1')}</MenuItem>
-                <MenuItem value="2">{t('completedTraining.workoutOptions.option2')}</MenuItem>
-                <MenuItem value="3">{t('completedTraining.workoutOptions.option3')}</MenuItem>
-              </Select>
-            </FormControl>
-
             <Autocomplete
               size="small"
               sx={styles.filterControl}
               options={clientOptions}
-              value={filters.client || null}
-              onChange={(_, newValue) => handleClientChange(newValue)}
+              getOptionLabel={(option) => option.name}
+              value={clientOptions.find(client => client.id === filters.clientId) || null}
+              onChange={(event, newValue) => handleClientChange(event, newValue)}
+              loading={loadingAvailableUsers}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -546,24 +470,32 @@ const CompletedTrainingPage: React.FC = () => {
 
       {/* Table */}
       <TableContainer component={Paper} sx={styles.tableContainer}>
-        <Table stickyHeader>
+        <Table stickyHeader sx={{ flex: 1 }}>
           <TableHead>
             <TableRow>
               <TableCell sx={styles.tableHeader}>{t('completedTraining.table.headers.date')}</TableCell>
               <TableCell sx={styles.tableHeader}>{t('completedTraining.table.headers.client')}</TableCell>
               <TableCell sx={styles.tableHeader}>{t('completedTraining.table.headers.trainingPlan')}</TableCell>
-              <TableCell sx={styles.tableHeader}>{t('completedTraining.table.headers.dayWeek')}</TableCell>
+              <TableCell sx={styles.tableHeader}>Training Type</TableCell>
               <TableCell sx={styles.tableHeader} align="center">{t('completedTraining.table.headers.exerciseDetail')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredTrainings.length > 0 ? (
-              filteredTrainings.map((training) => (
+            {loadingCompletedTrainings && trainingsData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} sx={{ ...styles.tableCell, textAlign: 'center', py: 4 }}>
+                  <Typography sx={{ color: '#999', fontStyle: 'italic' }}>
+                    Loading...
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : trainingsData.length > 0 ? (
+              trainingsData.map((training) => (
                 <TableRow key={training.id} hover sx={styles.tableRow}>
-                  <TableCell sx={styles.tableCell}>{training.data}</TableCell>
-                  <TableCell sx={styles.tableCell}>{training.cliente}</TableCell>
-                  <TableCell sx={styles.tableCell}>{training.pianoAllenamento}</TableCell>
-                  <TableCell sx={styles.tableCell}>{training.giornoSettimana}</TableCell>
+                  <TableCell sx={styles.tableCell}>{formatDate(training.completedAt)}</TableCell>
+                  <TableCell sx={styles.tableCell}>{training.clientName}</TableCell>
+                  <TableCell sx={styles.tableCell}>{training.trainingProgramName}</TableCell>
+                  <TableCell sx={styles.tableCell}>{formatTrainingType(training.trainingProgramType)}</TableCell>
                   <TableCell sx={styles.tableCell} align="center">
                     <IconButton 
                       sx={styles.detailButton}
@@ -585,14 +517,60 @@ const CompletedTrainingPage: React.FC = () => {
             )}
           </TableBody>
         </Table>
+
+        {/* Load More Button - Inside TableContainer */}
+        {hasMorePages && !loadingCompletedTrainings && (
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            p: 2,
+            borderTop: '1px solid #f0f0f0',
+            backgroundColor: '#fff'
+          }}>
+            <Button 
+              variant="outlined" 
+              onClick={handleLoadMore}
+              sx={{
+                borderRadius: 2,
+                fontWeight: 500,
+                color: '#616160',
+                borderColor: '#e0e0e0',
+                textTransform: 'none',
+                px: 4,
+                py: 1.5,
+                '&:hover': {
+                  borderColor: '#E6BB4A',
+                  color: '#E6BB4A',
+                }
+              }}
+            >
+              Load More
+            </Button>
+          </Box>
+        )}
+
+        {/* Loading indicator for Load More - Inside TableContainer */}
+        {loadingCompletedTrainings && trainingsData.length > 0 && (
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            p: 2,
+            borderTop: '1px solid #f0f0f0',
+            backgroundColor: '#fff'
+          }}>
+            <Typography sx={{ color: '#999', fontStyle: 'italic' }}>
+              Loading more...
+            </Typography>
+          </Box>
+        )}
       </TableContainer>
 
       {/* Exercise Detail Modal */}
-      {modalOpen && selectedExercise && (
+      {modalOpen && selectedAssignmentId && (
         <ExerciseDetailModal
           open={modalOpen}
           onClose={handleCloseModal}
-          exerciseData={selectedExercise}
+          assignmentId={selectedAssignmentId}
         />
       )}
     </Box>

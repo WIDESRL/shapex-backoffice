@@ -7,7 +7,8 @@ import PlusIcon from '../../../icons/PlusIcon';
 import ExerciseModal, { ExerciseModalSaveData, ExerciseModalUpdateData } from './ExerciseModal';
 import DeleteDialog from '../DeleteDialog';
 import VideoPreviewDialog from './VideoPreviewDialog';
-import { useTraining, Exercise } from '../../../Context/TrainingContext';
+import { useTraining } from '../../../Context/TrainingContext';
+import { Exercise } from '../../../types/trainingProgram.types';
 import { useTranslation } from 'react-i18next';
 import OutlinedTextIconButton from '../../../components/OutlinedTextIconButton';
 

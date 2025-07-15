@@ -22,7 +22,7 @@ import XIcon from '../../../icons/XIcon';
 import VideoPreviewDialog from './VideoPreviewDialog';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { Exercise } from '../../../Context/TrainingContext';
+import { Exercise } from '../../../types/trainingProgram.types';
 import { useTranslation } from 'react-i18next';
 
 const styles = {

@@ -7,7 +7,8 @@ import MagnifierIcon from '../../../../../icons/MagnifierIcon';
 import FilterIcon from '../../../../../icons/FilterIcon';
 import VideoIcon from '../../../../../icons/VideoIcon';
 import DialogCloseIcon from '../../../../../icons/DialogCloseIcon2';
-import { useTraining, WorkoutExercisePayload } from '../../../../../Context/TrainingContext';
+import { useTraining } from '../../../../../Context/TrainingContext';
+import { WorkoutExercisePayload } from '../../../../../types/trainingProgram.types';
 import { useSnackbar } from '../../../../../Context/SnackbarContext';
 
 const styles = {

@@ -734,10 +734,23 @@
     "program": "Program",
     "date": "Date",
     "duration": "Workout Duration",
+    "client": "Client",
+    "type": "Type",
     "series": "Series",
     "repetitions": "Repetitions",
     "weight": "Weight (Kg)",
     "notes": "Notes",
+    "totalLogs": "Total Logs",
+    "rest": "Rest",
+    "completedAt": "Completed At",
+    "expires": "Expires",
+    "createdAt": "Created At",
+    "time": "Time",
+    "emptyState": {
+      "title": "No exercise logs yet",
+      "description": "No exercise logs have been recorded for this training assignment yet. Logs will appear here as the client completes exercises.",
+      "subtitle": "Exercise logs will be displayed here once available"
+    },
     "table": {
       "headers": {
         "series": "Series",

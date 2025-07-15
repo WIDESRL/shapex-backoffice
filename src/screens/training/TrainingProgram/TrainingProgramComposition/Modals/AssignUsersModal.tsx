@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Typogra
 import DialogCloseIcon from '../../../../../icons/DialogCloseIcon2';
 import MagnifierIcon from '../../../../../icons/MagnifierIcon';
 import { useTraining } from '../../../../../Context/TrainingContext';
-import type { User } from '../../../../../Context/TrainingContext';
+import type { User } from '../../../../../types/trainingProgram.types';
 import PendingIcon from '@mui/icons-material/Pending';
 import { useSnackbar } from '../../../../../Context/SnackbarContext';
 import { useTranslation } from 'react-i18next';

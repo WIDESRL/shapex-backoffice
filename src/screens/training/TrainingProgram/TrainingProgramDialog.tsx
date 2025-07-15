@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Box, TextField, Typo
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import DialogCloseIcon from '../../../icons/DialogCloseIcon2';
-import { TrainingProgram } from '../../../Context/TrainingContext';
+import { TrainingProgram } from '../../../types/trainingProgram.types';
 
 interface TrainingProgramDialogProps {
   open: boolean;

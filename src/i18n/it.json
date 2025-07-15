@@ -719,10 +719,23 @@
     "program": "Programma",
     "date": "Data",
     "duration": "Durata allenamento",
+    "client": "Cliente",
+    "type": "Tipo",
     "series": "Serie",
     "repetitions": "Ripetizioni",
     "weight": "Peso (Kg)",
     "notes": "Note",
+    "totalLogs": "Log totali",
+    "rest": "Riposo",
+    "completedAt": "Completato il",
+    "expires": "Scade",
+    "createdAt": "Creato il",
+    "time": "Tempo",
+    "emptyState": {
+      "title": "Nessun log di esercizio ancora",
+      "description": "Non sono ancora stati registrati log di esercizio per questa assegnazione di allenamento. I log appariranno qui quando il cliente completerà gli esercizi.",
+      "subtitle": "I log degli esercizi saranno visualizzati qui una volta disponibili"
+    },
     "table": {
       "headers": {
         "series": "Serie",

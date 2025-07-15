@@ -1,223 +1,30 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { api } from '../utils/axiosInstance';
 import { uploadFileAndGetId } from '../utils/uploadFileAndGetId';
-
-export interface UploadedFile {
-  id: number;
-  type: string;
-  fileName: string;
-  signedUrl: string;
-  signedUrlExpire: string;
-  createdAt?: string;
-}
-
-export interface Exercise {
-  id: number;
-  title: string;
-  muscleGroup: string;
-  description: string;
-  videoFile?: UploadedFile | null;
-  videoFileId?: number | null;
-  originalVideoFileName?: string;
-  videoThumbnailFileId?: number | null;
-  videoThumbnailFile?: UploadedFile | null;
-  videoDuration?: number;
-  videoName?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface TrainingProgram extends TrainingProgramPayload {
-  id: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-interface TrainingProgramPayload {
-    title?: string;
-    description?: string;
-    type?: string;
-}
-
-export interface FullTrainningProgram extends TrainingProgram {
-  weeks: TrainingProgramWeek[];
-}
-
-
-// --- Training Program Weeks Types ---
-export type TrainingProgramExercise = {
-  id: number;
-  dayId: number;
-  exerciseId: number;
-  order: number;
-  type: string;
-  sets: number;
-  repsOrTime: string;
-  rest: number;
-  weight?: number;
-  rpe?: number;
-  rir?: number;
-  tut?: number;
-  note?: string;
-  supersetGroup?: number | null;
-  createdAt: string;
-  updatedAt: string;
-  exercise: Exercise;
-};
-
-export type TrainingProgramDay = {
-  id: number;
-  weekId: number;
-  dayOfWeek: number;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-  exercises: TrainingProgramExercise[];
-};
-
-export type TrainingProgramWeek = {
-  id: number;
-  trainingProgramId: number;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-  days: TrainingProgramDay[];
-};
-
-interface TrainingContextType {
-  exercises: Exercise[];
-  isLoading: boolean;
-  loadingAvailableUsers: boolean;
-  fetchExercises: (limit: number | undefined) => Promise<void>;
-  fetchExercisesWithoutLoading: (limit?: number, search?: string, muscleGroups?: string[]) => Promise<void>;
-  addExercise: (data: {
-    title: string;
-    muscleGroup: string;
-    description: string;
-    videoFile?: File | null;
-    videoThumbnailFile?: File | null;
-    videoDuration?: number;
-  }) => Promise<Exercise>;
-  updateExercise: (id: number, data: UpdateExercisePayload) => Promise<Exercise>;
-  deleteExercise: (id: number) => Promise<void>;
-  trainingPrograms: TrainingProgram[];
-  fetchTrainingPrograms: (limit?: number) => Promise<void>;
-  addTrainingProgram: (data: { title: string; description: string; type: string;}) => Promise<TrainingProgram>;
-  updateTrainingProgram: (id: number, data: { title?: string; description?: string; type?: string; }) => Promise<TrainingProgram>;
-  deleteTrainingProgram: (id: number) => Promise<void>;
-  selectedTrainingProgram: FullTrainningProgram | null;
-  fetchTrainingProgramById: (id: string | number) => Promise<TrainingProgram>;
-  modifyTrainingProgram: (id: number, data: TrainingProgramPayload) => Promise<void>;
-  deleteWeek: (weekId: number) => Promise<void>;
-  createNextWeek: (programId: number) => Promise<void>;
-  duplicateWeek: (weekId: number, destinationWeekOrderNumber: number, programId: number) => Promise<void>;
-  updateDayTitle: (dayId: number, title: string) => Promise<void>;
-  cloneDay: (sourceWeekId: number, sourceDayOfWeek: number, destinationWeekId: number, destinationDayOfWeek: number) => Promise<void>;
-  deleteDay: (dayId: string | number) => Promise<void>;
-  createDay: (weekId: number, dayOfWeek: number, title: string) => Promise<void>;
-  updateExercisesOrder: (updates: { exerciseId: number; order: number }[]) => Promise<void>;
-  // Create a workout exercise for a day
-  createWorkoutExercise: (dayId: number, data: WorkoutExercisePayload) => Promise<void>;
-  // Update a workout exercise
-  updateWorkoutExercise: (exerciseId: number, data: WorkoutExercisePayload) => Promise<void>;
-  // Delete a workout exercise
-  deleteWorkoutExercise: (exerciseId: number) => Promise<void>;
-  copyExerciseToDay: (exerciseId: number, destinationDayId: number) => Promise<void>;
-  availableUsers: User[];
-  fetchAllUsers: () => Promise<void>;
-  assignedUsers: AssignedUser[];
-  loadingAssignedUsers: boolean;
-  fetchAssignedUsers: () => Promise<void>;
-  removeUserAssignment: (assignmentId: number) => Promise<void>;
-  assignUserToProgram: (userId: number, trainingProgramId?: number) => Promise<void>;
-  batchAssignAndRemoveUsers: (userIdsToAssign: number[], assignmentIdsToRemove: number[]) => Promise<void>;
-}
-
-// Type for exercise payload
-export type ExercisePayload = {
-  title: string;
-  muscleGroup: string;
-  description: string;
-  videoFileId?: number | null;
-  videoThumbnailFileId?: number | null;
-  videoDuration?: number;
-  originalVideoFileName?: string;
-};
-
-// Type for update exercise payload
-export type UpdateExercisePayload = {
-  title?: string;
-  muscleGroup?: string;
-  description?: string;
-  video?: File | null;
-  videoThumbnail?: File | null;
-  videoDuration?: number;
-  originalVideoFileName?: string;
-};
-
-// Type for update exercise API payload (extends UpdateExercisePayload)
-export type UpdateExerciseApiPayload = UpdateExercisePayload & {
-  videoFileId?: number | null;
-  videoThumbnailFileId?: number | null;
-};
-
-// Type for modify training program payload
-export type ModifyTrainingProgramPayload = {
-  title: string;
-  description: string;
-  type: string;
-};
-
-// Reusable type for workout exercise payload
-export type WorkoutExercisePayload = {
-  exerciseId: number;
-  order?: number; //Required when create a new exercise, optional when updating
-  type: string;
-  sets: number;
-  repsOrTime: string;
-  rest: number;
-  weight?: number;
-  rpe?: number;
-  rir?: number;
-  tut?: number;
-  note?: string;
-  supersetWorkoutExerciseId?: number | null; // ID of the exercise to superset with, if any
-};
-
-// --- User Types ---
-export interface UserActiveSubscription {
-  id: number;
-}
-
-export interface UserAssignedProgram {
-  trainingProgramId: number;
-  id: number;
-  completed: boolean;
-}
-
-export interface User {
-  id: number;
-  email: string;
-  username: string;
-  firstName: string | null;
-  lastName: string | null;
-  subscriptions: UserActiveSubscription[];
-  assignedPrograms: UserAssignedProgram[];
-}
-
-// --- Assigned User Types ---
-export interface AssignedUser {
-  id: number;
-  trainingProgramId: number;
-  completed: boolean;
-  user: {
-    id: number;
-    username: string;
-    email: string;
-    firstName: string | null;
-    lastName: string | null;
-  };
-}
+import type {
+  // Exercise Types
+  Exercise,
+  ExercisePayload,
+  UpdateExercisePayload,
+  UpdateExerciseApiPayload,
+  // Training Program Types
+  TrainingProgram,
+  TrainingProgramPayload,
+  ModifyTrainingProgramPayload,
+  FullTrainningProgram,
+  // Workout Exercise Types
+  WorkoutExercisePayload,
+  // User Types
+  User,
+  AssignedUser,
+  // Completed Training Types
+  CompletedTrainingParams,
+  CompletedTrainingResponse,
+  // Assignment Logs Types
+  AssignmentLogsResponse,
+  // Context Type
+  TrainingContextType,
+} from '../types/trainingProgram.types';
 
 const TrainingContext = createContext<TrainingContextType | undefined>(undefined);
 
@@ -230,6 +37,12 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [loadingAvailableUsers, setLoadingAvailableUsers] = React.useState(false);
   const [assignedUsers, setAssignedUsers] = React.useState<AssignedUser[]>([]);
   const [loadingAssignedUsers, setLoadingAssignedUsers] = React.useState(false);
+  const [completedTrainings, setCompletedTrainings] = React.useState<CompletedTrainingResponse | null>(null);
+  const [loadingCompletedTrainings, setLoadingCompletedTrainings] = React.useState(false);
+  
+  // Assignment logs states
+  const [assignmentLogs, setAssignmentLogs] = React.useState<AssignmentLogsResponse | null>(null);
+  const [loadingAssignmentLogs, setLoadingAssignmentLogs] = React.useState(false);
 
   const fetchExercises = React.useCallback(async (limit: number | undefined = undefined) => {
     setIsLoading(true);
@@ -487,6 +300,83 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     await fetchAssignedUsers();
   };
 
+  // Fetch completed trainings
+  const fetchCompletedTrainings = React.useCallback(async (params: CompletedTrainingParams = {}) => {
+    setLoadingCompletedTrainings(true);
+    try {
+      const searchParams = new URLSearchParams();
+      
+      // Set default values
+      searchParams.append('page', (params.page || 1).toString());
+      searchParams.append('itemsPerPage', (params.itemsPerPage || 20).toString());
+      
+      // Add optional parameters
+      if (params.clientId) searchParams.append('clientId', params.clientId.toString());
+      if (params.status) searchParams.append('status', params.status);
+      if (params.startDate) searchParams.append('startDate', params.startDate);
+      if (params.endDate) searchParams.append('endDate', params.endDate);
+      
+      const url = `/trainning/completed-programs?${searchParams.toString()}`;
+      const res = await api.get(url);
+      console.log('fetchCompletedTrainings response:', res);
+      setCompletedTrainings(res);
+    } catch (error) {
+      console.error('Error fetching completed trainings:', error);
+    } finally {
+      setLoadingCompletedTrainings(false);
+    }
+  }, []);
+
+  // Load more completed trainings (append to existing data)
+  const loadMoreCompletedTrainings = React.useCallback(async (params: CompletedTrainingParams = {}) => {
+    setLoadingCompletedTrainings(true);
+    try {
+      const searchParams = new URLSearchParams();
+      
+      // Set default values - use the next page from current data
+      const currentPage = completedTrainings?.page || 1;
+      const nextPage = currentPage + 1;
+      
+      searchParams.append('page', nextPage.toString());
+      searchParams.append('itemsPerPage', (params.itemsPerPage || 2).toString());
+      
+      // Add optional parameters
+      if (params.clientId) searchParams.append('clientId', params.clientId.toString());
+      if (params.status) searchParams.append('status', params.status);
+      if (params.startDate) searchParams.append('startDate', params.startDate);
+      if (params.endDate) searchParams.append('endDate', params.endDate);
+      
+      const url = `/trainning/completed-programs?${searchParams.toString()}`;
+      const res = await api.get(url);
+      
+      // Append new data to existing assignments
+      setCompletedTrainings(prev => ({
+        ...res,
+        assignments: prev ? [...prev.assignments, ...res.assignments] : res.assignments
+      }));
+    } catch (error) {
+      console.error('Error loading more completed trainings:', error);
+    } finally {
+      setLoadingCompletedTrainings(false);
+    }
+  }, [completedTrainings]);
+
+  // Fetch assignment logs
+  const fetchAssignmentLogs = React.useCallback(async (assignmentId: number) => {
+    setLoadingAssignmentLogs(true);
+    try {
+      const url = `/trainning/assignment/${assignmentId}/logs`;
+      const res = await api.get(url);
+      console.log('fetchAssignmentLogs response:', res);
+      setAssignmentLogs(res);
+    } catch (error) {
+      console.error('Error fetching assignment logs:', error);
+      setAssignmentLogs(null);
+    } finally {
+      setLoadingAssignmentLogs(false);
+    }
+  }, []);
+
   return (
     <TrainingContext.Provider value={{
       exercises,
@@ -524,7 +414,14 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       fetchAssignedUsers,
       removeUserAssignment,
       assignUserToProgram,
-      batchAssignAndRemoveUsers
+      batchAssignAndRemoveUsers,
+      completedTrainings,
+      loadingCompletedTrainings,
+      fetchCompletedTrainings,
+      loadMoreCompletedTrainings,
+      assignmentLogs,
+      loadingAssignmentLogs,
+      fetchAssignmentLogs
     }}>
       {children}
     </TrainingContext.Provider>

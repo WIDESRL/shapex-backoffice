@@ -234,8 +234,15 @@ export type NotificationsResponse = {
   pagination: Pagination;
 };
 
+// Type for client names
+export type ClientName = {
+  id: number;
+  name: string;
+};
+
 export type ClientContextType = {
   clients: Client[];
+  clientNames: ClientName[];
   clientAnagrafica: ClientAnagrafica | null;
   trainingProgramOfUser: TrainingProgramOfUser[];
   historicalExercises: HistoricalExercise[];
@@ -248,6 +255,7 @@ export type ClientContextType = {
   userImagesAlbumPagination: Pagination | null;
   selectedCheckDetailed: UserCheckDetailed | null;
   loading: boolean;
+  loadingClientNames: boolean;
   loadingClientAnagrafica: boolean;
   loadingTrainingPrograms: boolean;
   loadingHistoricalExercises: boolean;
@@ -262,6 +270,7 @@ export type ClientContextType = {
   total: number;
   search: string;
   fetchClients: (params?: { page?: number; pageSize?: number; search?: string; append?: boolean }) => Promise<void>;
+  fetchClientNames: () => Promise<void>;
   setSearch: (search: string) => void;
   setPage: (page: number) => void;
   setClients: React.Dispatch<React.SetStateAction<Client[]>>;
@@ -281,6 +290,7 @@ const ClientContext = createContext<ClientContextType | undefined>(undefined);
 
 export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [clients, setClients] = useState<Client[]>([]);
+  const [clientNames, setClientNames] = useState<ClientName[]>([]);
   const [clientAnagrafica, setClientAnagrafica] = useState<ClientAnagrafica | null>(null);
   const [trainingProgramOfUser, setTrainingProgramOfUser] = useState<TrainingProgramOfUser[]>([]);
   const [historicalExercises, setHistoricalExercises] = useState<HistoricalExercise[]>([]);
@@ -293,6 +303,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [userImagesAlbumPagination, setUserImagesAlbumPagination] = useState<Pagination | null>(null);
   const [selectedCheckDetailed, setSelectedCheckDetailed] = useState<UserCheckDetailed | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingClientNames, setLoadingClientNames] = useState(false);
   const [loadingClientAnagrafica, setLoadingClientAnagrafica] = useState(false);
   const [loadingTrainingPrograms, setLoadingTrainingPrograms] = useState(false);
   const [loadingHistoricalExercises, setLoadingHistoricalExercises] = useState(false);
@@ -330,6 +341,20 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     },
     [page, pageSize, search]
   );
+
+  const fetchClientNames = useCallback(async (): Promise<void> => {
+    try {
+      setLoadingClientNames(true);
+      const response = await axiosInstance.get('/client/all/names');
+      setClientNames(response.data || []);
+    } catch (error) {
+      console.error('Error fetching client names:', error);
+      setClientNames([]);
+      throw error;
+    } finally {
+      setLoadingClientNames(false);
+    }
+  }, []);
 
   const fetchClientAnagrafica = async (clientId: string): Promise<void> => {
     try {
@@ -547,6 +572,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     <ClientContext.Provider
       value={{ 
         clients, 
+        clientNames,
         clientAnagrafica, 
         trainingProgramOfUser,
         historicalExercises,
@@ -559,6 +585,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         userImagesAlbumPagination,
         selectedCheckDetailed,
         loading, 
+        loadingClientNames,
         loadingClientAnagrafica,
         loadingTrainingPrograms,
         loadingHistoricalExercises,
@@ -573,6 +600,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         total, 
         search, 
         fetchClients, 
+        fetchClientNames,
         setSearch, 
         setPage, 
         setClients, 
