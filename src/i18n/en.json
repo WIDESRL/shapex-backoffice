@@ -685,6 +685,11 @@
         "exerciseDetail": "Exercise Detail"
       }
     },
+    "dateLabels": {
+      "completed": "completed",
+      "expired": "expires",
+      "created": "created"
+    },
     "status": {
       "completed": "Completed",
       "expiring": "Expiring",

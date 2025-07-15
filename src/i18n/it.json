@@ -670,6 +670,11 @@
         "exerciseDetail": "Dettaglio esercizio"
       }
     },
+    "dateLabels": {
+      "completed": "completato",
+      "expired": "scade",
+      "created": "creato"
+    },
     "status": {
       "completed": "Terminato",
       "expiring": "In scadenza",

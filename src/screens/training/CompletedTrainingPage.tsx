@@ -211,7 +211,7 @@ const CompletedTrainingPage: React.FC = () => {
   
   // Filter state (what user is currently selecting)
   const [filters, setFilters] = useState<FilterState>({
-    status: '',
+    status: 'completed',
     clientId: null,
     dateFrom: '',
     dateTo: ''
@@ -219,7 +219,7 @@ const CompletedTrainingPage: React.FC = () => {
 
   // Store current filters for load more functionality
   const [currentFilters, setCurrentFilters] = useState<FilterState>({
-    status: '',
+    status: 'completed',
     clientId: null,
     dateFrom: '',
     dateTo: ''
@@ -228,7 +228,7 @@ const CompletedTrainingPage: React.FC = () => {
   // Fetch data when component mounts
   useEffect(() => {
     fetchAllUsers();
-    fetchCompletedTrainings();
+    fetchCompletedTrainings({ status: 'completed' });
   }, [fetchAllUsers, fetchCompletedTrainings]);
 
   // Get users formatted for autocomplete
@@ -241,6 +241,42 @@ const CompletedTrainingPage: React.FC = () => {
 
   // Get trainings data
   const trainingsData = completedTrainings?.assignments || [];
+
+  // Helper function to get the appropriate date value based on status
+  const getDateValue = (training: CompletedTraining) => {
+    let dateValue = '';
+    let dateLabel = '';
+    
+    switch (training.status) {
+      case 'completed':
+        dateValue = training.completedAt;
+        dateLabel = t('completedTraining.dateLabels.completed');
+        break;
+      case 'expiringSoon':
+        dateValue = training.expiresAt;
+        dateLabel = t('completedTraining.dateLabels.expired');
+        break;
+      case 'inProgress':
+        dateValue = training.createdAt;
+        dateLabel = t('completedTraining.dateLabels.created');
+        break;
+      default:
+        dateValue = training.completedAt || training.createdAt;
+        dateLabel = training.completedAt ? t('completedTraining.dateLabels.completed') : t('completedTraining.dateLabels.created');
+    }
+    
+    if (!dateValue) return '--';
+    
+    const date = new Date(dateValue);
+    const year = date.getFullYear();
+    
+    // Check for invalid dates or dates from 1970
+    if (isNaN(date.getTime()) || year <= 1970) {
+      return '--';
+    }
+    
+    return `${formatDate(dateValue)} (${dateLabel})`;
+  };
 
   // Debug logging
   console.log('CompletedTrainingPage Debug:', {
@@ -492,7 +528,7 @@ const CompletedTrainingPage: React.FC = () => {
             ) : trainingsData.length > 0 ? (
               trainingsData.map((training) => (
                 <TableRow key={training.id} hover sx={styles.tableRow}>
-                  <TableCell sx={styles.tableCell}>{formatDate(training.completedAt)}</TableCell>
+                  <TableCell sx={styles.tableCell}>{getDateValue(training)}</TableCell>
                   <TableCell sx={styles.tableCell}>{training.clientName}</TableCell>
                   <TableCell sx={styles.tableCell}>{training.trainingProgramName}</TableCell>
                   <TableCell sx={styles.tableCell}>{formatTrainingType(training.trainingProgramType)}</TableCell>
