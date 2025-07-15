@@ -37,7 +37,6 @@ const styles = {
     py: 2,
   },
   chip: {
-    color: '#616160',
     fontWeight: 500,
     borderRadius: 1,
     minWidth: 90,
@@ -111,6 +110,23 @@ const AnagraficaPage: React.FC = () => {
   const loadMoreDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const [localSearch, setLocalSearch] = useState(search);
   const [hasInitialFetch, setHasInitialFetch] = useState(false);
+
+  // Helper function to calculate luminance and determine if text should be light or dark
+  const getContrastColor = useCallback((backgroundColor: string): string => {
+    // Remove # if present
+    const hex = backgroundColor.replace('#', '');
+    
+    // Convert to RGB
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Calculate luminance using the formula: (0.299*R + 0.587*G + 0.114*B)
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    // Return white text for dark backgrounds, black text for light backgrounds
+    return luminance > 0.5 ? '#000000' : '#FFFFFF';
+  }, []);
 
   // Debounced fetch on page/search change
   useEffect(() => {
@@ -229,7 +245,11 @@ const AnagraficaPage: React.FC = () => {
                   {client.activeSubscription ? (
                     <Chip
                       label={client.activeSubscription.name || '--'}
-                      sx={{ ...styles.chip, background: client.activeSubscription.color }}
+                      sx={{ 
+                        ...styles.chip, 
+                        background: client.activeSubscription.color,
+                        color: getContrastColor(client.activeSubscription.color || '#ffffff'),
+                      }}
                     />
                   ) : '--'}
                 </TableCell>
