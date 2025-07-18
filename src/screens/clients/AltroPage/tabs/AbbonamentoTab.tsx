@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Chip, Paper, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useClientContext } from '../../../../Context/ClientContext';
+import { getContrastColor } from '../../../../utils/colorUtils';
 
 const styles = {
   container: {
@@ -176,7 +177,7 @@ const AbbonamentoTab: React.FC = () => {
           label={subscriptionData.title}
           sx={{
             backgroundColor: subscriptionData.color,
-            color: '#fff',
+            color: getContrastColor(subscriptionData.color || '#ffffff'),
             fontWeight: 500,
             fontSize: 12,
             height: 24,

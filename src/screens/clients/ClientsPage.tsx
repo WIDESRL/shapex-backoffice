@@ -13,6 +13,7 @@ import MoreIcon from '../../icons/MoreIcon';
 import DialogCloseIcon from '../../icons/DialogCloseIcon2';
 import AnagraficaIcon from '../../icons/AnagraficaIcon';
 import AllenamentiIcon from '../../icons/AllenamentiIcon';
+import { getContrastColor } from '../../utils/colorUtils';
 
 const styles = {
   modalSectionBox: {
@@ -160,7 +161,17 @@ const styles = {
     gap: 1,
   },
   dialogPaper: { borderRadius: 3, p: 2, minWidth: 480 },
-  dialogTitle: { fontWeight: 300, fontSize: 28, color: '#616160', pb: 1, pr: 5 },
+  dialogTitle: { 
+    fontWeight: 300, 
+    fontSize: 28, 
+    color: '#616160', 
+    pb: 1, 
+    pr: 5,
+    maxWidth: '90%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
   dialogCloseButton: { 
     position: 'absolute', 
     right: 16, 
@@ -236,23 +247,6 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [hasInitialFetch, setHasInitialFetch] = useState(false);
-
-  // Helper function to calculate luminance and determine if text should be light or dark
-  const getContrastColor = useCallback((backgroundColor: string): string => {
-    // Remove # if present
-    const hex = backgroundColor.replace('#', '');
-    
-    // Convert to RGB
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-    
-    // Calculate luminance using the formula: (0.299*R + 0.587*G + 0.114*B)
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    
-    // Return white text for dark backgrounds, black text for light backgrounds
-    return luminance > 0.5 ? '#000000' : '#FFFFFF';
-  }, []);
 
   // Debounced fetch on page/search change (debounce only the fetch, not the state update)
   useEffect(() => {
@@ -350,6 +344,13 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
 
   // Calculate number of columns for colspan
   const totalColumns = useMemo(() => dashboard ? 4 : 8, [dashboard]);
+
+  // Memoize client display name
+  const clientDisplayName = useMemo(() => {
+    if (!selectedClient) return '';
+    const fullName = `${selectedClient.firstName || ''} ${selectedClient.lastName || ''}`.trim();
+    return fullName || selectedClient.email || '';
+  }, [selectedClient]);
 
   return (
     <Box sx={styles.pageContainer}>
@@ -475,7 +476,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
           }}
           >
         <DialogTitle sx={styles.dialogTitle}>
-          {selectedClient ? `${selectedClient.firstName || ''} ${selectedClient.lastName || ''}`.trim() : ''}
+          {clientDisplayName}
           <IconButton aria-label="close" onClick={handleModalClose} sx={styles.dialogCloseButton}>
             <DialogCloseIcon style={styles.dialogCloseIcon} />
           </IconButton>
