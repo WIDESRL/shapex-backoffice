@@ -8,7 +8,7 @@ import FilterIcon from '../../../../../icons/FilterIcon';
 import VideoIcon from '../../../../../icons/VideoIcon';
 import DialogCloseIcon from '../../../../../icons/DialogCloseIcon2';
 import { useTraining } from '../../../../../Context/TrainingContext';
-import { WorkoutExercisePayload } from '../../../../../types/trainingProgram.types';
+import { WorkoutExercisePayload, Exercise } from '../../../../../types/trainingProgram.types';
 import { useSnackbar } from '../../../../../Context/SnackbarContext';
 
 const styles = {
@@ -412,7 +412,7 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
           )}
         </Box>
         <Box sx={styles.exerciseList}>
-          {exercises.length === 0 ? (
+          {!exercises || !exercises.exercises || exercises.exercises.length === 0 ? (
             <Box sx={styles.emptyStateBox}>
               <Box sx={styles.emptyStateIcon}>
                 <MagnifierIcon style={{ width: 24, height: 24, color: '#6c757d' }} />
@@ -425,7 +425,7 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
               </Typography>
             </Box>
           ) : (
-            exercises.map(ex => (
+            exercises.exercises.map((ex: Exercise) => (
               <Box
                 key={ex.id}
                 sx={{
