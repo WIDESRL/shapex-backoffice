@@ -157,7 +157,7 @@ const AlimentazionePage: React.FC = () => {
   }, [diet]);
 
   const handleBackClick = () => {
-    navigate('/clients/anagrafica');
+    navigate('/clients');
   };
 
   const handleInsertPiano = async () => {

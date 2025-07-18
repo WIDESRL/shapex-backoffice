@@ -72,7 +72,7 @@ const AnagraficaPage: React.FC = () => {
   }, [clientId]);
 
   const handleBackClick = () => {
-    navigate('/clients/anagrafica');
+    navigate('/clients');
   };
 
   if (loadingClientAnagrafica) {

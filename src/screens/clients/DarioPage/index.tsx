@@ -71,7 +71,7 @@ const DiarioPage: React.FC = () => {
   }, [clientId, debouncedFetchClientData]);
 
   const handleBackClick = () => {
-    navigate('/clients/anagrafica');
+    navigate('/clients');
   };
 
   if (loadingClientAnagrafica || !hasInitialFetch) {

@@ -18,7 +18,6 @@ import TrainingExercisePage from './screens/training/Exercises/TrainingExerciseP
 import TrainingProgramPage from './screens/training/TrainingProgram/TrainingProgramPage';
 import TrainingProgramDetailPage from './screens/training/TrainingProgram/TrainingProgramDetailPage';
 import CompletedTrainingPage from './screens/training/CompletedTrainingPage';
-import AnagraficaMainPage from './screens/clients/AnagraficaMainPage';
 import SettingsPage from './screens/SettingsPage';
 
 const AppRoutes: React.FC = () => {
@@ -33,7 +32,6 @@ const AppRoutes: React.FC = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/subscriptions" element={<SubscriptionScreen />} />
           <Route path="/clients" element={<ClientsPage />} />
-          <Route path="/clients/anagrafica" element={<AnagraficaMainPage  />} />
           <Route path="/clients/:clientId/anagrafica" element={<AnagraficaPage />} />
           <Route path="/clients/:clientId/allenamenti" element={<AllenamentiPage />} />
           <Route path="/clients/:clientId/diario" element={<DiarioPage />} />

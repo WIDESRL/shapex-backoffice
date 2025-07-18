@@ -142,7 +142,7 @@ const DashboardPage: React.FC = () => {
 					</Paper>
 				))}
 			</Box>
-			<ClientsPage />
+			<ClientsPage dashboard={true} />
 		</Box>
 	);
 };

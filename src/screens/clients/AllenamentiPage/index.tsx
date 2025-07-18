@@ -60,7 +60,7 @@ const AllenamentiPage: React.FC = () => {
   }, [tabValue]);
 
   const handleBackClick = () => {
-    navigate('/clients/anagrafica');
+    navigate('/clients');
   };
 
   if (loadingClientAnagrafica) {

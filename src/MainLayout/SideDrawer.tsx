@@ -191,28 +191,24 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
 
   // Helper for submenu navigation
   const handleClientSubmenuNavigation = (submenu: string) => {
+    if (!clientId) {
+      handleNavigation("/clients");
+      return;
+    }
+    
     switch (submenu) {
-      case ClientiSubMenu.Anagrafica: {
-        const anagraficaPath = clientId
-          ? `/clients/${clientId}/anagrafica`
-          : "/clients/anagrafica";
-        handleNavigation(anagraficaPath);
-        break;
-      }
+      case ClientiSubMenu.Anagrafica:
       case ClientiSubMenu.Allenamenti:
       case ClientiSubMenu.Diario:
       case ClientiSubMenu.Alimentazione:
       case ClientiSubMenu.Altro: {
-        if (!clientId) {
-          handleNavigation("/clients");
-          return;
-        }
         const baseClientPath = `/clients/${clientId}`;
         const sectionMap = {
           [ClientiSubMenu.Allenamenti]: "allenamenti",
           [ClientiSubMenu.Diario]: "diario",
           [ClientiSubMenu.Alimentazione]: "alimentazione",
           [ClientiSubMenu.Altro]: "altro",
+          [ClientiSubMenu.Anagrafica]: "anagrafica",
         };
         handleNavigation(
           `${baseClientPath}/${sectionMap[submenu as keyof typeof sectionMap]}`
@@ -333,9 +329,9 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
               color: activeMenu === ActiveMenu.Clients ? menuColor : undefined,
             }}
             onClick={() => {
+              handleNavigation(MenuPath.Clients);
               if (openSubmenu !== ActiveMenu.Clients) {
                 setOpenSubmenu(ActiveMenu.Clients);
-                handleNavigation(MenuPath.Clients);
               } else {
                 setOpenSubmenu(null);
               }
@@ -385,7 +381,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
         >
           <List component="div" disablePadding sx={{ pl: 9 }}>
             {Object.values(ClientiSubMenu).map((label) => {
-              const isDisabled = !clientId && label !== ClientiSubMenu.Anagrafica;
+              const isDisabled = !clientId;
               const isActive = activeSubmenu === label;
               
               const menuItem = (
@@ -448,9 +444,9 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
               color: activeMenu === ActiveMenu.Training ? menuColor : undefined,
             }}
             onClick={() => {
+              handleNavigation(MenuPath.Training);
               if (openSubmenu !== ActiveMenu.Training) {
                 setOpenSubmenu(ActiveMenu.Training);
-                handleNavigation(MenuPath.Training);
               } else {
                 setOpenSubmenu(null);
               }

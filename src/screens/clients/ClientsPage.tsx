@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback, useState } from 'react';
+import React, { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip } from '@mui/material';
@@ -60,8 +60,17 @@ const styles = {
     color: '#aaa',
     fontWeight: 300,
   },
-  tableCellHeader: { background: '#EDEDED', fontWeight: 500 },
-  tableCell: { py: 0.5 },
+  tableCellHeader: { 
+    background: '#EDEDED', 
+    fontWeight: 500,
+    minWidth: 120,
+    whiteSpace: 'nowrap',
+  },
+  tableCell: { 
+    py: 0.5,
+    minWidth: 120,
+    whiteSpace: 'nowrap',
+  },
   tableActionCell: { py: 0.5, textAlign: 'center' },
   tableRow: { 
     height: 42, 
@@ -88,7 +97,12 @@ const styles = {
     boxShadow: 'none',
     flex: 1,
     minHeight: 0,
+    maxWidth: '78vw',
+    margin: '0 auto',
     overflow: 'auto',
+    overflowX: 'auto',
+    scrollbarWidth: 'none', 
+    msOverflowStyle: 'none',
   },
   searchInput: {
     width: 440,
@@ -211,7 +225,7 @@ const getExpirationTooltip = (dateString: string, t: (key: string) => string): s
   return '';
 };
 
-const ClientsPage: React.FC = () => {
+const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { clients, loading, page, pageSize, total, search, fetchClients, setSearch, setPage } = useClientContext();
@@ -334,6 +348,9 @@ const ClientsPage: React.FC = () => {
     }
   };
 
+  // Calculate number of columns for colspan
+  const totalColumns = useMemo(() => dashboard ? 4 : 8, [dashboard]);
+
   return (
     <Box sx={styles.pageContainer}>
       <Box sx={styles.headerContainer}>
@@ -363,6 +380,10 @@ const ClientsPage: React.FC = () => {
               <TableCell sx={styles.tableCellHeader}>{t('client.main.clientName')}</TableCell>
               <TableCell sx={styles.tableCellHeader}>{t('client.main.subscription')}</TableCell>
               <TableCell sx={styles.tableCellHeader}>{t('client.main.expiration')}</TableCell>
+              {!dashboard && <TableCell sx={styles.tableCellHeader}>{t('client.anagrafica.email')}</TableCell>}
+              {!dashboard && <TableCell sx={styles.tableCellHeader}>{t('client.anagrafica.phone')}</TableCell>}
+              {!dashboard && <TableCell sx={styles.tableCellHeader}>{t('client.anagrafica.dateOfBirth')}</TableCell>}
+              {!dashboard && <TableCell sx={styles.tableCellHeader}>{t('client.anagrafica.placeOfBirth')}</TableCell>}
               <TableCell sx={styles.tableCellHeader}>{t('client.main.messages')}</TableCell>
             </TableRow>
           </TableHead>
@@ -408,13 +429,21 @@ const ClientsPage: React.FC = () => {
                       '--'
                     )}
                   </TableCell>
+                  {!dashboard && <TableCell sx={styles.tableCell}>{client.email || '--'}</TableCell>}
+                  {!dashboard && <TableCell sx={styles.tableCell}>{client.phoneNumber || '--'}</TableCell>}
+                  {!dashboard && (
+                    <TableCell sx={styles.tableCell}>
+                      {client.dateOfBirth ? new Date(client.dateOfBirth).toLocaleDateString() : '--'}
+                    </TableCell>
+                  )}
+                  {!dashboard && <TableCell sx={styles.tableCell}>{client.placeOfBirth || '--'}</TableCell>}
                   <TableCell sx={styles.tableCell}>{client.totalMessages}</TableCell>
                 </TableRow>
               );
             })}
             {clients && clients.length === 0 && !loading && hasInitialFetch && (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={styles.emptyTableCell}>
+                <TableCell colSpan={totalColumns} align="center" sx={styles.emptyTableCell}>
                   <Box sx={styles.emptyStateBox}>
                     <UserIcon  />
                     <span>{t('client.main.noClientsTitle')}</span>
@@ -427,7 +456,7 @@ const ClientsPage: React.FC = () => {
             )}
             {(loading || !hasInitialFetch) && (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={styles.loadingTableCell}>
+                <TableCell colSpan={totalColumns} align="center" sx={styles.loadingTableCell}>
                   <CircularProgress size={24} />
                 </TableCell>
               </TableRow>
