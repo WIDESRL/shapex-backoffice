@@ -54,6 +54,11 @@
       "orderPositive": "L'ordine deve essere un numero positivo maggiore di 0.",
       "pricePositive": "Il prezzo deve essere un numero positivo maggiore di 0."
     },
+    "errors": {
+      "addFailed": "Impossibile aggiungere l'abbonamento. Riprova più tardi.",
+      "updateFailed": "Impossibile aggiornare l'abbonamento. Riprova più tardi.",
+      "deleteFailed": "Impossibile eliminare l'abbonamento. Riprova più tardi."
+    },
     "deletionIrreversible": "Questa operazione non può essere annullata."
   },
   "banners": {
@@ -852,5 +857,13 @@
     "send": "Invia",
     "close": "Chiudi",
     "user": "Utente"
+  },
+  "login": {
+    "title": "Accedi",
+    "subtitle": "Inserisci le tue credenziali per accedere alla sezione amministrativa",
+    "emailPlaceholder": "E-Mail",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Accedi",
+    "errorMessage": "Nome utente o password non validi"
   }
 }

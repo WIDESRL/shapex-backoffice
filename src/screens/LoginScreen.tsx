@@ -6,11 +6,13 @@ import {
   Typography,
   InputAdornment,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '../Context/AuthContext';
 
 const LoginScreen: React.FC = () => {
   const { login } = useAuth();
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +25,7 @@ const LoginScreen: React.FC = () => {
       await login({ username, password });
       // Redirect to a protected route or dashboard
     } catch (error) {
-      setError('Invalid username or password');
+      setError(t('login.errorMessage'));
     }
   };
 
@@ -62,7 +64,7 @@ const LoginScreen: React.FC = () => {
         </Box>
         {/* Title */}
         <Typography variant="h4" sx={{ fontWeight: 500, mb: 1, textAlign: 'center', marginTop: 10 }}>
-          Log in
+          {t('login.title')}
         </Typography>
         {/* Subtitle */}
         <Typography
@@ -75,12 +77,12 @@ const LoginScreen: React.FC = () => {
             maxWidth: 320,
           }}
         >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+          {t('login.subtitle')}
         </Typography>
         {/* Form */}
         <form onSubmit={handleSubmit} style={{ width: '100%', marginTop: 20 }}>
           <TextField
-            placeholder="E-Mail"
+            placeholder={t('login.emailPlaceholder')}
             variant="outlined"
             fullWidth
             margin="normal"
@@ -110,7 +112,7 @@ const LoginScreen: React.FC = () => {
             }}
           />
           <TextField
-            placeholder="Password"
+            placeholder={t('login.passwordPlaceholder')}
             type="password"
             variant="outlined"
             fullWidth
@@ -165,7 +167,7 @@ const LoginScreen: React.FC = () => {
               height: 48,
             }}
           >
-            Log in
+            {t('login.loginButton')}
           </Button>
         </form>
         {/* Bottom link */}

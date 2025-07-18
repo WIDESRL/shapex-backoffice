@@ -13,6 +13,7 @@ import './splash.css';
 import './global-font.css';
 import { ClientProvider } from './Context/ClientContext';
 import { StatsProvider } from './Context/StatsContext';
+import { SnackbarProvider } from './Context/SnackbarContext';
 
 const queryClient = new QueryClient();
 
@@ -25,26 +26,28 @@ const hideSplash = () => {
 };
 
 const renderApp = () => {
-  createRoot(document.getElementById('root')!).render(
+  createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SubscriptionsProvider>
-          <BannersProvider>
-            <MessagesProvider>
-              <TrainingProvider>
-                 <StatsProvider>
-                  <ClientProvider>
-                    <App />
-                  </ClientProvider>
-                </StatsProvider>
-              </TrainingProvider>
-            </MessagesProvider>
-          </BannersProvider>
-        </SubscriptionsProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-</React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <SnackbarProvider>
+            <SubscriptionsProvider>
+              <BannersProvider>
+                <MessagesProvider>
+                  <TrainingProvider>
+                    <StatsProvider>
+                      <ClientProvider>
+                        <App />
+                      </ClientProvider>
+                    </StatsProvider>
+                  </TrainingProvider>
+                </MessagesProvider>
+              </BannersProvider>
+            </SubscriptionsProvider>
+          </SnackbarProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
   setTimeout(hideSplash, 200);
 };

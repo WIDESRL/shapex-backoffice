@@ -2,6 +2,8 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '../utils/axiosInstance'; // Reuse the axios instance
 import { omit } from 'lodash';
+import { useSnackbar } from './SnackbarContext';
+import { useTranslation } from 'react-i18next';
 
 // Define the structure of a subscription
 export interface Subscription {
@@ -37,6 +39,8 @@ const SubscriptionsContext = createContext<SubscriptionsContextType | undefined>
 // Create the provider
 export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const { showSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   // Fetch subscriptions using React Query
   const {data, isLoading, refetch } = useQuery<Subscription[], Error>({
@@ -60,6 +64,7 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
     },
     onError: (error) => {
       console.error('Failed to add subscription:', error);
+      showSnackbar(t('subscriptions.errors.addFailed'), 'error');
     },
   });
 
@@ -76,6 +81,7 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
     },
     onError: (error) => {
       console.error('Failed to update subscription:', error);
+      showSnackbar(t('subscriptions.errors.updateFailed'), 'error');
     },
   });
 
@@ -89,6 +95,7 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
     },
     onError: (error) => {
       console.error('Failed to remove subscription:', error);
+      showSnackbar(t('subscriptions.errors.deleteFailed'), 'error');
     },
   });
 

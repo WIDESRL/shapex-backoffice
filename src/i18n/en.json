@@ -70,6 +70,11 @@
       "orderPositive": "Order must be a positive number greater than 0.",
       "pricePositive": "Price must be a positive number greater than 0."
     },
+    "errors": {
+      "addFailed": "Failed to add subscription. Please try again.",
+      "updateFailed": "Failed to update subscription. Please try again.",
+      "deleteFailed": "Failed to remove subscription. Please try again."
+    },
     "deletionIrreversible": "This action cannot be undone."
   },
   "banners": {
@@ -867,5 +872,13 @@
     "send": "Send",
     "close": "Close",
     "user": "User"
+  },
+  "login": {
+    "title": "Log in",
+    "subtitle": "Enter your credentials to access the administrative section",
+    "emailPlaceholder": "E-Mail",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Log in",
+    "errorMessage": "Invalid username or password"
   }
 }
