@@ -34,6 +34,7 @@ const SubscriptionsScreen: React.FC = () => {
     description: '',
     duration: '',
     order: '',
+    price: '',
   });
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const SubscriptionsScreen: React.FC = () => {
 
   const handleCloseForm = () => {
     setOpenForm(false);
-    setErrors({ title: '', description: '', duration: '', order: '' });
+    setErrors({ title: '', description: '', duration: '', order: '', price: '' });
   };
 
   const handleFormSubmit = async () => {
@@ -79,6 +80,7 @@ const SubscriptionsScreen: React.FC = () => {
       description: formData.description.trim() ? '' : t('subscriptions.validation.descriptionRequired'),
       duration: formData.duration > 0 ? '' : t('subscriptions.validation.durationPositive'),
       order: formData.order > 0 ? '' : t('subscriptions.validation.orderPositive'),
+      price: formData.price > 0 ? '' : t('subscriptions.validation.pricePositive'), 
     };
 
     setErrors(newErrors);

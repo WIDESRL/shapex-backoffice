@@ -40,11 +40,19 @@
     "price": "Prezzo",
     "save": "Salva",
     "chooseCustomColor": "Scegli altro colore...",
+    "colors": {
+      "red": "Rosso",
+      "green": "Verde",
+      "blue": "Blu",
+      "yellow": "Giallo",
+      "orange": "Arancione"
+    },
     "validation": {
       "titleRequired": "Il titolo è obbligatorio.",
       "descriptionRequired": "La descrizione è obbligatoria.",
       "durationPositive": "La durata deve essere un numero positivo maggiore di 0.",
-      "orderPositive": "L'ordine deve essere un numero positivo maggiore di 0."
+      "orderPositive": "L'ordine deve essere un numero positivo maggiore di 0.",
+      "pricePositive": "Il prezzo deve essere un numero positivo maggiore di 0."
     },
     "deletionIrreversible": "Questa operazione non può essere annullata."
   },

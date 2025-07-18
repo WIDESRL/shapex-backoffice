@@ -56,11 +56,19 @@
     "price": "Price",
     "save": "Save",
     "chooseCustomColor": "Choose custom color...",
+    "colors": {
+      "red": "Red",
+      "green": "Green",
+      "blue": "Blue",
+      "yellow": "Yellow",
+      "orange": "Orange"
+    },
     "validation": {
       "titleRequired": "Title is required.",
       "descriptionRequired": "Description is required.",
       "durationPositive": "Duration must be a positive number greater than 0.",
-      "orderPositive": "Order must be a positive number greater than 0."
+      "orderPositive": "Order must be a positive number greater than 0.",
+      "pricePositive": "Price must be a positive number greater than 0."
     },
     "deletionIrreversible": "This action cannot be undone."
   },

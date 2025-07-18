@@ -27,21 +27,13 @@ interface SubscriptionFormDialogProps {
     description: string;
     duration: string;
     order: string;
+    price: string;
   };
   onClose: () => void;
   onSubmit: () => void;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   editMode: boolean;
 }
-
-const colorOptions = [
-  { value: '#FF0000', label: 'Red' },
-  { value: '#00C853', label: 'Green' },
-  { value: '#2979FF', label: 'Blue' },
-  { value: '#FFD600', label: 'Yellow' },
-  { value: '#FF9100', label: 'Orange' },
-  // ...add more if needed
-];
 
   const styles = {
     dialog: {
@@ -275,6 +267,15 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
   
   const [colorMenuAnchor, setColorMenuAnchor] = React.useState<null | HTMLElement>(null);
 
+  // Color options with translations
+  const colorOptions = [
+    { value: '#FF0000', label: t('subscriptions.colors.red') },
+    { value: '#00C853', label: t('subscriptions.colors.green') },
+    { value: '#2979FF', label: t('subscriptions.colors.blue') },
+    { value: '#FFD600', label: t('subscriptions.colors.yellow') },
+    { value: '#FF9100', label: t('subscriptions.colors.orange') },
+  ];
+
   // Add a ref for the color dropdown
   const colorDropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -307,6 +308,14 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
       target: { name: 'color', value: color, type: 'text' },
     } as React.ChangeEvent<HTMLInputElement>);
     setColorMenuAnchor(null);
+  };
+
+  // Handle price change with validation
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === '' || (parseFloat(value) > 0)) {
+      onInputChange(e);
+    }
   };
 
   return (
@@ -447,13 +456,15 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
               name="price"
               type="number"
               value={formData.price}
-              onChange={onInputChange}
+              onChange={handlePriceChange}
               fullWidth
               margin="normal"
+              error={!!errors.price}
+              helperText={errors.price}
               InputProps={{
                 sx: styles.textFieldInputNumber,
                 startAdornment: <InputAdornment position="start">€</InputAdornment>,
-                inputProps: { min: 0, style: { textAlign: 'left' } },
+                inputProps: { min: 1, step: 1, style: { textAlign: 'left' } },
               }}
             />
           </Box>
