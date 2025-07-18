@@ -12,11 +12,8 @@ import {
   IconButton,
   TextField,
   InputAdornment,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Button,
+  Autocomplete,
 } from '@mui/material';
 import EditIcon from '../../../icons/EditIcon';
 import DeleteIcon from '../../../icons/DeleteIcon';
@@ -107,7 +104,7 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const debouncedFetchExercises = useCallback(
-    (params: { limit?: number; search?: string; muscleGroup?: string; resetPagination?: boolean }) => {
+    (params: { limit?: number; search?: string; muscleGroups?: string[]; resetPagination?: boolean }) => {
       // Clear existing timeout
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
@@ -116,7 +113,13 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
       // Set new timeout
       debounceTimeoutRef.current = setTimeout(() => {
         setIsLoading(true);
-        fetchExercises(params).finally(() => setIsLoading(false));
+        fetchExercises({
+          limit: params.limit,
+          search: params.search,
+          muscleGroups: params.muscleGroups,
+          page: params.resetPagination ? 1 : undefined,
+          resetPagination: params.resetPagination
+        }).finally(() => setIsLoading(false));
       }, 500);
     },
     [fetchExercises]
@@ -127,7 +130,7 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
     debouncedFetchExercises({ 
       limit: rowLimit, 
       search: searchTerm, 
-      muscleGroup: selectedMuscleGroup,
+      muscleGroups: selectedMuscleGroup ? [selectedMuscleGroup] : undefined,
       resetPagination: true 
     });
   }, [searchTerm, selectedMuscleGroup, debouncedFetchExercises, rowLimit]);
@@ -259,21 +262,23 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
               }}
             />
             
-            <FormControl variant="outlined" size="small" sx={styles.muscleGroupSelect}>
-              <InputLabel>{t('training.muscleGroup')}</InputLabel>
-              <Select
-                value={selectedMuscleGroup}
-                onChange={(e) => setSelectedMuscleGroup(e.target.value)}
-                label={t('training.muscleGroup')}
-              >
-                <MenuItem value="">{t('training.allMuscleGroups')}</MenuItem>
-                {muscleGroups.map((group) => (
-                  <MenuItem key={group} value={group}>
-                    {t(`training.muscleGroups.${group}`)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Autocomplete
+              size="small"
+              sx={styles.muscleGroupSelect}
+              options={muscleGroups}
+              value={selectedMuscleGroup || null}
+              onChange={(_, newValue) => setSelectedMuscleGroup(newValue || '')}
+              getOptionLabel={(option) => t(`training.muscleGroups.${option}`)}
+              renderInput={(params) => (
+                <TextField 
+                  {...params} 
+                  label={t('training.muscleGroup')}
+                  variant="outlined"
+                />
+              )}
+              isOptionEqualToValue={(option, value) => option === value}
+              clearOnEscape
+            />
           </Box>
         </>
       )}

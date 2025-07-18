@@ -46,7 +46,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [assignmentLogs, setAssignmentLogs] = React.useState<AssignmentLogsResponse | null>(null);
   const [loadingAssignmentLogs, setLoadingAssignmentLogs] = React.useState(false);
 
-  const fetchExercises = React.useCallback(async (params: { limit?: number; search?: string; muscleGroup?: string; page?: number; resetPagination?: boolean } = {}) => {
+  const fetchExercises = React.useCallback(async (params: { limit?: number; search?: string; muscleGroups?: string[]; page?: number; resetPagination?: boolean } = {}) => {
     setIsLoading(true);
     try {
       const url = '/trainning/exercise';
@@ -55,7 +55,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       // Store current filter state
       setCurrentExerciseFilters({
         search: params.search,
-        muscleGroup: params.muscleGroup,
+        muscleGroup: params.muscleGroups?.[0],
         limit: params.limit
       });
       
@@ -65,7 +65,9 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       // Add filter parameters
       if (params.search) urlParams.append('search', params.search);
-      if (params.muscleGroup) urlParams.append('muscleGroup', params.muscleGroup);
+      if (params.muscleGroups && params.muscleGroups.length > 0) {
+        params.muscleGroups.forEach(group => urlParams.append('muscleGroups', group));
+      }
       
       const res = await api.get(`${url}?${urlParams.toString()}`);
       setExercises(res);
@@ -74,7 +76,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, []);
 
-  const loadMoreExercises = React.useCallback(async (params: { limit?: number; search?: string; muscleGroup?: string } = {}) => {
+  const loadMoreExercises = React.useCallback(async (params: { limit?: number; search?: string; muscleGroups?: string[] } = {}) => {
     if (!exercises || exercises.page >= exercises.totalPages) return;
     
     try {
@@ -83,7 +85,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       // Use current filter state if not provided in params
       const search = params.search ?? currentExerciseFilters.search;
-      const muscleGroup = params.muscleGroup ?? currentExerciseFilters.muscleGroup;
+      const muscleGroup = params.muscleGroups ?? (currentExerciseFilters.muscleGroup ? [currentExerciseFilters.muscleGroup] : undefined);
       const limit = params.limit ?? currentExerciseFilters.limit;
       
       // Set pagination parameters for next page
@@ -92,7 +94,9 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       // Add filter parameters
       if (search) urlParams.append('search', search);
-      if (muscleGroup) urlParams.append('muscleGroup', muscleGroup);
+      if (muscleGroup && muscleGroup.length > 0) {
+        muscleGroup.forEach(group => urlParams.append('muscleGroups', group));
+      }
       
       const res = await api.get(`${url}?${urlParams.toString()}`);
       setExercises(prev => prev ? {
@@ -112,7 +116,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (limit) params.append('limit', limit.toString());
       if (search) params.append('search', search);
       if (muscleGroups && muscleGroups.length > 0) {
-        muscleGroups.forEach(group => params.append('muscleGroup[]', group));
+        muscleGroups.forEach(group => params.append('muscleGroups', group));
       }
       
       if (params.toString()) {

@@ -275,8 +275,8 @@ export interface TrainingContextType {
   exercises: ExerciseResponse | null;
   isLoading: boolean;
   loadingAvailableUsers: boolean;
-  fetchExercises: (params?: { limit?: number; search?: string; muscleGroup?: string; page?: number; resetPagination?: boolean }) => Promise<void>;
-  loadMoreExercises: (params?: { limit?: number; search?: string; muscleGroup?: string }) => Promise<void>;
+  fetchExercises: (params?: { limit?: number; search?: string; muscleGroups?: string[]; page?: number; resetPagination?: boolean }) => Promise<void>;
+  loadMoreExercises: (params?: { limit?: number; search?: string; muscleGroups?: string[] }) => Promise<void>;
   fetchExercisesWithoutLoading: (limit?: number, search?: string, muscleGroups?: string[]) => Promise<void>;
   addExercise: (data: {
     title: string;
