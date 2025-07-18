@@ -24,6 +24,7 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import { Exercise } from '../../../types/trainingProgram.types';
 import { useTranslation } from 'react-i18next';
+import { muscleGroups } from '../../../constants/muscleGroups';
 
 const styles = {
   dialogPaper: {
@@ -141,6 +142,10 @@ const styles = {
   inputLabel: {
     fontSize: 16,
     color: '#888',
+    transform: 'translate(14px, 12px) scale(1)',
+    '&.Mui-focused, &.MuiFormLabel-filled': {
+      transform: 'translate(14px, -9px) scale(0.75)',
+    },
   },
   select: {
     borderRadius: 3,
@@ -149,6 +154,13 @@ const styles = {
     borderColor: '#E0E0E0',
     minHeight: 45,
     height: 45,
+    '& .MuiSelect-select': {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '12px 14px',
+      fontSize: 16,
+      lineHeight: 1,
+    },
   },
   selectMenuPaper: {
     borderRadius: 3,
@@ -341,29 +353,6 @@ export type ExerciseModalUpdateData = {
   videoDuration?: number | null;
   originalVideoFileName?: string;
 };
-
-const muscleGroups = [
-  'Pettorali',
-  'Dorsali',
-  'Spalle',
-  'Trapezi',
-  'Bicipiti',
-  'Tricipiti',
-  'Avambracci',
-  'Quadricipiti',
-  "Femorali", 
-  "Adduttori", 
-  "Abduttori", 
-  "Glutei",
-  "Polpacci", 
-  "Addome", 
-  "Total Body", 
-  "Cardio", 
-  "Stretching"
-];
-
-
-
 
 interface ExerciseModalProps {
   open: boolean;

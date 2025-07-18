@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, MenuItem, InputLabel, Select, FormControl, Fade, SelectChangeEvent } from '@mui/material';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import DialogCloseIcon from '../icons/DialogCloseIcon2';
 import ImageCropDialog from './ImageCropDialog';
 import ImageCustom from './ImageCustom';
+import { BANNER_SIZES } from '../constants/bannerSizes';
 
 export interface BannerForm {
   title: string;
@@ -266,19 +267,21 @@ const BannerFormDialog = ({ open, onClose, onSubmit, initialValues }: BannerForm
     },
   };
 
-  const sizeOptions = [
-    { value: 'Great', label: t('banners.sizeGreat') },
-    { value: 'Medium', label: t('banners.sizeMedium') },
-    { value: 'Small', label: t('banners.sizeSmall') },
-  ];
+  const sizeOptions = useMemo(() => 
+    BANNER_SIZES.map(size => ({
+      value: size.value,
+      label: t(size.translationKey)
+    })), 
+    [t]
+  );
   const colorOptions = [
-    { value: '#E6BB4A', label: 'Gold' },
-    { value: '#FF0000', label: 'Red' },
-    { value: '#00C853', label: 'Green' },
-    { value: '#2979FF', label: 'Blue' },
-    { value: '#FFD600', label: 'Yellow' },
-    { value: '#FF9100', label: 'Orange' },
-    { value: '#616160', label: 'Gray' },
+    { value: '#E6BB4A', label: t('subscriptions.colors.gold') },
+    { value: '#FF0000', label: t('subscriptions.colors.red') },
+    { value: '#00C853', label: t('subscriptions.colors.green') },
+    { value: '#2979FF', label: t('subscriptions.colors.blue') },
+    { value: '#FFD600', label: t('subscriptions.colors.yellow') },
+    { value: '#FF9100', label: t('subscriptions.colors.orange') },
+    { value: '#616160', label: t('subscriptions.colors.gray') },
   ];
   const isEdit = Boolean(initialValues);
   const [form, setForm] = useState<BannerForm>(() => ({ ...defaultBanner, ...initialValues }));

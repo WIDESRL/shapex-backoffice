@@ -1,9 +1,28 @@
-import React from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  Typography,
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+  TextField,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+} from '@mui/material';
 import EditIcon from '../../../icons/EditIcon';
 import DeleteIcon from '../../../icons/DeleteIcon';
 import VideoIcon from '../../../icons/VideoIcon';
 import PlusIcon from '../../../icons/PlusIcon';
+import MagnifierIcon from '../../../icons/MagnifierIcon';
 import ExerciseModal, { ExerciseModalSaveData, ExerciseModalUpdateData } from './ExerciseModal';
 import DeleteDialog from '../DeleteDialog';
 import VideoPreviewDialog from './VideoPreviewDialog';
@@ -11,12 +30,34 @@ import { useTraining } from '../../../Context/TrainingContext';
 import { Exercise } from '../../../types/trainingProgram.types';
 import { useTranslation } from 'react-i18next';
 import OutlinedTextIconButton from '../../../components/OutlinedTextIconButton';
+import { muscleGroups } from '../../../constants/muscleGroups';
 
 // Styles object for TrainingExercisePage
 const styles = {
   root: { p: 4, background: '#fff',  },
   title: { fontSize: 38, fontWeight: 400, color: '#616160', fontFamily: 'Montserrat, sans-serif', mb: 3 },
   sectionHeader: { fontSize: 28, fontWeight: 400, color: '#616160', fontFamily: 'Montserrat, sans-serif' },
+  filterContainer: {
+    display: 'flex',
+    gap: 2,
+    mb: 3,
+    alignItems: 'center',
+  },
+  searchInput: {
+    minWidth: 300,
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      background: '#fff',
+      fontSize: 16,
+    },
+  },
+  muscleGroupSelect: {
+    minWidth: 200,
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      background: '#fff',
+    },
+  },
   paper: { background: '#F6F6F6', borderRadius: 3, boxShadow: 'none' },
   tableContainer: { background: 'transparent', boxShadow: 'none' },
   tableHeadCell: { fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0 },
@@ -41,19 +82,74 @@ interface TrainingExercisePageProps {
   rowLimit?: number;
 }
 
-const TrainingExercisePage: React.FC<TrainingExercisePageProps> = ({ showHeader = true, rowLimit }) => {
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [editData, setEditData] = React.useState<Exercise | null>(null);
-  const [videoPreviewOpen, setVideoPreviewOpen] = React.useState(false);
-  const [videoUrl, setVideoUrl] = React.useState<string>('');
-  const [deleteTarget, setDeleteTarget] = React.useState<Exercise | null>(null);
-  const { addExercise, updateExercise, deleteExercise, exercises, fetchExercises, isLoading } = useTraining();
+const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExercisePageProps) => {
   const { t } = useTranslation();
+  const {
+    fetchExercises,
+    loadMoreExercises,
+    updateExercise,
+    deleteExercise,
+    exercises,
+    addExercise,
+  } = useTraining();
 
-  React.useEffect(() => {
-    fetchExercises(rowLimit ?? undefined);
-  }, [fetchExercises, rowLimit]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('');
+  const [editData, setEditData] = useState<Exercise | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Exercise | null>(null);
+  const [videoPreviewOpen, setVideoPreviewOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Debounced fetch function
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const debouncedFetchExercises = useCallback(
+    (params: { limit?: number; search?: string; muscleGroup?: string; resetPagination?: boolean }) => {
+      // Clear existing timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      
+      // Set new timeout
+      debounceTimeoutRef.current = setTimeout(() => {
+        setIsLoading(true);
+        fetchExercises(params).finally(() => setIsLoading(false));
+      }, 500);
+    },
+    [fetchExercises]
+  );
+
+  // Initial load
+  useEffect(() => {
+    debouncedFetchExercises({ 
+      limit: rowLimit, 
+      search: searchTerm, 
+      muscleGroup: selectedMuscleGroup,
+      resetPagination: true 
+    });
+  }, [searchTerm, selectedMuscleGroup, debouncedFetchExercises, rowLimit]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const currentExercises = exercises?.exercises || [];
+  const hasMore = exercises ? exercises.page < exercises.totalPages : false;
+
+  const handleLoadMore = useCallback(() => {
+    if (exercises && exercises.page < exercises.totalPages) {
+      setIsLoading(true);
+      loadMoreExercises().finally(() => setIsLoading(false));
+    }
+  }, [exercises, loadMoreExercises]);
 
   const handleAdd = () => {
     setEditData(null);
@@ -144,6 +240,41 @@ const TrainingExercisePage: React.FC<TrainingExercisePageProps> = ({ showHeader 
               onClick={handleAdd}
             />
           </Box>
+          
+          {/* Filter Section */}
+          <Box sx={styles.filterContainer}>
+            <TextField
+              placeholder={t('training.searchExercises')}
+              variant="outlined"
+              size="small"
+              sx={styles.searchInput}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MagnifierIcon style={{ color: '#bdbdbd', fontSize: 20 }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            
+            <FormControl variant="outlined" size="small" sx={styles.muscleGroupSelect}>
+              <InputLabel>{t('training.muscleGroup')}</InputLabel>
+              <Select
+                value={selectedMuscleGroup}
+                onChange={(e) => setSelectedMuscleGroup(e.target.value)}
+                label={t('training.muscleGroup')}
+              >
+                <MenuItem value="">{t('training.allMuscleGroups')}</MenuItem>
+                {muscleGroups.map((group) => (
+                  <MenuItem key={group} value={group}>
+                    {t(`training.muscleGroups.${group}`)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
         </>
       )}
       <Paper elevation={0} sx={styles.paper}>
@@ -169,7 +300,7 @@ const TrainingExercisePage: React.FC<TrainingExercisePageProps> = ({ showHeader 
                     ))}
                   </TableRow>
                 ))
-              ) : exercises.length === 0 ? (
+              ) : !currentExercises.length ? (
                 <TableRow>
                   <TableCell colSpan={5} align="center" sx={styles.emptyCell}>
                     <Box sx={styles.emptyBox}>
@@ -177,16 +308,16 @@ const TrainingExercisePage: React.FC<TrainingExercisePageProps> = ({ showHeader 
                         <VideoIcon style={{ fontSize: 22, color: '#E6BB4A' }} />
                       </Box>
                       <Typography sx={styles.emptyTitle}>
-                        {t('training.noExercisesTitle')}
+                        {searchTerm || selectedMuscleGroup ? t('training.exerciseEmptyStateTitle') : t('training.noExercisesTitle')}
                       </Typography>
                       <Typography sx={styles.emptyDesc}>
-                        {t('training.noExercisesDesc')}
+                        {searchTerm || selectedMuscleGroup ? t('training.exerciseEmptyStateDesc') : t('training.noExercisesDesc')}
                       </Typography>
                     </Box>
                   </TableCell>
                 </TableRow>
               ) : (
-                (rowLimit ? exercises.slice(0, rowLimit) : exercises).map((ex, idx) => (
+                (rowLimit ? currentExercises.slice(0, rowLimit) : currentExercises).map((ex, idx) => (
                   <TableRow key={ex.id || idx} sx={styles.tableRow}>
                     <TableCell sx={styles.tableCell}>{ex.title}</TableCell>
                     <TableCell sx={styles.tableCell}>{stripHtml(ex.description)}</TableCell>
@@ -212,6 +343,28 @@ const TrainingExercisePage: React.FC<TrainingExercisePageProps> = ({ showHeader 
           </Table>
         </TableContainer>
       </Paper>
+      
+      {/* Load More Button */}
+      {!rowLimit && hasMore && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={handleLoadMore}
+            disabled={isLoading}
+            sx={{
+              borderColor: '#E6BB4A',
+              color: '#E6BB4A',
+              '&:hover': {
+                borderColor: '#d4a737',
+                backgroundColor: '#f9f2e4',
+              },
+            }}
+          >
+            {isLoading ? t('training.loading') : t('training.loadMore')}
+          </Button>
+        </Box>
+      )}
+      
       <ExerciseModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

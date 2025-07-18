@@ -4,6 +4,7 @@ import { uploadFileAndGetId } from '../utils/uploadFileAndGetId';
 import type {
   // Exercise Types
   Exercise,
+  ExerciseResponse,
   ExercisePayload,
   UpdateExercisePayload,
   UpdateExerciseApiPayload,
@@ -29,7 +30,8 @@ import type {
 const TrainingContext = createContext<TrainingContextType | undefined>(undefined);
 
 export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [exercises, setExercises] = React.useState<Exercise[]>([]);
+  const [exercises, setExercises] = React.useState<ExerciseResponse | null>(null);
+  const [currentExerciseFilters, setCurrentExerciseFilters] = React.useState<{ search?: string; muscleGroup?: string; limit?: number }>({});
   const [trainingPrograms, setTrainingPrograms] = React.useState<TrainingProgram[]>([]);
   const [selectedTrainingProgram, setSelectedTrainingProgram] = React.useState<FullTrainningProgram | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -44,17 +46,63 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [assignmentLogs, setAssignmentLogs] = React.useState<AssignmentLogsResponse | null>(null);
   const [loadingAssignmentLogs, setLoadingAssignmentLogs] = React.useState(false);
 
-  const fetchExercises = React.useCallback(async (limit: number | undefined = undefined) => {
+  const fetchExercises = React.useCallback(async (params: { limit?: number; search?: string; muscleGroup?: string; page?: number; resetPagination?: boolean } = {}) => {
     setIsLoading(true);
     try {
-        let url = '/trainning/exercise';
-      if (limit) url += `?limit=${limit}`;
-      const res = await api.get(url);
+      const url = '/trainning/exercise';
+      const urlParams = new URLSearchParams();
+      
+      // Store current filter state
+      setCurrentExerciseFilters({
+        search: params.search,
+        muscleGroup: params.muscleGroup,
+        limit: params.limit
+      });
+      
+      // Set pagination parameters
+      urlParams.append('page', (params.page || 1).toString());
+      urlParams.append('itemsPerPage', (params.limit || 20).toString());
+      
+      // Add filter parameters
+      if (params.search) urlParams.append('search', params.search);
+      if (params.muscleGroup) urlParams.append('muscleGroup', params.muscleGroup);
+      
+      const res = await api.get(`${url}?${urlParams.toString()}`);
       setExercises(res);
     } finally {
       setIsLoading(false);
     }
   }, []);
+
+  const loadMoreExercises = React.useCallback(async (params: { limit?: number; search?: string; muscleGroup?: string } = {}) => {
+    if (!exercises || exercises.page >= exercises.totalPages) return;
+    
+    try {
+      const url = '/trainning/exercise';
+      const urlParams = new URLSearchParams();
+      
+      // Use current filter state if not provided in params
+      const search = params.search ?? currentExerciseFilters.search;
+      const muscleGroup = params.muscleGroup ?? currentExerciseFilters.muscleGroup;
+      const limit = params.limit ?? currentExerciseFilters.limit;
+      
+      // Set pagination parameters for next page
+      urlParams.append('page', (exercises.page + 1).toString());
+      urlParams.append('itemsPerPage', (limit || 20).toString());
+      
+      // Add filter parameters
+      if (search) urlParams.append('search', search);
+      if (muscleGroup) urlParams.append('muscleGroup', muscleGroup);
+      
+      const res = await api.get(`${url}?${urlParams.toString()}`);
+      setExercises(prev => prev ? {
+        ...res,
+        exercises: [...prev.exercises, ...res.exercises]
+      } : res);
+    } catch (error) {
+      console.error('Error loading more exercises:', error);
+    }
+  }, [exercises, currentExerciseFilters]);
 
   const fetchExercisesWithoutLoading = React.useCallback(async (limit: number | undefined = undefined, search?: string, muscleGroups?: string[]) => {
     try {
@@ -125,15 +173,20 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     delete payload.video;
     delete payload.videoThumbnail;
     const res = await api.put(`/trainning/exercise/${id}`, payload);
-    setExercises(prev =>
-      prev.map(ex => (ex.id === res.id ? res : ex))
-    );
+    setExercises(prev => prev ? {
+      ...prev,
+      exercises: prev.exercises.map(ex => (ex.id === res.id ? res : ex))
+    } : prev);
     return res;
   };
 
   const deleteExercise = async (id: number) => {
     await api.delete(`/trainning/exercise/${id}`);
-    setExercises(prev => prev.filter(ex => ex.id !== id));
+    setExercises(prev => prev ? {
+      ...prev,
+      exercises: prev.exercises.filter(ex => ex.id !== id),
+      totalCount: prev.totalCount - 1
+    } : prev);
   };
 
   const fetchTrainingPrograms = React.useCallback(async (limit?: number) => {
@@ -382,6 +435,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       exercises,
       isLoading,
       fetchExercises,
+      loadMoreExercises,
       fetchExercisesWithoutLoading,
       addExercise,
       updateExercise,

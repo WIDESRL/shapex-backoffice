@@ -61,7 +61,9 @@
       "green": "Green",
       "blue": "Blue",
       "yellow": "Yellow",
-      "orange": "Orange"
+      "orange": "Orange",
+      "gold": "Gold",
+      "gray": "Gray"
     },
     "validation": {
       "titleRequired": "Title is required.",
@@ -99,7 +101,10 @@
     "loading": "Loading banners...",
     "sizeGreat": "Great",
     "sizeMedium": "Medium",
-    "sizeSmall": "Small"
+    "sizeSmall": "Small",
+    "allSizes": "All sizes",
+    "noImage": "No image",
+    "search": "Search"
   },
   "mainMenu": {
     "dashboard": "Dashboard",
@@ -154,6 +159,8 @@
     "errorNotVideo": "The selected file is not a video.",
     "actions": "Actions",
     "video": "Video",
+    "searchExercises": "Search exercises...",
+    "allMuscleGroups": "All muscle groups",
     "muscleGroups": {
       "Pettorali": "Chest",
       "Dorsali": "Back",
@@ -336,8 +343,10 @@
       },
       "messages": "Messages",
       "actions": "Actions",
+      "allSubscriptions": "All subscriptions",
       "noClientsTitle": "No clients present",
       "noClientsDescription": "Clients will appear here when they register through the application.",
+      "noClientsForSubscription": "No clients with this subscription",
       "modalSections": {
         "anagrafica": {
           "title": "Personal Info",
@@ -362,10 +371,16 @@
             "photos": "Photo album"
           }
         },
+        "alimentazione": {
+          "title": "Nutrition",
+          "items": {
+            "plan": "Meal plan",
+            "supplements": "Dietary supplements"
+          }
+        },
         "altro": {
           "title": "Other",
           "items": {
-            "nutrition": "Nutrition",
             "subscription": "Subscription",
             "notifications": "Notifications"
           }

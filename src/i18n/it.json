@@ -45,7 +45,9 @@
       "green": "Verde",
       "blue": "Blu",
       "yellow": "Giallo",
-      "orange": "Arancione"
+      "orange": "Arancione",
+      "gold": "Oro",
+      "gray": "Grigio"
     },
     "validation": {
       "titleRequired": "Il titolo è obbligatorio.",
@@ -83,7 +85,10 @@
     "loading": "Caricamento banners...",
     "sizeGreat": "Grande",
     "sizeMedium": "Media",
-    "sizeSmall": "Piccola"
+    "sizeSmall": "Piccola",
+    "allSizes": "Tutte le dimensioni",
+    "noImage": "Nessuna immagine",
+    "search": "Cerca"
   },
   "mainMenu": {
     "dashboard": "Dashboard",
@@ -138,6 +143,8 @@
     "errorNotVideo": "Il file selezionato non è un video.",
     "actions": "Azioni",
     "video": "Video",
+    "searchExercises": "Cerca esercizi...",
+    "allMuscleGroups": "Tutti i gruppi muscolari",
     "muscleGroups": {
       "Pettorali": "Pettorali",
       "Dorsali": "Dorsali",
@@ -320,8 +327,10 @@
       },
       "messages": "Messaggi",
       "actions": "Azioni",
+      "allSubscriptions": "Tutti gli abbonamenti",
       "noClientsTitle": "Nessun cliente presente",
       "noClientsDescription": "I clienti appariranno qui quando si registreranno tramite l'applicazione.",
+      "noClientsForSubscription": "Nessun cliente con questo abbonamento",
       "modalSections": {
         "anagrafica": {
           "title": "Anagrafica",
@@ -346,10 +355,16 @@
             "photos": "Album fotografico"
           }
         },
+        "alimentazione": {
+          "title": "Alimentazione",
+          "items": {
+            "plan": "Piano alimentare",
+            "supplements": "Integrazione alimentare"
+          }
+        },
         "altro": {
           "title": "Altro",
           "items": {
-            "nutrition": "Alimentazione",
             "subscription": "Abbonamento",
             "notifications": "Notifiche"
           }

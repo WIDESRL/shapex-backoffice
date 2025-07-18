@@ -196,6 +196,14 @@ export interface CompletedTrainingResponse {
   totalPages: number;
 }
 
+export interface ExerciseResponse {
+  exercises: Exercise[];
+  totalCount: number;
+  page: number;
+  itemsPerPage: number;
+  totalPages: number;
+}
+
 // --- Exercise Detail Types (Legacy) ---
 export interface ExerciseDetailData {
   programma: string;
@@ -264,10 +272,11 @@ export interface AssignmentLogsResponse {
 
 // --- Training Context Interface ---
 export interface TrainingContextType {
-  exercises: Exercise[];
+  exercises: ExerciseResponse | null;
   isLoading: boolean;
   loadingAvailableUsers: boolean;
-  fetchExercises: (limit: number | undefined) => Promise<void>;
+  fetchExercises: (params?: { limit?: number; search?: string; muscleGroup?: string; page?: number; resetPagination?: boolean }) => Promise<void>;
+  loadMoreExercises: (params?: { limit?: number; search?: string; muscleGroup?: string }) => Promise<void>;
   fetchExercisesWithoutLoading: (limit?: number, search?: string, muscleGroups?: string[]) => Promise<void>;
   addExercise: (data: {
     title: string;

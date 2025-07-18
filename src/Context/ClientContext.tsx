@@ -269,7 +269,7 @@ export type ClientContextType = {
   pageSize: number;
   total: number;
   search: string;
-  fetchClients: (params?: { page?: number; pageSize?: number; search?: string; append?: boolean }) => Promise<void>;
+  fetchClients: (params?: { page?: number; pageSize?: number; search?: string; subscriptionId?: string; append?: boolean }) => Promise<void>;
   fetchClientNames: () => Promise<void>;
   setSearch: (search: string) => void;
   setPage: (page: number) => void;
@@ -319,7 +319,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [search, setSearch] = useState('');
 
   const fetchClients = useCallback(
-    async (params?: { page?: number; pageSize?: number; search?: string; append?: boolean }) => {
+    async (params?: { page?: number; pageSize?: number; search?: string; subscriptionId?: string; append?: boolean }) => {
       setLoading(true);
       const currentPage = params?.page ?? page;
       const currentPageSize = params?.pageSize ?? pageSize;
@@ -332,6 +332,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           page: currentPage,
           pageSize: currentPageSize,
           search: currentSearch,
+          ...(params?.subscriptionId && { subscriptionId: params.subscriptionId }),
         },
       }
     );

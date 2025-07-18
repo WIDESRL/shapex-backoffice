@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Button, InputBase, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress } from '@mui/material';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Box, Typography, Paper, Button, InputBase, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import MagnifierIcon from '../icons/MagnifierIcon';
 import BannerFormDialog, { BannerForm } from '../components/BannerFormDialog';
 import DeleteConfirmationDialog from '../screens/Subscription/DeleteConfirmationDialog';
@@ -9,19 +9,200 @@ import { useBanners, Banner } from '../Context/BannersContext';
 import { useTranslation } from 'react-i18next';
 import FullscreenImageDialog from '../components/FullscreenImageDialog';
 import ImageCustom from '../components/ImageCustom';
+import { BANNER_SIZES } from '../constants/bannerSizes';
+
+const styles = {
+	pageContainer: {
+		p: 4,
+		background: '#fff',
+		minHeight: '100vh',
+	},
+	pageTitle: {
+		fontSize: 38,
+		fontWeight: 400,
+		color: '#616160',
+		fontFamily: 'Montserrat, sans-serif',
+		mb: 3,
+	},
+	searchContainer: {
+		display: 'flex',
+		alignItems: 'center',
+		mb: 3,
+		gap: 1,
+		maxWidth: '100%',
+	},
+	searchBox: {
+		display: 'flex',
+		alignItems: 'center',
+		flex: 1,
+		maxWidth: 500,
+	},
+	searchInput: {
+		background: '#fff',
+		borderRadius: 2,
+		px: 2.5,
+		py: 1.2,
+		fontSize: 18,
+		fontFamily: 'Montserrat, sans-serif',
+		width: '100%',
+		boxShadow: '0 0 0 1px #eee',
+	},
+	filterContainer: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: 1,
+	},
+	sizeFilter: {
+		minWidth: 160,
+		backgroundColor: '#fff',
+		borderRadius: 2,
+		'& .MuiOutlinedInput-root': {
+			borderRadius: 2,
+		},
+	},
+	buttonContainer: {
+		flex: 1,
+		display: 'flex',
+		justifyContent: 'flex-end',
+	},
+	addButton: {
+		background: 'linear-gradient(90deg, #E6BB4A 0%, #FFD700 100%)',
+		color: '#fff',
+		fontWeight: 700,
+		borderRadius: 3,
+		textTransform: 'none',
+		fontSize: 20,
+		boxShadow: '0 4px 16px 0 rgba(230,187,74,0.15)',
+		px: 4,
+		py: 1.5,
+		letterSpacing: 0.5,
+		display: 'flex',
+		alignItems: 'center',
+		gap: 1.5,
+		minWidth: 220,
+	},
+	tableContainer: {
+		background: '#F6F6F6',
+		borderRadius: 3,
+		boxShadow: 'none',
+		maxWidth: '100%',
+		overflowX: 'auto',
+		mt: 2,
+	},
+	tableHeaderCell: {
+		fontWeight: 500,
+		fontSize: 18,
+		color: '#888',
+		fontFamily: 'Montserrat, sans-serif',
+		background: '#EDEDED',
+		border: 0,
+	},
+	tableHeaderCellCenter: {
+		fontWeight: 500,
+		fontSize: 18,
+		color: '#888',
+		fontFamily: 'Montserrat, sans-serif',
+		background: '#EDEDED',
+		border: 0,
+		textAlign: 'center',
+	},
+	tableRow: {
+		background: '#fff',
+		borderBottom: '1px solid #ededed',
+	},
+	tableCell: {
+		fontSize: 18,
+		color: '#616160',
+		fontFamily: 'Montserrat, sans-serif',
+		border: 0,
+	},
+	tableCellBorderOnly: {
+		border: 0,
+	},
+	tableCellCenter: {
+		border: 0,
+		textAlign: 'center',
+	},
+	loadingCell: {
+		py: 8,
+	},
+	emptyStateContainer: {
+		display: 'flex',
+		flexDirection: 'column',
+		alignItems: 'center',
+		gap: 2,
+	},
+	emptyStateTitle: {
+		color: '#bdbdbd',
+		fontSize: 22,
+		fontWeight: 500,
+		fontFamily: 'Montserrat, sans-serif',
+	},
+	emptyStateSubtitle: {
+		color: '#bdbdbd',
+		fontSize: 16,
+		fontFamily: 'Montserrat, sans-serif',
+	},
+	colorBox: {
+		width: 32,
+		height: 32,
+		borderRadius: 1,
+	},
+	imagePreview: {
+		width: 48,
+		height: 32,
+		objectFit: 'cover' as const,
+		borderRadius: 4,
+		cursor: 'pointer',
+	},
+	noImageText: {
+		color: '#bbb',
+		fontStyle: 'italic',
+	},
+	editIcon: {
+		fontSize: 22,
+		color: '#E6BB4A',
+	},
+	deleteIcon: {
+		fontSize: 22,
+		color: '#E57373',
+	},
+	circularProgress: {
+		color: '#E6BB4A',
+	},
+};
 
 const BannersPage: React.FC = () => {
 	const { t } = useTranslation();
 	const { banners, isLoading, addBanner, updateBanner, removeBanner, fetchBanners } = useBanners();
 	const [search, setSearch] = useState('');
+	const [sizeFilter, setSizeFilter] = useState<string>('');
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [editBanner, setEditBanner] = useState<Banner | null>(null);
 	const [deleteBanner, setDeleteBanner] = useState<Banner | null>(null);
 	const [imageDialogOpen, setImageDialogOpen] = useState(false);
 	const [imageDialogUrl, setImageDialogUrl] = useState<string | null>(null);
 
-	// Filter banners by title
-	const filteredBanners = banners.filter(b => b.title.toLowerCase().includes(search.toLowerCase()));
+	// Filter banners by title and size using useMemo
+	const filteredBanners = useMemo(() => {
+		return banners.filter(banner => {
+			const searchLower = search.toLowerCase();
+			const matchesSearch = banner.title.toLowerCase().includes(searchLower) ||
+								  banner.link.toLowerCase().includes(searchLower) ||
+								  banner.couponCode.toLowerCase().includes(searchLower);
+			const matchesSize = !sizeFilter || banner.size === sizeFilter;
+			return matchesSearch && matchesSize;
+		});
+	}, [banners, search, sizeFilter]);
+
+	// Size options for the filter
+	const sizeOptions = useMemo(() => 
+		BANNER_SIZES.map(size => ({
+			value: size.value,
+			label: t(size.translationKey)
+		})), 
+		[t]
+	);
 
 	// Helper function to convert Banner to BannerForm
 	const bannerToBannerForm = (banner: Banner): Partial<BannerForm> => ({
@@ -77,6 +258,9 @@ const BannersPage: React.FC = () => {
 		setEditBanner(null);
 	};
 
+	const handleSizeFilterChange = (event: SelectChangeEvent<string>) => {
+		setSizeFilter(event.target.value);
+	};
 
     useEffect(() => {
             fetchBanners();
@@ -84,49 +268,44 @@ const BannersPage: React.FC = () => {
     , [fetchBanners]);
 
 	return (
-		<Box sx={{ p: 4, background: '#fff', minHeight: '100vh' }}>
-			<Typography sx={{ fontSize: 38, fontWeight: 400, color: '#616160', fontFamily: 'Montserrat, sans-serif', mb: 3 }}>
+		<Box sx={styles.pageContainer}>
+			<Typography sx={styles.pageTitle}>
 				{t('banners.manageBanners')}
 			</Typography>
 			{/* Search Bar */}
-			<Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 1, maxWidth: '100%' }}>
-				<Box sx={{ display: 'flex', alignItems: 'center', flex: 1, maxWidth: 500 }}>
+			<Box sx={styles.searchContainer}>
+				<Box sx={styles.searchBox}>
 					<InputBase
-						placeholder={t('banners.title') + '...'}
+						placeholder={t('banners.search') + '...'}
 						value={search}
 						onChange={e => setSearch(e.target.value)}
-						sx={{
-							background: '#fff',
-							borderRadius: 2,
-							px: 2.5,
-							py: 1.2,
-							fontSize: 18,
-							fontFamily: 'Montserrat, sans-serif',
-							width: '100%',
-							boxShadow: '0 0 0 1px #eee',
-						}}
+						sx={styles.searchInput}
 						endAdornment={<MagnifierIcon style={{ marginLeft: 8 }} />}
 					/>
 				</Box>
-				<Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+				<Box sx={styles.filterContainer}>
+					<FormControl size="small" sx={styles.sizeFilter}>
+						<InputLabel>{t('banners.size')}</InputLabel>
+						<Select
+							value={sizeFilter}
+							onChange={handleSizeFilterChange}
+							label={t('banners.size')}
+						>
+							<MenuItem value="">
+								{t('banners.allSizes')}
+							</MenuItem>
+							{sizeOptions.map(option => (
+								<MenuItem key={option.value} value={option.value}>
+									{option.label}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+				</Box>
+				<Box sx={styles.buttonContainer}>
 					<Button
 						variant="contained"
-						sx={{
-							background: 'linear-gradient(90deg, #E6BB4A 0%, #FFD700 100%)',
-							color: '#fff',
-							fontWeight: 700,
-							borderRadius: 3,
-							textTransform: 'none',
-							fontSize: 20,
-							boxShadow: '0 4px 16px 0 rgba(230,187,74,0.15)',
-							px: 4,
-							py: 1.5,
-							letterSpacing: 0.5,
-							display: 'flex',
-							alignItems: 'center',
-							gap: 1.5,
-							minWidth: 220,
-						}}
+						sx={styles.addButton}
 						startIcon={<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="22" height="22" rx="6" fill="#fff"/><path d="M11 6V16" stroke="#E6BB4A" strokeWidth="2" strokeLinecap="round"/><path d="M6 11H16" stroke="#E6BB4A" strokeWidth="2" strokeLinecap="round"/></svg>}
 						onClick={() => setDialogOpen(true)}
 					>
@@ -135,36 +314,36 @@ const BannersPage: React.FC = () => {
 				</Box>
 			</Box>
 			{/* Banner List Table */}
-			<TableContainer component={Paper} elevation={0} sx={{ background: '#F6F6F6', borderRadius: 3, boxShadow: 'none', maxWidth: '100%', overflowX: 'auto', mt: 2 }}>
+			<TableContainer component={Paper} elevation={0} sx={styles.tableContainer}>
 				<Table>
 					<TableHead>
 						<TableRow>
-							<TableCell sx={{ fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0 }}> {t('banners.title')} </TableCell>
-							<TableCell sx={{ fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0 }}> {t('banners.size')} </TableCell>
-							<TableCell sx={{ fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0 }}> {t('banners.link')} </TableCell>
-							<TableCell sx={{ fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0 }}> {t('banners.couponCode')} </TableCell>
-							<TableCell sx={{ fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0 }}> {t('banners.color')} </TableCell>
-							<TableCell sx={{ fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0 }}> {t('banners.image')} </TableCell>
-							<TableCell sx={{ fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0 }}> {t('banners.description')} </TableCell>
-							<TableCell sx={{ fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0, textAlign: 'center' }}> {t('banners.actions')} </TableCell>
+							<TableCell sx={styles.tableHeaderCell}> {t('banners.title')} </TableCell>
+							<TableCell sx={styles.tableHeaderCell}> {t('banners.size')} </TableCell>
+							<TableCell sx={styles.tableHeaderCell}> {t('banners.link')} </TableCell>
+							<TableCell sx={styles.tableHeaderCell}> {t('banners.couponCode')} </TableCell>
+							<TableCell sx={styles.tableHeaderCell}> {t('banners.color')} </TableCell>
+							<TableCell sx={styles.tableHeaderCell}> {t('banners.image')} </TableCell>
+							<TableCell sx={styles.tableHeaderCell}> {t('banners.description')} </TableCell>
+							<TableCell sx={styles.tableHeaderCellCenter}> {t('banners.actions')} </TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
 						{isLoading ? (
 							<TableRow>
-								<TableCell colSpan={8} align="center" sx={{ py: 8 }}>
-									<CircularProgress size={48} sx={{ color: '#E6BB4A' }} />
+								<TableCell colSpan={8} align="center" sx={styles.loadingCell}>
+									<CircularProgress size={48} sx={styles.circularProgress} />
 								</TableCell>
 							</TableRow>
 						) : filteredBanners.length === 0 ? (
 							<TableRow>
-								<TableCell colSpan={8} align="center" sx={{ py: 8 }}>
-									<Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+								<TableCell colSpan={8} align="center" sx={styles.loadingCell}>
+									<Box sx={styles.emptyStateContainer}>
 										<svg width="64" height="64" fill="none" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#F6F6F6"/><path d="M20 44V20h24v24H20Z" stroke="#E6BB4A" strokeWidth="2" strokeLinejoin="round"/><path d="M28 28h8v8h-8v-8Z" stroke="#E6BB4A" strokeWidth="2" strokeLinejoin="round"/></svg>
-										<Typography sx={{ color: '#bdbdbd', fontSize: 22, fontWeight: 500, fontFamily: 'Montserrat, sans-serif' }}>
+										<Typography sx={styles.emptyStateTitle}>
 											{t('banners.noBanners')}
 										</Typography>
-										<Typography sx={{ color: '#bdbdbd', fontSize: 16, fontFamily: 'Montserrat, sans-serif' }}>
+										<Typography sx={styles.emptyStateSubtitle}>
 											{t('banners.addToGetStarted')}
 										</Typography>
 									</Box>
@@ -172,30 +351,30 @@ const BannersPage: React.FC = () => {
 							</TableRow>
 						) : (
 							filteredBanners.map(banner => (
-								<TableRow key={banner.id} sx={{ background: '#fff', borderBottom: '1px solid #ededed' }}>
-									<TableCell sx={{ fontSize: 18, color: '#616160', fontFamily: 'Montserrat, sans-serif', border: 0 }}>{banner.title}</TableCell>
-									<TableCell sx={{ fontSize: 18, color: '#616160', fontFamily: 'Montserrat, sans-serif', border: 0 }}>{t(`banners.size${banner.size}`)}</TableCell>
-									<TableCell sx={{ fontSize: 18, color: '#616160', fontFamily: 'Montserrat, sans-serif', border: 0 }}>{banner.link}</TableCell>
-									<TableCell sx={{ fontSize: 18, color: '#616160', fontFamily: 'Montserrat, sans-serif', border: 0 }}>{banner.couponCode}</TableCell>
-									<TableCell sx={{ border: 0 }}>
-										<Box sx={{ width: 32, height: 32, background: banner.color, borderRadius: 1 }} />
+								<TableRow key={banner.id} sx={styles.tableRow}>
+									<TableCell sx={styles.tableCell}>{banner.title}</TableCell>
+									<TableCell sx={styles.tableCell}>{t(`banners.size${banner.size}`)}</TableCell>
+									<TableCell sx={styles.tableCell}>{banner.link}</TableCell>
+									<TableCell sx={styles.tableCell}>{banner.couponCode}</TableCell>
+									<TableCell sx={styles.tableCellBorderOnly}>
+										<Box sx={{ ...styles.colorBox, background: banner.color }} />
 									</TableCell>
-									<TableCell sx={{ border: 0 }}>
+									<TableCell sx={styles.tableCellBorderOnly}>
 										{banner.image && banner.image.signedUrl ? (
 											<ImageCustom
 												src={banner.image.signedUrl}
 												alt="banner"
-												style={{ width: 48, height: 32, objectFit: 'cover', borderRadius: 4, cursor: 'pointer' }}
+												style={styles.imagePreview}
 												onClick={() => {
 													setImageDialogUrl(banner.image?.signedUrl || '');
 													setImageDialogOpen(true);
 												}}
 											/>
 										) : (
-											<Box sx={{ color: '#bbb', fontStyle: 'italic' }}>No image</Box>
+											<Box sx={styles.noImageText}>{t('banners.noImage')}</Box>
 										)}
 									</TableCell>
-									<TableCell sx={{ fontSize: 18, color: '#616160', fontFamily: 'Montserrat, sans-serif', border: 0 }} title={banner.description.replace(/<[^>]+>/g, '')}>
+									<TableCell sx={styles.tableCell} title={banner.description.replace(/<[^>]+>/g, '')}>
 										{banner.description
 											? (() => {
 													// Remove HTML tags for preview
@@ -204,12 +383,12 @@ const BannersPage: React.FC = () => {
 											  })()
 											: ''}
 									</TableCell>
-									<TableCell sx={{ border: 0, textAlign: 'center' }}>
+									<TableCell sx={styles.tableCellCenter}>
 										<IconButton onClick={() => handleEditClick(banner)} size="small" sx={{ mr: 1 }}>
-											<EditIcon style={{ fontSize: 22, color: '#E6BB4A' }} />
+											<EditIcon style={styles.editIcon} />
 										</IconButton>
 										<IconButton onClick={() => handleDeleteClick(banner)} size="small">
-											<DeleteIcon style={{ fontSize: 22, color: '#E57373' }} />
+											<DeleteIcon style={styles.deleteIcon} />
 										</IconButton>
 									</TableCell>
 								</TableRow>

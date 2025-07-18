@@ -1,15 +1,17 @@
 import React, { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip, Autocomplete } from '@mui/material';
 import MagnifierIcon from '../../icons/MagnifierIcon';
 import UserIcon from '../../icons/UserIcon';
 import { Client, useClientContext } from '../../Context/ClientContext';
+import { useSubscriptions, Subscription } from '../../Context/SubscriptionsContext';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DiaryIcon from '../../icons/DiarioIcon';
 import MoreIcon from '../../icons/MoreIcon';
+import AlimentazioneIcon from '../../icons/AlimentazioneIcon';
 import DialogCloseIcon from '../../icons/DialogCloseIcon2';
 import AnagraficaIcon from '../../icons/AnagraficaIcon';
 import AllenamentiIcon from '../../icons/AllenamentiIcon';
@@ -106,8 +108,9 @@ const styles = {
     msOverflowStyle: 'none',
   },
   searchInput: {
-    width: 440,
+    width: { xs: 200, sm: 300, md: 440 },
     mr: 1,
+    ml: 5,
     input: { p: 1.5, fontSize: 15, color: '#616160' },
   },
   searchInputProps: {
@@ -160,7 +163,31 @@ const styles = {
     alignItems: 'center',
     gap: 1,
   },
-  dialogPaper: { borderRadius: 3, p: 2, minWidth: 480 },
+  subscriptionFilter: {
+    width: { xs: 150, sm: 200, md: 250 },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      backgroundColor: '#fff',
+    },
+    '& .MuiInputBase-input': {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
+  },
+  subscriptionMenuItem: {
+    maxWidth: 250,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  dialogPaper: { 
+    borderRadius: 3, 
+    p: 2, 
+    minWidth: { xs: 320, sm: 600, lg: 800 }, 
+    maxWidth: { xs: '90vw', sm: '80vw', lg: '85vw' },
+    width: '100%'
+  },
   dialogTitle: { 
     fontWeight: 300, 
     fontSize: 28, 
@@ -187,7 +214,11 @@ const styles = {
   },
   dialogGrid: {
     display: 'grid',
-    gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+    gridTemplateColumns: { 
+      xs: '1fr', 
+      sm: 'repeat(2, 1fr)', 
+      lg: 'repeat(3, 1fr)' 
+    },
     gap: 3,
   },
   dialogBackdrop: {
@@ -240,10 +271,13 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { clients, loading, page, pageSize, total, search, fetchClients, setSearch, setPage } = useClientContext();
+  const { subscriptions, fetchSubscriptions } = useSubscriptions();
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const loadMoreDebounceRef = useRef<NodeJS.Timeout | null>(null);
+  const subscriptionsDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const [localSearch, setLocalSearch] = useState(search);
+  const [subscriptionFilter, setSubscriptionFilter] = useState<Subscription | null>(null);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [hasInitialFetch, setHasInitialFetch] = useState(false);
@@ -253,13 +287,26 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       setHasInitialFetch(true);
-      fetchClients({ page, pageSize, search, append: page > 1 });
+      const subscriptionId = subscriptionFilter?.id?.toString() || undefined;
+      fetchClients({ page, pageSize, search, subscriptionId, append: page > 1 });
     }, 500);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, search]);
+  }, [page, search, subscriptionFilter]);
+
+  // Fetch subscriptions on mount with debounce
+  useEffect(() => {
+    if (subscriptionsDebounceRef.current) clearTimeout(subscriptionsDebounceRef.current);
+    subscriptionsDebounceRef.current = setTimeout(() => {
+      fetchSubscriptions();
+    }, 300);
+    
+    return () => {
+      if (subscriptionsDebounceRef.current) clearTimeout(subscriptionsDebounceRef.current);
+    };
+  }, [fetchSubscriptions]);
 
   // Infinite scroll (debounced load more)
   const handleScroll = useCallback(() => {
@@ -269,7 +316,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
       if (loadMoreDebounceRef.current) clearTimeout(loadMoreDebounceRef.current);
       loadMoreDebounceRef.current = setTimeout(() => {
         setPage(page + 1);
-      }, 300);
+      }, 500);
     }
   }, [clients?.length, total, setPage, loading, page]);
 
@@ -285,18 +332,14 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setLocalSearch(value);
-    if (value === '') {
-      setPage(1);
-      setSearch('');
-    }
+    setPage(1);
+    setSearch(value);
   };
 
-  // On Enter, update context search and reset page
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      setPage(1);
-      setSearch(localSearch);
-    }
+  // Subscription filter handler
+  const handleSubscriptionFilterChange = (_event: React.SyntheticEvent, value: Subscription | null) => {
+    setSubscriptionFilter(value);
+    setPage(1);
   };
 
   // Auto-load more if no scrollbar after data loads (debounced)
@@ -334,6 +377,9 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
       case 'diario':
         navigate(`/clients/${clientId}/diario`);
         break;
+      case 'alimentazione':
+        navigate(`/clients/${clientId}/alimentazione`);
+        break;
       case 'altro':
         navigate(`/clients/${clientId}/altro`);
         break;
@@ -358,17 +404,82 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
         <Typography sx={styles.pageTitle}>
           {t('client.main.title')}
         </Typography>
-        <Box sx={styles.searchContainer}>
-          <TextField
-            size="small"
-            placeholder={t('client.main.searchPlaceholder')}
-            value={localSearch}
-            onChange={handleSearchChange}
-            onKeyDown={handleSearchKeyDown}
-            InputProps={styles.searchInputProps}
-            sx={styles.searchInput}
-          />
-        </Box>
+        {!dashboard && (
+          <Box sx={styles.searchContainer}>
+            <TextField
+              size="small"
+              placeholder={t('client.main.searchPlaceholder')}
+              value={localSearch}
+              onChange={handleSearchChange}
+              InputProps={styles.searchInputProps}
+              sx={styles.searchInput}
+            />
+            <Autocomplete
+              size="small"
+              options={subscriptions}
+              getOptionLabel={(option) => option.title}
+              value={subscriptionFilter}
+              onChange={handleSubscriptionFilterChange}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t('client.main.subscription')}
+                  placeholder={t('client.main.allSubscriptions')}
+                  sx={styles.subscriptionFilter}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: subscriptionFilter ? (
+                      <Box
+                        sx={{
+                          width: 12,
+                          height: 12,
+                          borderRadius: '50%',
+                          backgroundColor: subscriptionFilter.color || '#ccc',
+                          marginLeft: 1,
+                          marginRight: 0.5,
+                          flexShrink: 0,
+                        }}
+                      />
+                    ) : null,
+                  }}
+                />
+              )}
+              renderOption={(props, option) => (
+                <Box 
+                  component="li" 
+                  {...props} 
+                  sx={{
+                    ...styles.subscriptionMenuItem,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                  title={option.title.length > 20 ? option.title : ''}
+                >
+                  <Box
+                    sx={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      backgroundColor: option.color || '#ccc',
+                      flexShrink: 0,
+                    }}
+                  />
+                  {option.title}
+                </Box>
+              )}
+              ListboxProps={{
+                style: {
+                  maxHeight: 300,
+                },
+              }}
+              clearOnBlur={false}
+              clearOnEscape
+              openOnFocus
+            />
+          </Box>
+        )}
       </Box>
       <TableContainer
         component={Paper}
@@ -403,7 +514,15 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                           ...styles.chip, 
                           background: client.activeSubscription.color,
                           color: getContrastColor(client.activeSubscription.color || '#ffffff'),
+                          maxWidth: 300,
+                          '& .MuiChip-label': {
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            display: 'block',
+                          },
                         }}
+                        title={client.activeSubscription.name || '--'}
                       />
                     ) : '--'}
                   </TableCell>
@@ -449,7 +568,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                     <UserIcon  />
                     <span>{t('client.main.noClientsTitle')}</span>
                     <span style={styles.emptyStateDesc}>
-                      {t('client.main.noClientsDescription')}
+                      {subscriptionFilter ? t('client.main.noClientsForSubscription') : t('client.main.noClientsDescription')}
                     </span>
                   </Box>
                 </TableCell>
@@ -467,7 +586,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
       </TableContainer>
 
       {/* Client Modal */}
-      <Dialog open={modalOpen} onClose={handleModalClose} maxWidth="sm" PaperProps={{ sx: styles.dialogPaper }}
+      <Dialog open={modalOpen} onClose={handleModalClose} maxWidth="md" PaperProps={{ sx: styles.dialogPaper }}
        slotProps={{
               backdrop: {
                   timeout: 300,
@@ -518,6 +637,17 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.diario.items.photos')}</li>
               </ul>
             </Box>
+            <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('alimentazione', selectedClient?.id || '')}>
+              <Box sx={styles.modalSectionTitle}>
+                <AlimentazioneIcon style={{ color: 'grey' }} />
+                <Typography sx={styles.modalSectionText}>{t('client.main.modalSections.alimentazione.title')}</Typography>
+              </Box>
+              <hr style={styles.modalSectionDivider} />
+              <ul style={styles.modalSectionList}>
+                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.alimentazione.items.plan')}</li>
+                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.alimentazione.items.supplements')}</li>
+              </ul>
+            </Box>
             <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('altro', selectedClient?.id || '')}>
               <Box sx={styles.modalSectionTitle}>
                 <MoreIcon />
@@ -525,7 +655,6 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
               </Box>
               <hr style={styles.modalSectionDivider} />
               <ul style={styles.modalSectionList}>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.nutrition')}</li>
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.subscription')}</li>
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.notifications')}</li>
               </ul>
