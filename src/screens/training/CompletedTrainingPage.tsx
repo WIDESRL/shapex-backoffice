@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -39,7 +39,7 @@ interface FilterState {
 const styles = {
   container: {
     p: 3,
-    height: '95vh',
+    maxHeight: '95vh',
     display: 'flex',
     flexDirection: 'column',
   },
@@ -124,36 +124,61 @@ const styles = {
     },
   },
   tableContainer: {
-    flex: 1,
-    borderRadius: 3,
+    background: 'transparent',
     boxShadow: 'none',
-    background: '#fff',
     overflow: 'auto',
     maxHeight: 'calc(100vh - 300px)',
     display: 'flex',
     flexDirection: 'column',
+    borderWidth: 3,
+    borderColor: 'red'
+  },
+  paper: {
+    background: '#F6F6F6',
+    borderRadius: 3,
+    boxShadow: 'none',
   },
   tableHeader: {
-    backgroundColor: '#F6F6F6',
-    fontWeight: 600,
-    fontSize: 14,
-    color: '#616160',
+    fontWeight: 500,
+    fontSize: 18,
+    color: '#888',
     fontFamily: 'Montserrat, sans-serif',
-    borderBottom: '1px solid #e0e0e0',
+    background: '#EDEDED',
+    border: 0,
+    py: 2,
+  },
+  tableHeaderFirst: {
+    fontWeight: 500,
+    fontSize: 18,
+    color: '#888',
+    fontFamily: 'Montserrat, sans-serif',
+    background: '#EDEDED',
+    border: 0,
+    borderTopLeftRadius: 12,
+    py: 2,
+  },
+  tableHeaderLast: {
+    fontWeight: 500,
+    fontSize: 18,
+    color: '#888',
+    fontFamily: 'Montserrat, sans-serif',
+    background: '#EDEDED',
+    border: 0,
+    borderTopRightRadius: 12,
     py: 2,
   },
   tableRow: {
-    backgroundColor: '#fff',
+    background: '#fff',
+    borderBottom: '1px solid #ededed',
     '&:hover': {
       backgroundColor: '#f9f9f9',
     },
   },
   tableCell: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 18,
+    color: '#616160',
     fontFamily: 'Montserrat, sans-serif',
-    borderBottom: '1px solid #f0f0f0',
-    py: 1.5,
+    border: 0,
     backgroundColor: '#fff',
   },
   detailButton: {
@@ -188,13 +213,49 @@ const styles = {
     backgroundColor: '#f8d7da',
     color: '#721c24',
   },
+  emptyCell: {
+    py: 8,
+    background: '#fafafa',
+  },
+  emptyBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 2,
+  },
+  emptyIconBox: {
+    border: '2px solid #E6BB4A',
+    borderRadius: 1,
+    width: 32,
+    height: 32,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    mb: 1,
+  },
+  emptyTitle: {
+    color: '#bdbdbd',
+    fontSize: 22,
+    fontWeight: 500,
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  emptyDesc: {
+    color: '#bdbdbd',
+    fontSize: 16,
+    fontFamily: 'Montserrat, sans-serif',
+  },
 };
 
 // ===============================
 // COMPONENT
 // ===============================
 
-const CompletedTrainingPage: React.FC = () => {
+interface CompletedTrainingPageProps {
+  showHeader?: boolean;
+  rowLimit?: number;
+}
+
+const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeader = true, rowLimit }) => {
   const { t } = useTranslation();
   const { 
     availableUsers, 
@@ -232,8 +293,8 @@ const CompletedTrainingPage: React.FC = () => {
   // Fetch data when component mounts
   useEffect(() => {
     fetchAllUsers();
-    fetchCompletedTrainings({ status: 'completed' });
-  }, [fetchAllUsers, fetchCompletedTrainings]);
+    fetchCompletedTrainings({ status: 'completed', ...(rowLimit ? { itemsPerPage: rowLimit } : {}) });
+  }, [fetchAllUsers, fetchCompletedTrainings, rowLimit]);
 
   // Get users formatted for autocomplete
   const clientOptions = availableUsers.map(user => ({
@@ -243,8 +304,15 @@ const CompletedTrainingPage: React.FC = () => {
       : user.username
   }));
 
-  // Get trainings data
-  const trainingsData = completedTrainings?.assignments || [];
+  // Get trainings data with memoization
+  const trainingsData = useMemo(() => {
+    return completedTrainings?.assignments || [];
+  }, [completedTrainings]);
+  
+  // Memoize displayed trainings based on rowLimit
+  const displayedTrainings = useMemo(() => {
+    return rowLimit ? trainingsData.slice(0, rowLimit) : trainingsData;
+  }, [trainingsData, rowLimit]);
 
   // Helper function to get the appropriate date value based on status
   const getDateValue = (training: CompletedTraining) => {
@@ -403,145 +471,151 @@ const CompletedTrainingPage: React.FC = () => {
 
   return (
     <Box sx={styles.container}>
-      <Typography sx={styles.title}>
-        Allenamenti completati
-      </Typography>
+      {showHeader && (
+        <>
+          <Typography sx={styles.title}>
+            {t('completedTraining.pageTitle')}
+          </Typography>
 
-
-      <Box sx={styles.headerContainer}>
-        <Typography sx={styles.subtitle}>
-          {t('completedTraining.subtitle')}
-        </Typography>
-        <IconButton 
-          sx={styles.filterButton}
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          <FilterIcon style={{ color: '#bdbdbd', fontSize: 28 }} />
-        </IconButton>
-      </Box>
-
-      {/* Collapsible Filter Section */}
-      <Collapse in={showFilters}>
-        <Paper sx={styles.filterSection} elevation={0}>
-          <Box sx={styles.filterRow}>
-            <FormControl sx={styles.filterControl} size="small">
-              <InputLabel>{t('completedTraining.filters.status')}</InputLabel>
-              <Select
-                value={filters.status}
-                onChange={handleSelectChange('status')}
-                label={t('completedTraining.filters.status')}
-              >
-                <MenuItem value="">All</MenuItem>
-                <MenuItem value="completed">
-                  <Chip 
-                    label={t('completedTraining.status.completed')}
-                    size="small" 
-                    sx={{ ...styles.statusChip, ...styles.statusCompleted }}
-                  />
-                </MenuItem>
-                <MenuItem value="expiringSoon">
-                  <Chip 
-                    label={t('completedTraining.status.expiring')}
-                    size="small" 
-                    sx={{ ...styles.statusChip, ...styles.statusExpiring }}
-                  />
-                </MenuItem>
-                <MenuItem value="inProgress">
-                  <Chip 
-                    label={t('completedTraining.status.inProgress')}
-                    size="small" 
-                    sx={{ ...styles.statusChip, ...styles.statusInProgress }}
-                  />
-                </MenuItem>
-                <MenuItem value="expired">
-                  <Chip 
-                    label={t('completedTraining.status.expired')}
-                    size="small" 
-                    sx={{ ...styles.statusChip, ...styles.statusExpired }}
-                  />
-                </MenuItem>
-              </Select>
-            </FormControl>
-
-            <Autocomplete
-              size="small"
-              sx={styles.filterControl}
-              options={clientOptions}
-              getOptionLabel={(option) => option.name}
-              value={clientOptions.find(client => client.id === filters.clientId) || null}
-              onChange={(event, newValue) => handleClientChange(event, newValue)}
-              loading={loadingAvailableUsers}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={t('completedTraining.filters.completedBy')}
-                  placeholder={t('completedTraining.filters.searchClients')}
-                />
-              )}
-              noOptionsText={t('completedTraining.autocomplete.noClientsFound')}
-              clearText={t('completedTraining.autocomplete.clear')}
-              openText={t('completedTraining.autocomplete.open')}
-              closeText={t('completedTraining.autocomplete.close')}
-            />
-          </Box>
-
-          {/* Date Range Row */}
-          <Box sx={styles.filterRow}>
-            <Typography sx={{ minWidth: 120, color: '#616160', fontWeight: 500 }}>
-              {t('completedTraining.filters.dateRange')}
+          <Box sx={styles.headerContainer}>
+            <Typography sx={styles.subtitle}>
+              {t('completedTraining.subtitle')}
             </Typography>
-            <Box sx={styles.dateRangeContainer}>
-              <DateRangePicker
-                value={dateRange}
-                onChange={handleDateRangeChange}
-                placeholder={t('completedTraining.filters.selectInterval')}
-                size="small"
-              />
-            </Box>
+            <IconButton 
+              sx={styles.filterButton}
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <FilterIcon style={{ color: '#bdbdbd', fontSize: 28 }} />
+            </IconButton>
           </Box>
 
-          <Box sx={styles.filterActions}>
-            <Button 
-              variant="outlined" 
-              sx={styles.clearButton}
-              onClick={handleClearFilters}
-            >
-              {t('completedTraining.filters.clearAll')}
-            </Button>
-            <Button 
-              variant="contained" 
-              sx={styles.applyButton}
-              onClick={handleApplyFilters}
-            >
-              {t('completedTraining.filters.showResults')}
-            </Button>
-          </Box>
-        </Paper>
-      </Collapse>
+          {/* Collapsible Filter Section */}
+          <Collapse in={showFilters}>
+            <Paper sx={styles.filterSection} elevation={0}>
+              <Box sx={styles.filterRow}>
+                <FormControl sx={styles.filterControl} size="small">
+                  <InputLabel>{t('completedTraining.filters.status')}</InputLabel>
+                  <Select
+                    value={filters.status}
+                    onChange={handleSelectChange('status')}
+                    label={t('completedTraining.filters.status')}
+                  >
+                    <MenuItem value="">All</MenuItem>
+                    <MenuItem value="completed">
+                      <Chip 
+                        label={t('completedTraining.status.completed')}
+                        size="small" 
+                        sx={{ ...styles.statusChip, ...styles.statusCompleted }}
+                      />
+                    </MenuItem>
+                    <MenuItem value="expiringSoon">
+                      <Chip 
+                        label={t('completedTraining.status.expiring')}
+                        size="small" 
+                        sx={{ ...styles.statusChip, ...styles.statusExpiring }}
+                      />
+                    </MenuItem>
+                    <MenuItem value="inProgress">
+                      <Chip 
+                        label={t('completedTraining.status.inProgress')}
+                        size="small" 
+                        sx={{ ...styles.statusChip, ...styles.statusInProgress }}
+                      />
+                    </MenuItem>
+                    <MenuItem value="expired">
+                      <Chip 
+                        label={t('completedTraining.status.expired')}
+                        size="small" 
+                        sx={{ ...styles.statusChip, ...styles.statusExpired }}
+                      />
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+
+                <Autocomplete
+                  size="small"
+                  sx={styles.filterControl}
+                  options={clientOptions}
+                  getOptionLabel={(option) => option.name}
+                  value={clientOptions.find(client => client.id === filters.clientId) || null}
+                  onChange={(event, newValue) => handleClientChange(event, newValue)}
+                  loading={loadingAvailableUsers}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label={t('completedTraining.filters.completedBy')}
+                      placeholder={t('completedTraining.filters.searchClients')}
+                    />
+                  )}
+                  noOptionsText={t('completedTraining.autocomplete.noClientsFound')}
+                  clearText={t('completedTraining.autocomplete.clear')}
+                  openText={t('completedTraining.autocomplete.open')}
+                  closeText={t('completedTraining.autocomplete.close')}
+                />
+              </Box>
+
+              {/* Date Range Row */}
+              <Box sx={styles.filterRow}>
+                <Typography sx={{ minWidth: 120, color: '#616160', fontWeight: 500 }}>
+                  {t('completedTraining.filters.dateRange')}
+                </Typography>
+                <Box sx={styles.dateRangeContainer}>
+                  <DateRangePicker
+                    value={dateRange}
+                    onChange={handleDateRangeChange}
+                    placeholder={t('completedTraining.filters.selectInterval')}
+                    size="small"
+                  />
+                </Box>
+              </Box>
+
+              <Box sx={styles.filterActions}>
+                <Button 
+                  variant="outlined" 
+                  sx={styles.clearButton}
+                  onClick={handleClearFilters}
+                >
+                  {t('completedTraining.filters.clearAll')}
+                </Button>
+                <Button 
+                  variant="contained" 
+                  sx={styles.applyButton}
+                  onClick={handleApplyFilters}
+                >
+                  {t('completedTraining.filters.showResults')}
+                </Button>
+              </Box>
+            </Paper>
+          </Collapse>
+        </>
+      )}
 
       {/* Table */}
-      <TableContainer component={Paper} sx={styles.tableContainer}>
-        <Table stickyHeader sx={{ flex: 1 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={styles.tableHeader}>{t('completedTraining.table.headers.date')}</TableCell>
-              <TableCell sx={styles.tableHeader}>{t('completedTraining.table.headers.client')}</TableCell>
-              <TableCell sx={styles.tableHeader}>{t('completedTraining.table.headers.trainingPlan')}</TableCell>
-              <TableCell sx={styles.tableHeader}>Training Type</TableCell>
-              <TableCell sx={styles.tableHeader} align="center">{t('completedTraining.table.headers.exerciseDetail')}</TableCell>
-            </TableRow>
-          </TableHead>
+      <Paper elevation={0} sx={styles.paper}>
+        <TableContainer sx={styles.tableContainer}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ overflow: 'hidden' }}>
+                <TableCell sx={styles.tableHeaderFirst}>{t('completedTraining.table.headers.date')}</TableCell>
+                <TableCell sx={styles.tableHeader}>{t('completedTraining.table.headers.client')}</TableCell>
+                <TableCell sx={styles.tableHeader}>{t('completedTraining.table.headers.trainingPlan')}</TableCell>
+                <TableCell sx={styles.tableHeader}>Training Type</TableCell>
+                <TableCell sx={{ ...styles.tableHeaderLast, textAlign: 'center' }}>{t('completedTraining.table.headers.exerciseDetail')}</TableCell>
+              </TableRow>
+            </TableHead>
           <TableBody>
             {loadingCompletedTrainings && trainingsData.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} sx={{ ...styles.tableCell, textAlign: 'center', py: 4 }}>
-                  <Typography sx={{ color: '#999', fontStyle: 'italic' }}>
-                    Loading...
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ) : trainingsData.length > 0 ? (
-              trainingsData.map((training) => (
+              [...Array(rowLimit || 3)].map((_, idx) => (
+                <TableRow key={idx} sx={styles.tableRow}>
+                  {[...Array(5)].map((_, cidx) => (
+                    <TableCell key={cidx} sx={styles.tableCell}>
+                      <Box sx={{ width: '100%', height: 24, background: '#eee', borderRadius: 2, animation: 'pulse 1.2s infinite' }} />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : displayedTrainings.length > 0 ? (
+              displayedTrainings.map((training) => (
                 <TableRow key={training.id} hover sx={styles.tableRow}>
                   <TableCell sx={styles.tableCell}>{getDateValue(training)}</TableCell>
                   <TableCell sx={styles.tableCell}>{training.clientName}</TableCell>
@@ -559,18 +633,27 @@ const CompletedTrainingPage: React.FC = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} sx={{ ...styles.tableCell, textAlign: 'center', py: 4 }}>
-                  <Typography sx={{ color: '#999', fontStyle: 'italic' }}>
-                    {t('completedTraining.emptyState')}
-                  </Typography>
+                <TableCell colSpan={5} align="center" sx={styles.emptyCell}>
+                  <Box sx={styles.emptyBox}>
+                    <Box sx={styles.emptyIconBox}>
+                      <InfoIcon style={{ fontSize: 22, color: '#E6BB4A' }} />
+                    </Box>
+                    <Typography sx={styles.emptyTitle}>
+                      {t('completedTraining.emptyState')}
+                    </Typography>
+                    <Typography sx={styles.emptyDesc}>
+                      {t('completedTraining.emptyStateDesc', 'No completed trainings found. Check your filters or try a different date range.')}
+                    </Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+        </TableContainer>
 
         {/* Load More Button - Inside TableContainer */}
-        {hasMorePages && !loadingCompletedTrainings && (
+        {!rowLimit && hasMorePages && !loadingCompletedTrainings && (
           <Box sx={{ 
             display: 'flex', 
             justifyContent: 'center', 
@@ -601,7 +684,7 @@ const CompletedTrainingPage: React.FC = () => {
         )}
 
         {/* Loading indicator for Load More - Inside TableContainer */}
-        {loadingCompletedTrainings && trainingsData.length > 0 && (
+        {!rowLimit && loadingCompletedTrainings && trainingsData.length > 0 && (
           <Box sx={{ 
             display: 'flex', 
             justifyContent: 'center', 
@@ -614,7 +697,7 @@ const CompletedTrainingPage: React.FC = () => {
             </Typography>
           </Box>
         )}
-      </TableContainer>
+      </Paper>
 
       {/* Exercise Detail Modal */}
       {modalOpen && selectedAssignmentId && (

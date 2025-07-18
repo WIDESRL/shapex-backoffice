@@ -662,6 +662,7 @@
     }
   },
   "completedTraining": {
+    "pageTitle": "Allenamenti completati",
     "title": "Allenamenti completati",
     "subtitle": "Dettagliato allenamenti completati",
     "filters": {

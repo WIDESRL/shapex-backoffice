@@ -1,11 +1,11 @@
 import React from 'react';
-import { Box, Typography, Paper, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import OutlinedTextIconButton from '../components/OutlinedTextIconButton';
-import InfoIcon from '../icons/InfoIcon';
 import ArrowRightIcon from '../icons/ArrowRightIcon';
 import TrainingExercisePage from './training/Exercises/TrainingExercisePage';
 import TrainingProgramPage from './training/TrainingProgram/TrainingProgramPage';
+import CompletedTrainingPage from './training/CompletedTrainingPage';
 import { useTranslation } from 'react-i18next';
 
 const styles = {
@@ -16,19 +16,8 @@ const styles = {
   sectionHeaderBox: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 3, pt: 3 },
   sectionTitle: { fontSize: 28, fontWeight: 400, color: '#616160', fontFamily: 'Montserrat, sans-serif' },
   sectionSubtitle: { fontSize: 15, color: '#888', fontFamily: 'Montserrat, sans-serif' },
-  tableContainer: { background: 'transparent', boxShadow: 'none', px: 3 },
-  tableHeadCell: { fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0 },
-  tableRow: { background: '#fff', borderBottom: '1px solid #ededed' },
-  tableCell: { fontSize: 18, color: '#616160', fontFamily: 'Montserrat, sans-serif', border: 0 },
-  actionCell: { border: 0, textAlign: 'center' },
   buttonBox: { px: 3, pb: 3, pt: 2 },
 };
-
-const completed = [
-  { date: '22.5.2025', client: 'Sara Rossi', plan: 'Lorem ipsum dolor', freq: '1 gg. / 1 set.' },
-  { date: '21.5.2025', client: 'Mario Bianchi', plan: 'Lorem ipsum dolor', freq: 'XX gg. / XX set.' },
-  { date: '20.05.2025', client: 'Francesca Verdi', plan: 'Lorem ipsum dolor', freq: 'XX gg. / XX set.' },
-];
 
 const TrainingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -72,37 +61,14 @@ const TrainingPage: React.FC = () => {
         </Box>
       </Paper>
 
-      <Paper elevation={0} sx={styles.sectionPaperGray}>
+      <Paper elevation={0} sx={styles.sectionPaper}>
         <Box sx={styles.sectionHeaderBox}>
           <Typography sx={styles.sectionTitle}>{t('training.completedSectionTitle', 'Allenamenti completati')}</Typography>
           <Typography sx={styles.sectionSubtitle}>{t('training.latestCompleted', 'ultimi 3 allenamenti completati')}</Typography>
         </Box>
-        <TableContainer sx={styles.tableContainer}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={styles.tableHeadCell}>{t('training.completedDate', 'Data')}</TableCell>
-                <TableCell sx={styles.tableHeadCell}>{t('training.completedClient', 'Cliente')}</TableCell>
-                <TableCell sx={styles.tableHeadCell}>{t('training.completedPlan', 'Piano di allenamento')}</TableCell>
-                <TableCell sx={styles.tableHeadCell}>{t('training.completedFreq', 'Giorno / Settimana')}</TableCell>
-                <TableCell sx={{ ...styles.tableHeadCell, textAlign: 'center' }}>{t('training.completedDetail', 'Dettaglio esercizio')}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {completed.map((c, idx) => (
-                <TableRow key={idx} sx={styles.tableRow}>
-                  <TableCell sx={styles.tableCell}>{c.date}</TableCell>
-                  <TableCell sx={styles.tableCell}>{c.client}</TableCell>
-                  <TableCell sx={styles.tableCell}>{c.plan}</TableCell>
-                  <TableCell sx={styles.tableCell}>{c.freq}</TableCell>
-                  <TableCell sx={styles.actionCell}>
-                    <IconButton size="small"><InfoIcon style={{ fontSize: 22, color: '#616160' }} /></IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Box>
+          <CompletedTrainingPage showHeader={false} rowLimit={3} />
+        </Box>
         <Box sx={styles.buttonBox}>
           <OutlinedTextIconButton
             text={t('training.fullList', 'Lista completa')}

@@ -25,6 +25,7 @@ const LoginScreen: React.FC = () => {
       await login({ username, password });
       // Redirect to a protected route or dashboard
     } catch (error) {
+      console.error('Login failed:', error);
       setError(t('login.errorMessage'));
     }
   };

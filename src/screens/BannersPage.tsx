@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Button, InputBase, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress } from '@mui/material';
-import FilterIcon from '../icons/FilterIcon';
 import MagnifierIcon from '../icons/MagnifierIcon';
 import BannerFormDialog, { BannerForm } from '../components/BannerFormDialog';
 import DeleteConfirmationDialog from '../screens/Subscription/DeleteConfirmationDialog';
@@ -108,9 +107,6 @@ const BannersPage: React.FC = () => {
 						}}
 						endAdornment={<MagnifierIcon style={{ marginLeft: 8 }} />}
 					/>
-					<IconButton sx={{ background: '#F6F6F6', borderRadius: 2, width: 44, height: 44, ml: 1, boxShadow: '0 0 0 1px #eee' }}>
-						<FilterIcon style={{ color: '#bdbdbd', fontSize: 28 }} />
-					</IconButton>
 				</Box>
 				<Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
 					<Button

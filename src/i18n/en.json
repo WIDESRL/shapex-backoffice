@@ -677,6 +677,7 @@
     }
   },
   "completedTraining": {
+    "pageTitle": "Completed Trainings",
     "title": "Completed Training",
     "subtitle": "Detailed completed training sessions",
     "filters": {

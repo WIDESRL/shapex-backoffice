@@ -2,12 +2,12 @@ import React from 'react';
 import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
 import EditIcon from '../../../icons/EditIcon';
 import DeleteIcon from '../../../icons/DeleteIcon';
+import PlusIcon from '../../../icons/PlusIcon';
 import { TrainingProgram } from '../../../types/trainingProgram.types';
 import { useTraining } from '../../../Context/TrainingContext';
 import { useTranslation } from 'react-i18next';
 import DeleteDialog from '../DeleteDialog';
 import OutlinedTextIconButton from '../../../components/OutlinedTextIconButton';
-import PlusIcon from '../../../icons/PlusIcon';
 import TrainingProgramDialog from './TrainingProgramDialog';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,12 +22,12 @@ const styles = {
   tableHeadCellLast: { fontWeight: 500, fontSize: 18, color: '#888', fontFamily: 'Montserrat, sans-serif', background: '#EDEDED', border: 0, borderTopRightRadius: 12 },
   tableRow: { background: '#fff', borderBottom: '1px solid #ededed' },
   tableCell: { fontSize: 18, color: '#616160', fontFamily: 'Montserrat, sans-serif', border: 0 },
-  actionCell: { border: 0, textAlign: 'center' },
-  actionContainer: { whiteSpace: 'nowrap' },
+  actionCell: { border: 0, textAlign: 'center', whiteSpace: 'nowrap' },
   editIcon: { fontSize: 22, color: '#E6BB4A' },
   deleteIcon: { fontSize: 22, color: '#E57373' },
   emptyCell: { py: 8, background: '#fafafa' },
   emptyBox: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 },
+  emptyIconBox: { border: '2px solid #E6BB4A', borderRadius: 1, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 },
   emptyTitle: { color: '#bdbdbd', fontSize: 22, fontWeight: 500, fontFamily: 'Montserrat, sans-serif' },
   emptyDesc: { color: '#bdbdbd', fontSize: 16, fontFamily: 'Montserrat, sans-serif' },
 };
@@ -138,13 +138,13 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
               <TableRow sx={{ overflow: 'hidden' }}>
                 <TableCell sx={styles.tableHeadCellFirst}>{t('training.programName', 'Nome programma')}</TableCell>
                 <TableCell sx={styles.tableHeadCell}>{t('training.description')}</TableCell>
-                <TableCell sx={{ ...styles.tableHeadCell, textAlign: 'center' }}>{t('training.programType', 'Tipologia di allenamento')}</TableCell>
-                <TableCell sx={[styles.tableHeadCell,styles.actionCell, styles.tableHeadCellLast]}></TableCell>
+                <TableCell sx={styles.tableHeadCell}>{t('training.programType', 'Tipologia di allenamento')}</TableCell>
+                <TableCell sx={{ ...styles.tableHeadCellLast, textAlign: 'center' }}>{t('training.actions')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {isLoading ? (
-                [...Array(3)].map((_, idx) => (
+                [...Array(rowLimit || 3)].map((_, idx) => (
                   <TableRow key={idx} sx={styles.tableRow}>
                     {[...Array(4)].map((_, cidx) => (
                       <TableCell key={cidx} sx={styles.tableCell}>
@@ -157,6 +157,9 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
                 <TableRow>
                   <TableCell colSpan={4} align="center" sx={styles.emptyCell}>
                     <Box sx={styles.emptyBox}>
+                      <Box sx={styles.emptyIconBox}>
+                        <PlusIcon style={{ fontSize: 22, color: '#E6BB4A' }} />
+                      </Box>
                       <Typography sx={styles.emptyTitle}>{t('training.noProgramsTitle', 'Nessun programma ancora')}</Typography>
                       <Typography sx={styles.emptyDesc}>{t('training.noProgramsDesc', 'Inizia aggiungendo il tuo primo programma di allenamento.')}</Typography>
                     </Box>
@@ -173,10 +176,8 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
                     <TableCell sx={styles.tableCell}>{stripHtml(pr?.description || "")}</TableCell>
                     <TableCell sx={styles.tableCell} align="center">{pr.type}</TableCell>
                     <TableCell sx={styles.actionCell}>
-                      <Box sx={styles.actionContainer}>
-                        <IconButton size="small" sx={{ mr: 1 }} onClick={e => { e.stopPropagation(); handleEdit(pr); }}><EditIcon style={styles.editIcon} /></IconButton>
-                        <IconButton size="small" onClick={e => { e.stopPropagation(); handleDelete(pr); }}><DeleteIcon style={styles.deleteIcon} /></IconButton>
-                      </Box>
+                      <IconButton size="small" sx={{ mr: 1 }} onClick={e => { e.stopPropagation(); handleEdit(pr); }}><EditIcon style={styles.editIcon} /></IconButton>
+                      <IconButton size="small" onClick={e => { e.stopPropagation(); handleDelete(pr); }}><DeleteIcon style={styles.deleteIcon} /></IconButton>
                     </TableCell>
                   </TableRow>
                 ))

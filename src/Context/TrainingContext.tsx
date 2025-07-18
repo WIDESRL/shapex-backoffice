@@ -338,7 +338,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       const nextPage = currentPage + 1;
       
       searchParams.append('page', nextPage.toString());
-      searchParams.append('itemsPerPage', (params.itemsPerPage || 2).toString());
+      searchParams.append('itemsPerPage', (params.itemsPerPage || 20).toString());
       
       // Add optional parameters
       if (params.clientId) searchParams.append('clientId', params.clientId.toString());
