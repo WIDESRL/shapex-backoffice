@@ -657,6 +657,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
               <ul style={styles.modalSectionList}>
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.subscription')}</li>
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.notifications')}</li>
+                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.configuration')}</li>
               </ul>
             </Box>
           </Box>

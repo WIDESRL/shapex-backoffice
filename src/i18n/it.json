@@ -375,7 +375,8 @@
           "title": "Altro",
           "items": {
             "subscription": "Abbonamento",
-            "notifications": "Notifiche"
+            "notifications": "Notifiche",
+            "configuration": "Configurazione"
           }
         }
       }
@@ -630,7 +631,8 @@
       "clientNotFound": "Cliente non trovato",
       "tabs": {
         "subscription": "Abbonamento",
-        "notifications": "Notifiche"
+        "notifications": "Notifiche",
+        "configuration": "Configurazione"
       },
       "abbonamento": {
         "fields": {
@@ -654,6 +656,14 @@
           "description": "Il cliente non ha un abbonamento attivo. I dettagli dell'abbonamento appariranno qui una volta assegnato un piano.",
           "subtitle": "Assegna un piano di abbonamento per iniziare"
         }
+      },
+      "config": {
+        "title": "Configurazione Utente",
+        "noConfig": "Nessuna configurazione disponibile",
+        "pushNotifications": "Notifiche Push",
+        "emailNotifications": "Notifiche Email",
+        "enabled": "Abilitato",
+        "disabled": "Disabilitato"
       },
       "notifiche": {
         "loading": "Caricamento notifiche...",

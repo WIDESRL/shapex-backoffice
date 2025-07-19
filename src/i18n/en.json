@@ -391,7 +391,8 @@
           "title": "Other",
           "items": {
             "subscription": "Subscription",
-            "notifications": "Notifications"
+            "notifications": "Notifications",
+            "configuration": "Configuration"
           }
         }
       }
@@ -645,7 +646,8 @@
       "clientNotFound": "Client not found",
       "tabs": {
         "subscription": "Subscription",
-        "notifications": "Notifications"
+        "notifications": "Notifications",
+        "configuration": "Configuration"
       },
       "abbonamento": {
         "fields": {
@@ -669,6 +671,14 @@
           "description": "The client does not have an active subscription. Subscription details will appear here once a plan is assigned.",
           "subtitle": "Assign a subscription plan to get started"
         }
+      },
+      "config": {
+        "title": "User Configuration",
+        "noConfig": "No configuration available",
+        "pushNotifications": "Push Notifications",
+        "emailNotifications": "Email Notifications",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
       },
       "notifiche": {
         "loading": "Loading notifications...",
