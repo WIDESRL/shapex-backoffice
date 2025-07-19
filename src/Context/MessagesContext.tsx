@@ -138,7 +138,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [conversationHasMore, setConversationHasMore] = useState(true);
     const [loadingConversations, setLoadingConversations] = useState(false);
     const [messagesPerPage] = useState(10);
-    const { socketInstance } = useAuth();
+    const {socketInstance, isAuth } = useAuth();
 
 
     const updateUserOnlineStatus = useCallback((user: { id: number }, online: boolean) => {
@@ -215,8 +215,8 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                 setConversations([]);
             }
         };
-        fetchConversations();
-    }, []);
+        if (isAuth) fetchConversations();
+    }, [isAuth]);
 
     useEffect(() => {
         const fetchAndMarkSeen = async () => {
@@ -224,16 +224,13 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             const conv = conversations.find(c => c.id === selectedConversationId);
             if (!conv) return;
             try {
-                // 1. Mark as seen
                 await axiosInstance.patch(`/messages/admin/${selectedConversationId}/seen`);
                 setConversations(prev => prev.map(c => c.id === selectedConversationId ? { ...c, seen: true } : c));
             } catch { 
                 console.error("Error marking conversation as seen");
             }
             try {
-                // 2. Fetch messages for this conversation (by userId)
                 const res = await axiosInstance.get(`/messages/admin/${conv.userId}`);
-                // Assume API returns an array of messages in the correct format
                 setMessagesByConversationId(prev => ({
                     ...prev,
                     [selectedConversationId]: res.data,
@@ -327,6 +324,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
     }, []);
 
     const fetchConversations = useCallback(async (opts?: { append?: boolean }) => {
+        if (!isAuth) return;
         setLoadingConversations(true);
         try {
             const res = await axiosInstance.get('/messages/admin/conversations', {
@@ -345,7 +343,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
         } finally {
             setLoadingConversations(false);
         }
-    }, [conversationSearch, conversationPage, conversationPageSize]);
+    }, [conversationSearch, conversationPage, conversationPageSize, isAuth]);
 
     const loadMoreMessages = useCallback(async (conversationId: number, lastMessageId: number) => {
         try {

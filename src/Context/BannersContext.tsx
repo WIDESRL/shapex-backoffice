@@ -37,7 +37,7 @@ const BannersContext = createContext<BannersContextType | undefined>(undefined);
 
 export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [banners, setBanners] = useState<Banner[]>([]);
-    const { socketInstance } = useAuth();
+    const { socketInstance, isAuth } = useAuth();
 
 
     useEffect(() => {
@@ -73,6 +73,7 @@ export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children })
         queryFn: async () => {
             return api.get('/banners');
         },
+        enabled: isAuth, 
     });
 
     useEffect(() => {
