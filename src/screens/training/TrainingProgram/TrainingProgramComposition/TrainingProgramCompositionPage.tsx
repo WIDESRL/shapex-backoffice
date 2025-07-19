@@ -189,6 +189,16 @@ const styles = {
   dayHeaderActions: { display: "flex", gap: 1, ml: 2 },
   tableHead: { background: "#f5f5f5", position: "relative", zIndex: 1 },
   tableCell: { fontSize: 16, color: "#616160", border: 0 },
+  exerciseTitleCell: { fontSize: 16, color: "#616160", border: 0 },
+  exerciseTitleSpan: {
+    display: '-webkit-box',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '300px',
+    lineHeight: 1.2,
+  },
   tableCellBox: { display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 },
   tableHeadCell: {
     fontWeight: 600,
@@ -735,8 +745,16 @@ useEffect(() => {
                                 }
                                 rows.push(
                                   <SortableExerciseRow key={ex.id} exercise={ex} bracketCell={bracketCell} isGroupDragging={highlightGroup}>
-                                    <TableCell sx={styles.tableCell}>
-                                      {ex.exercise?.title}
+                                    <TableCell sx={styles.exerciseTitleCell}>
+                                      <Tooltip 
+                                        title={(ex.exercise?.title || "").length > 20 ? ex.exercise?.title || "" : ""} 
+                                        placement="top" 
+                                        arrow
+                                      >
+                                        <Box sx={styles.exerciseTitleSpan}>
+                                          {ex.exercise?.title}
+                                        </Box>
+                                      </Tooltip>
                                     </TableCell>
                                     <TableCell sx={styles.tableCell}>
                                       {ex.type}

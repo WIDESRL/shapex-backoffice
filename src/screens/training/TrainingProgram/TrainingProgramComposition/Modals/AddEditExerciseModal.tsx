@@ -39,12 +39,33 @@ const styles = {
   searchRow: { display: 'flex', alignItems: 'center', gap: 2, mb: 2 },
   searchInput: { flex: 1, background: '#fff', borderRadius: 3, '& .MuiInputBase-root': { height: 40, minHeight: 40 } },
   filterBtn: { ml: 1 },
-  exerciseList: { display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3, minHeight: 120 },
+  exerciseList: { 
+    display: 'flex', 
+    flexWrap: 'wrap', 
+    gap: 2, 
+    mb: 3, 
+    minHeight: 120, 
+    maxHeight: 400, 
+    overflowY: 'auto',
+    padding: 1,
+    border: '1px solid #e9ecef',
+    borderRadius: 2
+  },
   exerciseItem: {
-    display: 'flex', alignItems: 'center', gap: 2, background: '#fff', borderRadius: 2, p: 0.3, cursor: 'pointer', minWidth: 220, mb: 1, boxShadow: '0 1px 4px 0 rgba(33,33,33,0.07)', minHeight: 40, height: 40
+    display: 'flex', alignItems: 'center', gap: 2, background: '#fff', borderRadius: 2, p: 0.3, cursor: 'pointer', minWidth: 220, mb: 1, boxShadow: '0 1px 4px 0 rgba(33,33,33,0.07)', minHeight: 40, 
   },
   exerciseThumb: { width: 34, height: 34, borderRadius: 8, objectFit: 'cover', background: '#eee' },
-  exerciseTitle: { fontWeight: 500, fontSize: 16, color: '#616160' },
+  exerciseTitle: { 
+    fontWeight: 500, 
+    fontSize: 16, 
+    color: '#616160', 
+    padding: '0 15px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    flex: 1,
+    maxWidth: 'calc(350px - 34px - 22px - 30px)' // Total width minus thumbnail, radio button, and padding
+  },
   dragHandle: { cursor: 'grab', ml: 1 },
   actions: { display: 'flex', justifyContent: 'flex-end', gap: 2, px: 5, pb: 4 },
   saveBtn: {
@@ -104,6 +125,34 @@ const styles = {
     color: '#6c757d',
     maxWidth: 500,
     lineHeight: 1.5
+  },
+  // Exercise card styles
+  exerciseCard: {
+    minHeight: 40,
+    height: 40,
+    width: 370,
+    minWidth: 370,
+    maxWidth: 370,
+    flex: '0 0 370px',
+    p: 0.5,
+    position: 'relative',
+    transition: 'background 0.2s, border 0.2s',
+  },
+  exerciseCardSelected: {
+    background: '#EFEFEF',
+    border: '2px solid #C3C3C3',
+  },
+  exerciseCardUnselected: {
+    background: '#fff',
+    border: '2px solid #D9D9D9',
+  },
+  exerciseRadioButton: {
+    marginLeft: 'auto',
+    marginRight: 8,
+    accentColor: '#EDB528',
+    width: 22,
+    height: 22,
+    flexShrink: 0
   }
 };
 
@@ -430,16 +479,8 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
                 key={ex.id}
                 sx={{
                   ...styles.exerciseItem,
-                  minHeight: 40,
-                  height: 40,
-                  minWidth: 220,
-                  maxWidth: 320,
-                  flex: '1 1 220px',
-                  p: 0.5,
-                  background: selectedExercises[0] === ex.id ? '#EFEFEF' : '#fff',
-                  border: selectedExercises[0] === ex.id ? '2px solid #C3C3C3' : '2px solid #D9D9D9',
-                  position: 'relative',
-                  transition: 'background 0.2s, border 0.2s',
+                  ...styles.exerciseCard,
+                  ...(selectedExercises[0] === ex.id ? styles.exerciseCardSelected : styles.exerciseCardUnselected),
                 }}
                 onClick={() => setSelectedExercises([ex.id])}
               >
@@ -456,13 +497,17 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
                     </Box>
                   </Box>
                 )}
-                <span style={styles.exerciseTitle as React.CSSProperties}>{ex.title}</span>
-                <span style={{ flex: 1 }} />
+                <span 
+                  style={styles.exerciseTitle as React.CSSProperties}
+                  title={ex.title}
+                >
+                  {ex.title}
+                </span>
                 <input
                   type="radio"
                   checked={selectedExercises[0] === ex.id}
                   readOnly
-                  style={{ marginLeft: 8, accentColor: '#EDB528', width: 22, height: 22 }}
+                  style={styles.exerciseRadioButton}
                 />
               </Box>
             ))
