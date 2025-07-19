@@ -170,7 +170,16 @@
     "exerciseEmptyStateTitle": "Nessun esercizio trovato",
     "exerciseEmptyStateDesc": "Nessun esercizio corrisponde ai criteri di ricerca o ai filtri del gruppo muscolare correnti. Prova a modificare i filtri o i termini di ricerca.",
     "deleteExerciseTitle": "Sei sicuro di voler eliminare questo esercizio?",
-    "deleteTrainingProgramTitle": "Sei sicuro di voler eliminare questo programma di allenamento?"
+    "deleteTrainingProgramTitle": "Sei sicuro di voler eliminare questo programma di allenamento?",
+    "searchPrograms": "Cerca programmi...",
+    "filterByType": "Filtra per tipologia",
+    "showingResults": "Mostrando {{count}} di {{total}} risultati",
+    "loadMore": "Carica altri",
+    "trainingProgramsTitle": "Programmi di allenamento",
+    "trainingPrograms": "Programmi di allenamento",
+    "addTrainingProgram": "Aggiungi Programma",
+    "programName": "Nome programma",
+    "programType": "Tipologia di allenamento"
   },
   "trainingPrograms": {
     "title": "Programmi di allenamento",
