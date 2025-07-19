@@ -275,6 +275,8 @@ export interface TrainingContextType {
   exercises: ExerciseResponse | null;
   isLoading: boolean;
   loadingAvailableUsers: boolean;
+  itemsPerPage: number;
+  setItemsPerPage: (itemsPerPage: number) => void;
   fetchExercises: (params?: { limit?: number; search?: string; muscleGroups?: string[]; page?: number; resetPagination?: boolean }) => Promise<void>;
   loadMoreExercises: (params?: { limit?: number; search?: string; muscleGroups?: string[] }) => Promise<void>;
   fetchExercisesWithoutLoading: (limit?: number, search?: string, muscleGroups?: string[]) => Promise<void>;
@@ -289,7 +291,26 @@ export interface TrainingContextType {
   updateExercise: (id: number, data: UpdateExercisePayload) => Promise<Exercise>;
   deleteExercise: (id: number) => Promise<void>;
   trainingPrograms: TrainingProgram[];
-  fetchTrainingPrograms: (limit?: number) => Promise<void>;
+  trainingProgramsResponse: {
+    programs: TrainingProgram[];
+    totalCount: number;
+    page: number;
+    itemsPerPage: number;
+    totalPages: number;
+  } | null;
+  fetchTrainingPrograms: (params?: {
+    limit?: number;
+    search?: string;
+    type?: string;
+    page?: number;
+    resetPagination?: boolean;
+  }) => Promise<void>;
+  loadMoreTrainingPrograms: (params: {
+    search?: string;
+    type?: string;
+    page: number;
+    limit?: number;
+  }) => Promise<void>;
   addTrainingProgram: (data: { title: string; description: string; type: string;}) => Promise<TrainingProgram>;
   updateTrainingProgram: (id: number, data: { title?: string; description?: string; type?: string; }) => Promise<TrainingProgram>;
   deleteTrainingProgram: (id: number) => Promise<void>;

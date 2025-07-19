@@ -33,6 +33,13 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [exercises, setExercises] = React.useState<ExerciseResponse | null>(null);
   const [currentExerciseFilters, setCurrentExerciseFilters] = React.useState<{ search?: string; muscleGroup?: string; limit?: number }>({});
   const [trainingPrograms, setTrainingPrograms] = React.useState<TrainingProgram[]>([]);
+  const [trainingProgramsResponse, setTrainingProgramsResponse] = React.useState<{
+    programs: TrainingProgram[];
+    totalCount: number;
+    page: number;
+    itemsPerPage: number;
+    totalPages: number;
+  } | null>(null);
   const [selectedTrainingProgram, setSelectedTrainingProgram] = React.useState<FullTrainningProgram | null>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [availableUsers, setAvailableUsers] = React.useState<User[]>([]);
@@ -41,6 +48,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [loadingAssignedUsers, setLoadingAssignedUsers] = React.useState(false);
   const [completedTrainings, setCompletedTrainings] = React.useState<CompletedTrainingResponse | null>(null);
   const [loadingCompletedTrainings, setLoadingCompletedTrainings] = React.useState(false);
+  const [itemsPerPage, setItemsPerPage] = React.useState(10);
   
   // Assignment logs states
   const [assignmentLogs, setAssignmentLogs] = React.useState<AssignmentLogsResponse | null>(null);
@@ -193,15 +201,66 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     } : prev);
   };
 
-  const fetchTrainingPrograms = React.useCallback(async (limit?: number) => {
+  const fetchTrainingPrograms = React.useCallback(async (params: {
+    limit?: number;
+    search?: string;
+    type?: string;
+    page?: number;
+    resetPagination?: boolean;
+  } = {}) => {
     setIsLoading(true);
     try {
-      let url = '/trainning/program';
-      if (limit) url += `?limit=${limit}`;
-      const res = await api.get(url);
-      setTrainingPrograms(res);
+      const searchParams = new URLSearchParams();
+      if (params.search) searchParams.append('search', params.search);
+      if (params.type) searchParams.append('type', params.type);
+      if (params.page) searchParams.append('page', params.page.toString());
+      if (params.limit) searchParams.append('itemsPerPage', params.limit.toString());
+      
+      const url = `/trainning/program${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+      const response = await api.get(url);
+      
+      // Handle both old and new API response formats
+      if (response.programs !== undefined) {
+        // New paginated response
+        setTrainingProgramsResponse(response);
+        if (params.resetPagination || !params.page || params.page === 1) {
+          setTrainingPrograms(response.programs);
+        } else {
+          // Append for load more
+          setTrainingPrograms(prev => [...prev, ...response.programs]);
+        }
+      } else {
+        // Old response format (direct array)
+        setTrainingPrograms(response);
+        setTrainingProgramsResponse(null);
+      }
     } finally {
       setIsLoading(false);
+    }
+  }, []);
+
+  const loadMoreTrainingPrograms = React.useCallback(async (params: {
+    search?: string;
+    type?: string;
+    page: number;
+    limit?: number;
+  }) => {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params.search) searchParams.append('search', params.search);
+      if (params.type) searchParams.append('type', params.type);
+      searchParams.append('page', params.page.toString());
+      if (params.limit) searchParams.append('itemsPerPage', params.limit.toString());
+      
+      const url = `/trainning/program?${searchParams.toString()}`;
+      const response = await api.get(url);
+      
+      if (response.programs !== undefined) {
+        setTrainingProgramsResponse(response);
+        setTrainingPrograms(prev => [...prev, ...response.programs]);
+      }
+    } catch (error) {
+      console.error('Error loading more training programs:', error);
     }
   }, []);
 
@@ -438,6 +497,8 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     <TrainingContext.Provider value={{
       exercises,
       isLoading,
+      itemsPerPage,
+      setItemsPerPage,
       fetchExercises,
       loadMoreExercises,
       fetchExercisesWithoutLoading,
@@ -445,7 +506,9 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       updateExercise,
       deleteExercise,
       trainingPrograms,
+      trainingProgramsResponse,
       fetchTrainingPrograms,
+      loadMoreTrainingPrograms,
       addTrainingProgram,
       updateTrainingProgram,
       deleteTrainingProgram,

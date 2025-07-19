@@ -1,5 +1,19 @@
 import React from 'react';
-import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  Paper, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  IconButton, 
+  TextField, 
+  Button,
+  Autocomplete
+} from '@mui/material';
 import EditIcon from '../../../icons/EditIcon';
 import DeleteIcon from '../../../icons/DeleteIcon';
 import PlusIcon from '../../../icons/PlusIcon';
@@ -11,6 +25,32 @@ import OutlinedTextIconButton from '../../../components/OutlinedTextIconButton';
 import TrainingProgramDialog from './TrainingProgramDialog';
 import { useNavigate } from 'react-router-dom';
 
+// Constants
+export const programTypes = [
+  'Altro',
+  'BodyBuilding',
+  'Crossfit',
+  'FunctionalTraining',
+  'HIIT',
+  'HomeWorkout',
+  'Pilates',
+  'Powerlifting',
+  'Streetlifting',
+  'Tabata',
+  'Weightlifting',
+  'Yoga',
+];
+
+// Utility Functions
+function stripHtml(html: string): string {
+  if (!html) return '';
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  const text = div.textContent || div.innerText || '';
+  return text.length > 100 ? text.slice(0, 100) + '...' : text;
+}
+
+// Styles Section
 const styles = {
   root: { p: 4, background: '#fff' },
   title: { fontSize: 38, fontWeight: 400, color: '#616160', fontFamily: 'Montserrat, sans-serif', mb: 3 },
@@ -30,30 +70,29 @@ const styles = {
   emptyIconBox: { border: '2px solid #E6BB4A', borderRadius: 1, width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 },
   emptyTitle: { color: '#bdbdbd', fontSize: 22, fontWeight: 500, fontFamily: 'Montserrat, sans-serif' },
   emptyDesc: { color: '#bdbdbd', fontSize: 16, fontFamily: 'Montserrat, sans-serif' },
+  searchContainer: { mb: 3 },
+  searchBox: { display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' },
+  searchField: { flex: '1 1 300px', minWidth: '200px' },
+  filterField: { flex: '1 1 250px', minWidth: '200px' },
+  inputStyle: { 
+    '& .MuiOutlinedInput-root': { 
+      borderRadius: 2,
+      fontFamily: 'Montserrat, sans-serif'
+    }
+  },
+  loadMoreContainer: { display: 'flex', justifyContent: 'center', p: 2 },
+  loadMoreButton: {
+    borderColor: '#E6BB4A',
+    color: '#E6BB4A',
+    fontFamily: 'Montserrat, sans-serif',
+    textTransform: 'none',
+    fontWeight: 600,
+    '&:hover': {
+      borderColor: '#d4a843',
+      backgroundColor: 'rgba(230, 187, 74, 0.04)'
+    }
+  }
 };
-
-export const programTypes = [
-  'Altro',
-  'BodyBuilding',
-  'Crossfit',
-  'FunctionalTraining',
-  'HIIT',
-  'HomeWorkout',
-  'Pilates',
-  'Powerlifting',
-  'Streetlifting',
-  'Tabata',
-  'Weightlifting',
-  'Yoga',
-];
-
-function stripHtml(html: string): string {
-  if (!html) return '';
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  const text = div.textContent || div.innerText || '';
-  return text.length > 100 ? text.slice(0, 100) + '...' : text;
-}
 
 interface TrainingProgramPageProps {
   showHeader?: boolean;
@@ -63,16 +102,65 @@ interface TrainingProgramPageProps {
 const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = true, rowLimit }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { trainingPrograms, fetchTrainingPrograms, addTrainingProgram, updateTrainingProgram, deleteTrainingProgram, isLoading } = useTraining();
+  const { 
+    trainingPrograms, 
+    trainingProgramsResponse,
+    fetchTrainingPrograms, 
+    loadMoreTrainingPrograms,
+    addTrainingProgram, 
+    updateTrainingProgram, 
+    deleteTrainingProgram, 
+    isLoading,
+    itemsPerPage
+  } = useTraining();
+  
   const [modalOpen, setModalOpen] = React.useState(false);
   const [editData, setEditData] = React.useState<TrainingProgram | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deleteTarget, setDeleteTarget] = React.useState<TrainingProgram | null>(null);
   const [saving, setSaving] = React.useState(false);
+  
+  // Search and filter states
+  const [searchValue, setSearchValue] = React.useState('');
+  const [selectedType, setSelectedType] = React.useState<string | null>(null);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
+  // Debounced search function
+  const debouncedSearch = React.useCallback(() => {
+    setCurrentPage(1);
+    fetchTrainingPrograms({
+      search: searchValue || undefined,
+      type: selectedType || undefined,
+      page: 1,
+      limit: itemsPerPage,
+      resetPagination: true
+    });
+  }, [searchValue, selectedType, fetchTrainingPrograms, itemsPerPage]);
+
+  // Debounced search effect
   React.useEffect(() => {
-    fetchTrainingPrograms(rowLimit ?? undefined);
-  }, [fetchTrainingPrograms]);
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    searchTimeoutRef.current = setTimeout(debouncedSearch, 500);
+    
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [debouncedSearch]);
+
+  // Initial fetch
+  React.useEffect(() => {
+    fetchTrainingPrograms({
+      limit: itemsPerPage,
+      page: 1,
+      resetPagination: true
+    });
+  }, [fetchTrainingPrograms, itemsPerPage]);
 
   const handleAdd = () => {
     setEditData(null);
@@ -116,6 +204,29 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
     }
   };
 
+  const handleLoadMore = async () => {
+    if (trainingProgramsResponse && currentPage < trainingProgramsResponse.totalPages) {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      await loadMoreTrainingPrograms({
+        search: searchValue || undefined,
+        type: selectedType || undefined,
+        page: nextPage,
+        limit: itemsPerPage
+      });
+    }
+  };
+
+  const canLoadMore = React.useMemo(() => 
+    trainingProgramsResponse && currentPage < trainingProgramsResponse.totalPages, 
+    [trainingProgramsResponse, currentPage]
+  );
+  
+  const displayedPrograms = React.useMemo(() => 
+    rowLimit ? trainingPrograms.slice(0, rowLimit) : trainingPrograms,
+    [trainingPrograms, rowLimit]
+  );
+
   return (
     <Box sx={styles.root}>
       {showHeader && (
@@ -131,6 +242,51 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
           </Box>
         </>
       )}
+      
+      {/* Search and Filter Section - Only show when showHeader is true */}
+      {showHeader && (
+        <Box sx={styles.searchContainer}>
+          <Box sx={styles.searchBox}>
+            <Box sx={styles.searchField}>
+              <TextField
+                fullWidth
+                placeholder={t('training.searchPrograms', 'Cerca programmi...')}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                size="small"
+                sx={styles.inputStyle}
+              />
+            </Box>
+            <Box sx={styles.filterField}>
+              <Autocomplete
+                fullWidth
+                size="small"
+                options={programTypes}
+                value={selectedType}
+                onChange={(_, newValue) => setSelectedType(newValue)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder={t('training.filterByType', 'Filtra per tipologia')}
+                    sx={styles.inputStyle}
+                  />
+                )}
+              />
+            </Box>
+            <Box sx={{ flex: '1 1 200px' }}>
+              {trainingProgramsResponse && (
+                <Typography sx={{ color: '#888', fontSize: 14, fontFamily: 'Montserrat, sans-serif' }}>
+                  {t('training.showingResults', 'Mostrando {{count}} di {{total}} risultati', {
+                    count: trainingPrograms.length,
+                    total: trainingProgramsResponse.totalCount
+                  })}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+        </Box>
+      )}
+
       <Paper elevation={0} sx={styles.paper}>
         <TableContainer sx={styles.tableContainer}>
           <Table>
@@ -143,7 +299,7 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
               </TableRow>
             </TableHead>
             <TableBody>
-              {isLoading ? (
+              {isLoading && trainingPrograms.length === 0 ? (
                 [...Array(rowLimit || 3)].map((_, idx) => (
                   <TableRow key={idx} sx={styles.tableRow}>
                     {[...Array(4)].map((_, cidx) => (
@@ -153,7 +309,7 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
                     ))}
                   </TableRow>
                 ))
-              ) : trainingPrograms.length === 0 ? (
+              ) : displayedPrograms.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} align="center" sx={styles.emptyCell}>
                     <Box sx={styles.emptyBox}>
@@ -166,7 +322,7 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
                   </TableCell>
                 </TableRow>
               ) : (
-                (rowLimit ? trainingPrograms.slice(0, rowLimit) : trainingPrograms).map((pr, idx) => (
+                displayedPrograms.map((pr, idx) => (
                   <TableRow
                     key={pr.id || idx}
                     sx={{ ...styles.tableRow, cursor: 'pointer' }}
@@ -185,6 +341,19 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
             </TableBody>
           </Table>
         </TableContainer>
+        
+        {/* Load More Button - Only show when showHeader is true */}
+        {canLoadMore && !rowLimit && showHeader && (
+          <Box sx={styles.loadMoreContainer}>
+            <Button
+              variant="outlined"
+              onClick={handleLoadMore}
+              sx={styles.loadMoreButton}
+            >
+              {t('training.loadMore', 'Carica altri')}
+            </Button>
+          </Box>
+        )}
       </Paper>
       {/* Modal for add/edit */}
       <TrainingProgramDialog
