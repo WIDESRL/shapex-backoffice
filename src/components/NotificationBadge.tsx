@@ -17,9 +17,9 @@ const NotificationBadge: React.FC<NotificationBadgeProps> = ({
   return (
     <Box
       sx={{
-        backgroundColor: "#FF4444",
-        color: "#fff",
-        fontSize: "0.75rem",
+        backgroundColor: "#EDB528",
+        color: "grey",
+        fontSize: "0.8rem",
         fontWeight: "bold",
         minWidth: "20px",
         height: "20px",
