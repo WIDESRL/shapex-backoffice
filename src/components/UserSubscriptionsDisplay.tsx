@@ -19,7 +19,7 @@ import Subscriptions from '../icons/Subscriptions';
 import RefreshIcon from '../icons/RefreshIcon';
 import { formatDistance } from 'date-fns';
 import SubscriptionDetailDialog from './SubscriptionDetailDialog';
-import { it } from 'date-fns/locale';
+import { it, enUS } from 'date-fns/locale';
 
 interface UserSubscriptionsDisplayProps {
   userId: string;
@@ -75,12 +75,13 @@ const formatCurrency = (amount: number | string, currency = 'EUR') => {
   }).format(numAmount || 0);
 };
 
-const formatDate = (dateString: string, t: (key: string) => string) => {
+const formatDate = (dateString: string, t: (key: string) => string, language: string = 'it') => {
   if (!dateString) return t('subscriptions.userSubscriptions.dates.notSpecified');
   
   try {
     const date = new Date(dateString);
-    return date.toLocaleDateString('it-IT', {
+    const locale = language === 'en' ? 'en-US' : 'it-IT';
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -90,14 +91,15 @@ const formatDate = (dateString: string, t: (key: string) => string) => {
   }
 };
 
-const formatRelativeDate = (dateString: string) => {
+const formatRelativeDate = (dateString: string, language: string = 'it') => {
   if (!dateString) return '';
   
   try {
     const date = new Date(dateString);
+    const locale = language === 'en' ? enUS : it;
     return formatDistance(date, new Date(), { 
       addSuffix: true, 
-      locale: it 
+      locale 
     });
   } catch {
     return '';
@@ -105,7 +107,7 @@ const formatRelativeDate = (dateString: string) => {
 };
 
 export const UserSubscriptionsDisplay: React.FC<UserSubscriptionsDisplayProps> = ({ userId }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { 
     userSubscriptions, 
     loadingUserSubscriptions, 
@@ -280,7 +282,7 @@ export const UserSubscriptionsDisplay: React.FC<UserSubscriptionsDisplayProps> =
                   {subscription.futureSubscription && (
                     <Box>
                       <Chip 
-                        label={`${t('subscriptions.userSubscriptions.futureActivation')} ${formatDate(subscription.startDate, t)}`}
+                        label={`${t('subscriptions.userSubscriptions.futureActivation')} ${formatDate(subscription.startDate, t, i18n.language)}`}
                         color="info" 
                         variant="outlined" 
                         size="small"
@@ -310,18 +312,18 @@ export const UserSubscriptionsDisplay: React.FC<UserSubscriptionsDisplayProps> =
                       {t('subscriptions.userSubscriptions.sections.period')}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>{t('subscriptions.userSubscriptions.labels.startDate')}</strong> {formatDate(subscription.startDate, t)}
+                      <strong>{t('subscriptions.userSubscriptions.labels.startDate')}</strong> {formatDate(subscription.startDate, t, i18n.language)}
                       {subscription.startDate && (
                         <Typography variant="caption" color="text.secondary" display="block">
-                          {formatRelativeDate(subscription.startDate)}
+                          {formatRelativeDate(subscription.startDate, i18n.language)}
                         </Typography>
                       )}
                     </Typography>
                     <Typography variant="body2" mt={0.5}>
-                      <strong>{t('subscriptions.userSubscriptions.labels.endDate')}</strong> {formatDate(subscription.endDate, t)}
+                      <strong>{t('subscriptions.userSubscriptions.labels.endDate')}</strong> {formatDate(subscription.endDate, t, i18n.language)}
                       {subscription.endDate && (
                         <Typography variant="caption" color="text.secondary" display="block">
-                          {formatRelativeDate(subscription.endDate)}
+                          {formatRelativeDate(subscription.endDate, i18n.language)}
                         </Typography>
                       )}
                     </Typography>
