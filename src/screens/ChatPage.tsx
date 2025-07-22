@@ -187,7 +187,7 @@ const ChatPageContent: React.FC = () => {
         conversationHasMore,
         fetchConversations,
         loadingConversations,
-        resetConversationSearch,
+        // resetConversationSearch,
 		loadMoreMessages,
 	} = useMessages();
 	const [message, setMessage] = useState('');
@@ -217,12 +217,12 @@ const ChatPageContent: React.FC = () => {
     }, [conversationSearch, conversationPage, fetchConversations]);
 
     // Reset conversation search state on sidebar close (unmount)
-    useEffect(() => {
-        return () => {
-            resetConversationSearch();
-            setSearchInput('');
-        };
-    }, [resetConversationSearch]);
+    // useEffect(() => {
+    //     return () => {
+    //         resetConversationSearch();
+    //         setSearchInput('');
+    //     };
+    // }, [resetConversationSearch]);
 
 	const selectedConversation = selectedConversationId
 		? conversations.find(c => c.id === selectedConversationId) || null
@@ -370,7 +370,7 @@ const ChatPageContent: React.FC = () => {
 			const selectedConversation = conversations.find(conv => conv.id === selectedConversationId)
 			if(selectedConversation && selectedConversation.seen === false) setConversationSeen(selectedConversation.id)
 		}, 500)
-	}, [conversations])
+	}, [conversations, selectedConversationId, setConversationSeen])
 
 	return (
 		<ChatContainer>

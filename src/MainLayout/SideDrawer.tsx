@@ -25,12 +25,16 @@ import BannersIcon from "../icons/Banners";
 import LogoutIcon from "../icons/Logout";
 import SettingsIcon from "../icons/SettingsIcon";
 import { useAuth } from "../Context/AuthContext";
+import { useMessages } from "../Context/MessagesContext";
+import NotificationBadge from "../components/NotificationBadge";
 
 const menuColor = "#EDB528";
 const hoverBg = "rgba(237,181,40,0.08)";
 const submenuHoverBg = "rgba(237,181,40,0.12)";
 const activeIconFilter =
   "brightness(0) saturate(100%) invert(73%) sepia(74%) saturate(749%) hue-rotate(352deg) brightness(92%) contrast(95%)";
+const redIconFilter =
+  "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)";
 
 const StyleSheet = {
   create: <T extends { [key: string]: React.CSSProperties }>(styles: T) =>
@@ -119,8 +123,14 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
   const { t } = useTranslation();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const { logout } = useAuth();
+  const { conversations } = useMessages();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Calculate unread conversations count
+  const unreadConversationsCount = React.useMemo(() => {
+    return conversations.filter(conversation => !conversation.seen).length;
+  }, [conversations]);
 
   // Memoize currentWidth calculation
   const currentWidth = React.useMemo(
@@ -551,28 +561,45 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
               color: activeMenu === ActiveMenu.Chat ? menuColor : undefined,
             }}
             onClick={() => handleNavigation(MenuPath.Chat)}
-            sx={{ "&:hover": { bgcolor: hoverBg } }}
+            sx={{ 
+              "&:hover": { bgcolor: hoverBg },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
-            <ChatIcon
-              style={{
-                ...styles.icon,
-                color: activeMenu === ActiveMenu.Chat ? menuColor : undefined,
-                filter:
-                  activeMenu === ActiveMenu.Chat ? activeIconFilter : undefined,
-              }}
-            />
-            {!miniDrawer && (
-              <ListItemText
-                primary={t("mainMenu.chat")}
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <ChatIcon
                 style={{
-                  ...styles.listItemText,
-                  color:
-                    activeMenu === ActiveMenu.Chat
-                      ? menuColor
-                      : styles.listItemText.color,
-                  fontWeight: activeMenu === ActiveMenu.Chat ? 600 : undefined,
+                  ...styles.icon,
+                  color: unreadConversationsCount > 0 
+                    ? "#FF4444" 
+                    : activeMenu === ActiveMenu.Chat 
+                      ? menuColor 
+                      : undefined,
+                  filter: unreadConversationsCount > 0 && miniDrawer
+                    ? redIconFilter 
+                    : activeMenu === ActiveMenu.Chat 
+                      ? activeIconFilter 
+                      : undefined,
                 }}
               />
+              {!miniDrawer && (
+                <ListItemText
+                  primary={t("mainMenu.chat")}
+                  style={{
+                    ...styles.listItemText,
+                    color:
+                      activeMenu === ActiveMenu.Chat
+                        ? menuColor
+                        : styles.listItemText.color,
+                    fontWeight: activeMenu === ActiveMenu.Chat ? 600 : undefined,
+                  }}
+                />
+              )}
+            </Box>
+            {!miniDrawer && (
+              <NotificationBadge count={unreadConversationsCount} />
             )}
           </ListItemButton>
         </ListItem>
