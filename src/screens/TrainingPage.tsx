@@ -67,7 +67,7 @@ const TrainingPage: React.FC = () => {
           <Typography sx={styles.sectionSubtitle}>{t('training.latestCompleted', 'ultimi 3 allenamenti completati')}</Typography>
         </Box>
         <Box>
-          <CompletedTrainingPage showHeader={false} rowLimit={3} />
+          <CompletedTrainingPage showHeader={false} rowLimit={3} compact={true} />
         </Box>
         <Box sx={styles.buttonBox}>
           <OutlinedTextIconButton

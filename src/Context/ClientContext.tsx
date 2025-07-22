@@ -23,6 +23,7 @@ export type HistoricalExercise = {
   data: string;
   type: string;
   week: number;
+  workoutExerciseId: number;
 };
 
 // Type for diet data

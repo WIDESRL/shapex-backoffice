@@ -528,7 +528,8 @@
           "type": "Type",
           "level": "Level",
           "category": "Category",
-          "weeks": "Weeks"
+          "weeks": "Weeks",
+          "exerciseDetail": "Exercise Detail"
         },
         "emptyState": {
           "title": "No completed workouts",
@@ -545,7 +546,8 @@
           "weeks": "Weeks",
           "type": "Type",
           "level": "Level",
-          "duration": "Duration"
+          "duration": "Duration",
+          "exerciseDetail": "Exercise Detail"
         },
         "emptyState": {
           "title": "No exercises in the record",

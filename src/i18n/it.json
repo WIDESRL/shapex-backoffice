@@ -512,7 +512,8 @@
           "type": "Tipo",
           "level": "Livello",
           "category": "Tipologia",
-          "weeks": "Settimane"
+          "weeks": "Settimane",
+          "exerciseDetail": "Dettaglio Esercizi"
         },
         "emptyState": {
           "title": "Nessun allenamento completato",
@@ -529,7 +530,8 @@
           "weeks": "Settimane",
           "type": "Tipo",
           "level": "Livello",
-          "duration": "Durata"
+          "duration": "Durata",
+          "exerciseDetail": "Dettaglio Esercizio"
         },
         "emptyState": {
           "title": "Nessun esercizio nel registro",

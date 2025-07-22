@@ -22,7 +22,8 @@ import { useTraining } from '../../Context/TrainingContext';
 interface ExerciseDetailModalProps {
   open: boolean;
   onClose: () => void;
-  assignmentId: number;
+  assignmentId?: number;
+  exerciseId?: number
 }
 
 const styles = {
@@ -327,19 +328,22 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
   open,
   onClose,
   assignmentId,
+  exerciseId,
 }) => {
   const { t } = useTranslation();
-  const { assignmentLogs, loadingAssignmentLogs, fetchAssignmentLogs } = useTraining();
+  const { assignmentLogs, loadingAssignmentLogs, fetchAssignmentLogs, fetchExerciseLog } = useTraining();
 
   // Fetch assignment logs when modal opens
   useEffect(() => {
-    if (open && assignmentId) {
-      fetchAssignmentLogs(assignmentId);
+    if (open) {
+      if(assignmentId) fetchAssignmentLogs(assignmentId);
+      else if (exerciseId) fetchExerciseLog(exerciseId)
     }
-  }, [open, assignmentId, fetchAssignmentLogs]);
+  }, [open, assignmentId, exerciseId, fetchAssignmentLogs, fetchExerciseLog]);
 
   // Format date helper function
   const formatDate = (dateString: string) => {
+    if(!dateString) return '___';
     const date = new Date(dateString);
     return date.toLocaleDateString('it-IT', {
       day: '2-digit',
@@ -436,10 +440,10 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
           <Box sx={styles.header}>
             <Box sx={styles.headerRow}>
               <Typography sx={styles.subtitle}>
-                {t('exerciseDetailModal.program')}: <Box component="span" sx={styles.boldSpan}>{assignmentLogs.trainingProgram.title}</Box>
+                {t('exerciseDetailModal.program')}: <Box component="span" sx={styles.boldSpan}>{assignmentLogs.trainingProgram?.title || '___'}</Box>
               </Typography>
               <Typography sx={styles.subtitle}>
-                {t('exerciseDetailModal.client')}: <Box component="span" sx={styles.boldSpan}>{assignmentLogs.assignment.clientName}</Box>
+                {t('exerciseDetailModal.client')}: <Box component="span" sx={styles.boldSpan}>{assignmentLogs.assignment?.clientName || '___'}</Box>
               </Typography>
             </Box>
             <Box sx={styles.headerRow}>
@@ -447,10 +451,10 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                 {t('exerciseDetailModal.type')}: {assignmentLogs.trainingProgram.type}
               </Typography>
               <Typography sx={styles.duration}>
-                {t('exerciseDetailModal.createdAt')}: {formatDate(assignmentLogs.assignment.createdAt)}
+                {t('exerciseDetailModal.createdAt')}: {formatDate(assignmentLogs.assignment?.createdAt)}
               </Typography>
               <Typography sx={styles.duration}>
-                {t('exerciseDetailModal.expires')}: {formatDate(assignmentLogs.assignment.expiresAt)}
+                {t('exerciseDetailModal.expires')}: {formatDate(assignmentLogs.assignment?.expiresAt)}
               </Typography>
             </Box>
           </Box>

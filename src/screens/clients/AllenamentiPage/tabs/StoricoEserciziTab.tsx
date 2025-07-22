@@ -1,7 +1,9 @@
-import React from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, CircularProgress } from '@mui/material';
+import React, { useState } from 'react';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, CircularProgress, IconButton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useClientContext } from '../../../../Context/ClientContext';
+import { useClientContext, HistoricalExercise } from '../../../../Context/ClientContext';
+import InfoIcon from '../../../../icons/InfoIcon';
+import ExerciseDetailModal from '../../../training/ExerciseDetailModal';
 
 const styles = {
   tableContainer: {
@@ -61,6 +63,16 @@ const styles = {
     color: '#9e9e9e',
     fontStyle: 'italic',
   },
+  detailButton: {
+    background: 'transparent',
+    border: 'none',
+    p: 0.5,
+    borderRadius: 1,
+    cursor: 'pointer',
+    '&:hover': {
+      background: 'rgba(0,0,0,0.04)',
+    },
+  },
   loadingContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -78,6 +90,8 @@ const styles = {
 const StoricoEserciziTab: React.FC = () => {
   const { t } = useTranslation();
   const { loadingHistoricalExercises, historicalExercises } = useClientContext();
+  const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // Format date helper function
   const formatDate = (dateString: string): string => {
@@ -87,6 +101,17 @@ const StoricoEserciziTab: React.FC = () => {
       month: '2-digit', 
       year: 'numeric'
     });
+  };
+
+  // Modal handlers
+  const handleShowDetail = (exercise: HistoricalExercise) => {
+    setSelectedExerciseId(exercise.workoutExerciseId);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedExerciseId(null);
   };
 
   // Empty state component
@@ -130,30 +155,50 @@ const StoricoEserciziTab: React.FC = () => {
   }
 
   return (
-    <TableContainer component={Paper} sx={styles.tableContainer}>
-      <Table stickyHeader>
-        <TableHead>
-          <TableRow>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.exercise')}</TableCell>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.date')}</TableCell>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.category')}</TableCell>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.weeks')}</TableCell>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.type')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {historicalExercises.map((exercise, index) => (
-            <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-              <TableCell sx={styles.tableCell}>{exercise.exerciseName}</TableCell>
-              <TableCell sx={styles.tableCell}>{formatDate(exercise.data)}</TableCell>
-              <TableCell sx={styles.tableCell}>{exercise.type}</TableCell>
-              <TableCell sx={styles.tableCell}>{exercise.week}</TableCell>
-              <TableCell sx={styles.tableCell}>Esercizio</TableCell>
+    <>
+      <TableContainer component={Paper} sx={styles.tableContainer}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.exercise')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.date')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.category')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.weeks')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.storicoEsercizi.tableHeaders.type')}</TableCell>
+              <TableCell sx={{ ...styles.tableCellHeader, textAlign: 'center' }}>{t('client.allenamenti.storicoEsercizi.tableHeaders.exerciseDetail')}</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {historicalExercises.map((exercise, index) => (
+              <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                <TableCell sx={styles.tableCell}>{exercise.exerciseName}</TableCell>
+                <TableCell sx={styles.tableCell}>{formatDate(exercise.data)}</TableCell>
+                <TableCell sx={styles.tableCell}>{exercise.type}</TableCell>
+                <TableCell sx={styles.tableCell}>{exercise.week}</TableCell>
+                <TableCell sx={styles.tableCell}>Esercizio</TableCell>
+                <TableCell sx={styles.tableCell} align="center">
+                  <IconButton 
+                    sx={styles.detailButton}
+                    onClick={() => handleShowDetail(exercise)}
+                  >
+                    <InfoIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Exercise Detail Modal */}
+      {modalOpen && selectedExerciseId && (
+        <ExerciseDetailModal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          exerciseId={selectedExerciseId}
+        />
+      )}
+    </>
   );
 };
 

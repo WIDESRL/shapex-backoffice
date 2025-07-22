@@ -39,9 +39,10 @@ interface FilterState {
 const styles = {
   container: {
     p: 3,
-    maxHeight: '95vh',
     display: 'flex',
     flexDirection: 'column',
+    minHeight: '60vh',
+    maxHeight: '90vh',
   },
   title: {
     fontSize: 32,
@@ -124,19 +125,23 @@ const styles = {
     },
   },
   tableContainer: {
-    background: 'transparent',
-    boxShadow: 'none',
-    overflow: 'auto',
-    maxHeight: 'calc(100vh - 300px)',
-    display: 'flex',
-    flexDirection: 'column',
-    borderWidth: 3,
-    borderColor: 'red'
-  },
-  paper: {
     background: '#F6F6F6',
     borderRadius: 3,
     boxShadow: 'none',
+    overflow: 'auto',
+    minHeight: '300px',
+    maxHeight: 'calc(90vh - 200px)',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  paper: {
+    background: 'transparent',
+    borderRadius: 3,
+    boxShadow: 'none',
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: 0,
+    overflow: 'hidden',
   },
   tableHeader: {
     fontWeight: 500,
@@ -253,9 +258,10 @@ const styles = {
 interface CompletedTrainingPageProps {
   showHeader?: boolean;
   rowLimit?: number;
+  compact?: boolean;
 }
 
-const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeader = true, rowLimit }) => {
+const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeader = true, rowLimit, compact = false }) => {
   const { t } = useTranslation();
   const { 
     availableUsers, 
@@ -469,10 +475,26 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
     setSelectedAssignmentId(null);
   };
 
+  // Get dynamic styles based on compact mode
+  const containerStyles = compact ? {
+    p: 3,
+    display: 'flex',
+    flexDirection: 'column',
+  } : styles.container;
+
+  const tableContainerStyles = compact ? {
+    background: '#F6F6F6',
+    borderRadius: 3,
+    boxShadow: 'none',
+    overflow: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+  } : styles.tableContainer;
+
   return (
-    <Box sx={styles.container}>
+    <Box sx={containerStyles}>
       {showHeader && (
-        <>
+        <Box sx={{ flexShrink: 0 }}>
           <Typography sx={styles.title}>
             {t('completedTraining.pageTitle')}
           </Typography>
@@ -587,13 +609,13 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
               </Box>
             </Paper>
           </Collapse>
-        </>
+        </Box>
       )}
 
       {/* Table */}
       <Paper elevation={0} sx={styles.paper}>
-        <TableContainer sx={styles.tableContainer}>
-          <Table>
+        <TableContainer sx={tableContainerStyles}>
+          <Table stickyHeader>
             <TableHead>
               <TableRow sx={{ overflow: 'hidden' }}>
                 <TableCell sx={styles.tableHeaderFirst}>{t('completedTraining.table.headers.date')}</TableCell>
@@ -603,53 +625,53 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
                 <TableCell sx={{ ...styles.tableHeaderLast, textAlign: 'center' }}>{t('completedTraining.table.headers.exerciseDetail')}</TableCell>
               </TableRow>
             </TableHead>
-          <TableBody>
-            {loadingCompletedTrainings && trainingsData.length === 0 ? (
-              [...Array(rowLimit || 3)].map((_, idx) => (
-                <TableRow key={idx} sx={styles.tableRow}>
-                  {[...Array(5)].map((_, cidx) => (
-                    <TableCell key={cidx} sx={styles.tableCell}>
-                      <Box sx={{ width: '100%', height: 24, background: '#eee', borderRadius: 2, animation: 'pulse 1.2s infinite' }} />
+            <TableBody>
+              {loadingCompletedTrainings && trainingsData.length === 0 ? (
+                [...Array(rowLimit || 3)].map((_, idx) => (
+                  <TableRow key={idx} sx={styles.tableRow}>
+                    {[...Array(5)].map((_, cidx) => (
+                      <TableCell key={cidx} sx={styles.tableCell}>
+                        <Box sx={{ width: '100%', height: 24, background: '#eee', borderRadius: 2, animation: 'pulse 1.2s infinite' }} />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : displayedTrainings.length > 0 ? (
+                displayedTrainings.map((training) => (
+                  <TableRow key={training.id} hover sx={styles.tableRow}>
+                    <TableCell sx={styles.tableCell}>{getDateValue(training)}</TableCell>
+                    <TableCell sx={styles.tableCell}>{training.clientName}</TableCell>
+                    <TableCell sx={styles.tableCell}>{training.trainingProgramName}</TableCell>
+                    <TableCell sx={styles.tableCell}>{formatTrainingType(training.trainingProgramType)}</TableCell>
+                    <TableCell sx={styles.tableCell} align="center">
+                      <IconButton 
+                        sx={styles.detailButton}
+                        onClick={() => handleShowDetail(training)}
+                      >
+                        <InfoIcon />
+                      </IconButton>
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : displayedTrainings.length > 0 ? (
-              displayedTrainings.map((training) => (
-                <TableRow key={training.id} hover sx={styles.tableRow}>
-                  <TableCell sx={styles.tableCell}>{getDateValue(training)}</TableCell>
-                  <TableCell sx={styles.tableCell}>{training.clientName}</TableCell>
-                  <TableCell sx={styles.tableCell}>{training.trainingProgramName}</TableCell>
-                  <TableCell sx={styles.tableCell}>{formatTrainingType(training.trainingProgramType)}</TableCell>
-                  <TableCell sx={styles.tableCell} align="center">
-                    <IconButton 
-                      sx={styles.detailButton}
-                      onClick={() => handleShowDetail(training)}
-                    >
-                      <InfoIcon />
-                    </IconButton>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={styles.emptyCell}>
+                    <Box sx={styles.emptyBox}>
+                      <Box sx={styles.emptyIconBox}>
+                        <InfoIcon style={{ fontSize: 22, color: '#E6BB4A' }} />
+                      </Box>
+                      <Typography sx={styles.emptyTitle}>
+                        {t('completedTraining.emptyState')}
+                      </Typography>
+                      <Typography sx={styles.emptyDesc}>
+                        {t('completedTraining.emptyStateDesc', 'No completed trainings found. Check your filters or try a different date range.')}
+                      </Typography>
+                    </Box>
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} align="center" sx={styles.emptyCell}>
-                  <Box sx={styles.emptyBox}>
-                    <Box sx={styles.emptyIconBox}>
-                      <InfoIcon style={{ fontSize: 22, color: '#E6BB4A' }} />
-                    </Box>
-                    <Typography sx={styles.emptyTitle}>
-                      {t('completedTraining.emptyState')}
-                    </Typography>
-                    <Typography sx={styles.emptyDesc}>
-                      {t('completedTraining.emptyStateDesc', 'No completed trainings found. Check your filters or try a different date range.')}
-                    </Typography>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              )}
+            </TableBody>
+          </Table>
         </TableContainer>
 
         {/* Load More Button - Inside TableContainer */}
@@ -659,7 +681,8 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
             justifyContent: 'center', 
             p: 2,
             borderTop: '1px solid #f0f0f0',
-            backgroundColor: '#fff'
+            backgroundColor: '#fff',
+            flexShrink: 0,
           }}>
             <Button 
               variant="outlined" 
@@ -690,7 +713,8 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
             justifyContent: 'center', 
             p: 2,
             borderTop: '1px solid #f0f0f0',
-            backgroundColor: '#fff'
+            backgroundColor: '#fff',
+            flexShrink: 0,
           }}>
             <Typography sx={{ color: '#999', fontStyle: 'italic' }}>
               Loading more...

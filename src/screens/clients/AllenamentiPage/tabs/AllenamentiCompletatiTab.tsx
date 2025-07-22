@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, CircularProgress } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, CircularProgress, IconButton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useClientContext, TrainingProgramOfUser, TrainingProgramAssignment } from '../../../../Context/ClientContext';
+import InfoIcon from '../../../../icons/InfoIcon';
+import ExerciseDetailModal from '../../../training/ExerciseDetailModal';
 
 const styles = {
   tableContainer: {
@@ -62,6 +64,16 @@ const styles = {
     color: '#9e9e9e',
     fontStyle: 'italic',
   },
+  detailButton: {
+    background: 'transparent',
+    border: 'none',
+    p: 0.5,
+    borderRadius: 1,
+    cursor: 'pointer',
+    '&:hover': {
+      background: 'rgba(0,0,0,0.04)',
+    },
+  },
   loadingContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -80,6 +92,8 @@ const AllenamentiCompletatiTab: React.FC = () => {
   const { t } = useTranslation();
   const { clientId } = useParams<{ clientId: string }>();
   const { loadingTrainingPrograms, trainingProgramOfUser } = useClientContext();
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // Get all completed assignments for the current user with their program data
   const completedAssignments = useMemo(() => {
@@ -115,6 +129,17 @@ const AllenamentiCompletatiTab: React.FC = () => {
       month: '2-digit', 
       year: 'numeric'
     });
+  };
+
+  // Modal handlers
+  const handleShowDetail = (assignment: TrainingProgramAssignment) => {
+    setSelectedAssignmentId(assignment.id);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedAssignmentId(null);
   };
 
   // Empty state component
@@ -157,33 +182,53 @@ const AllenamentiCompletatiTab: React.FC = () => {
   }
 
   return (
-    <TableContainer component={Paper} sx={styles.tableContainer}>
-      <Table stickyHeader>
-        <TableHead>
-          <TableRow>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.workout')}</TableCell>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.date')}</TableCell>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.type')}</TableCell>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.category')}</TableCell>
-            <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.weeks')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {completedAssignments.map((item, index) => {
-            const { program, assignment } = item;
-            return (
-              <TableRow key={`${program.id}-${assignment.id}-${index}`} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                <TableCell sx={styles.tableCell}>{program.title}</TableCell>
-                <TableCell sx={styles.tableCell}>{formatDate(assignment.completedAt || null)}</TableCell>
-                <TableCell sx={styles.tableCell}>Programma</TableCell>
-                <TableCell sx={styles.tableCell}>{program.type}</TableCell>
-                <TableCell sx={styles.tableCell}>{program.weeks.length}</TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer component={Paper} sx={styles.tableContainer}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.workout')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.date')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.type')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.category')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.weeks')}</TableCell>
+              <TableCell sx={{ ...styles.tableCellHeader, textAlign: 'center' }}>{t('client.allenamenti.allenamentiCompletati.tableHeaders.exerciseDetail')}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {completedAssignments.map((item, index) => {
+              const { program, assignment } = item;
+              return (
+                <TableRow key={`${program.id}-${assignment.id}-${index}`} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                  <TableCell sx={styles.tableCell}>{program.title}</TableCell>
+                  <TableCell sx={styles.tableCell}>{formatDate(assignment.completedAt || null)}</TableCell>
+                  <TableCell sx={styles.tableCell}>Programma</TableCell>
+                  <TableCell sx={styles.tableCell}>{program.type}</TableCell>
+                  <TableCell sx={styles.tableCell}>{program.weeks.length}</TableCell>
+                  <TableCell sx={styles.tableCell} align="center">
+                    <IconButton 
+                      sx={styles.detailButton}
+                      onClick={() => handleShowDetail(assignment)}
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Exercise Detail Modal */}
+      {modalOpen && selectedAssignmentId && (
+        <ExerciseDetailModal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          assignmentId={selectedAssignmentId}
+        />
+      )}
+    </>
   );
 };
 
