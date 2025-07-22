@@ -198,6 +198,27 @@ export type ClientAnagrafica = {
 
 };
 
+// Type for user subscriptions
+export type UserSubscription = {
+  id: number;
+  subscription: {
+    id: number;
+    title: string;
+    color: string;
+  };
+  status: 'active' | 'expired' | 'pending' | 'cancelled';
+  startDate: string;
+  endDate: string;
+  isCurrentActiveSubscription: boolean;
+  futureSubscription?: boolean;
+  stripePaymentData: {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+  };
+};
+
 // Type for notification data
 export type UserNotification = {
   id: number;
@@ -251,6 +272,7 @@ export type ClientContextType = {
   userChecks: UserCheck[];
   userImagesAlbum: UserAlbumImage[];
   userNotifications: UserNotification[];
+  userSubscriptions: UserSubscription[];
   notificationsPagination: Pagination | null;
   userImagesAlbumPagination: Pagination | null;
   selectedCheckDetailed: UserCheckDetailed | null;
@@ -264,6 +286,7 @@ export type ClientContextType = {
   loadingUserChecks: boolean;
   loadingUserImagesAlbum: boolean;
   loadingUserNotifications: boolean;
+  loadingUserSubscriptions: boolean;
   loadingSelectedCheck: boolean;
   page: number;
   pageSize: number;
@@ -283,6 +306,7 @@ export type ClientContextType = {
   fetchUserChecks: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
   fetchUserImagesAlbum: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, append?: boolean) => Promise<void>;
   fetchUserNotifications: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, type?: string, append?: boolean) => Promise<void>;
+  fetchUserSubscriptions: (userId: string) => Promise<void>;
   fetchCheckById: (checkId: number) => Promise<void>;
 };
 
@@ -299,6 +323,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [userChecks, setUserChecks] = useState<UserCheck[]>([]);
   const [userImagesAlbum, setUserImagesAlbum] = useState<UserAlbumImage[]>([]);
   const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
+  const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
   const [notificationsPagination, setNotificationsPagination] = useState<Pagination | null>(null);
   const [userImagesAlbumPagination, setUserImagesAlbumPagination] = useState<Pagination | null>(null);
   const [selectedCheckDetailed, setSelectedCheckDetailed] = useState<UserCheckDetailed | null>(null);
@@ -312,6 +337,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingUserChecks, setLoadingUserChecks] = useState(false);
   const [loadingUserImagesAlbum, setLoadingUserImagesAlbum] = useState(false);
   const [loadingUserNotifications, setLoadingUserNotifications] = useState(false);
+  const [loadingUserSubscriptions, setLoadingUserSubscriptions] = useState(false);
   const [loadingSelectedCheck, setLoadingSelectedCheck] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
@@ -555,6 +581,20 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
+  const fetchUserSubscriptions = useCallback(async (userId: string): Promise<void> => {
+    try {
+      setLoadingUserSubscriptions(true);
+      const response = await axiosInstance.get(`/client/${userId}/subscriptions`);
+      setUserSubscriptions(response.data || []);
+    } catch (error) {
+      console.error('Error fetching user subscriptions:', error);
+      setUserSubscriptions([]);
+      throw error;
+    } finally {
+      setLoadingUserSubscriptions(false);
+    }
+  }, []);
+
   const fetchCheckById = useCallback(async (checkId: number): Promise<void> => {
     try {
       setLoadingSelectedCheck(true);
@@ -582,6 +622,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         userChecks,
         userImagesAlbum,
         userNotifications,
+        userSubscriptions,
         notificationsPagination,
         userImagesAlbumPagination,
         selectedCheckDetailed,
@@ -595,6 +636,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingUserChecks,
         loadingUserImagesAlbum,
         loadingUserNotifications,
+        loadingUserSubscriptions,
         loadingSelectedCheck,
         page, 
         pageSize, 
@@ -614,6 +656,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchUserChecks,
         fetchUserImagesAlbum,
         fetchUserNotifications,
+        fetchUserSubscriptions,
         fetchCheckById
       }}
     >

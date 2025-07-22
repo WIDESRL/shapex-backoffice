@@ -39,6 +39,11 @@
     "updatedAt": "Aggiornato il",
     "price": "Prezzo",
     "save": "Salva",
+    "subscriptionDetails": "Dettagli Abbonamento",
+    "loadingDetails": "Caricamento dettagli...",
+    "basicInformation": "Informazioni Generali",
+    "features": "Caratteristiche",
+    "metadata": "Metadati",
     "chooseCustomColor": "Scegli altro colore...",
     "colors": {
       "red": "Rosso",
@@ -59,9 +64,41 @@
     "errors": {
       "addFailed": "Impossibile aggiungere l'abbonamento. Riprova più tardi.",
       "updateFailed": "Impossibile aggiornare l'abbonamento. Riprova più tardi.",
-      "deleteFailed": "Impossibile eliminare l'abbonamento. Riprova più tardi."
+      "deleteFailed": "Impossibile eliminare l'abbonamento. Riprova più tardi.",
+      "fetchFailed": "Errore durante il caricamento dei dettagli dell'abbonamento"
     },
-    "deletionIrreversible": "Questa operazione non può essere annullata."
+    "deletionIrreversible": "Questa operazione non può essere annullata.",
+    "userSubscriptions": {
+      "title": "Abbonamenti dell'utente",
+      "refreshTooltip": "Aggiorna abbonamenti",
+      "noSubscriptionsTitle": "Nessun abbonamento trovato",
+      "noSubscriptionsDescription": "L'utente non ha abbonamenti attivi o passati nel sistema.",
+      "defaultSubscriptionTitle": "Abbonamento",
+      "currentSubscription": "Abbonamento Corrente",
+      "futureActivation": "Attivazione futura:",
+      "status": {
+        "active": "Attivo",
+        "expired": "Scaduto",
+        "suspended": "Sospeso",
+        "cancelled": "Annullato",
+        "unknown": "Sconosciuto",
+        "scheduled": "Programmato"
+      },
+      "sections": {
+        "period": "PERIODO",
+        "stripePayment": "PAGAMENTO STRIPE",
+        "subscriptionId": "ID ABBONAMENTO"
+      },
+      "labels": {
+        "startDate": "Inizio:",
+        "endDate": "Fine:",
+        "paymentId": "ID:"
+      },
+      "dates": {
+        "notSpecified": "Non specificato",
+        "invalidDate": "Data non valida"
+      }
+    }
   },
   "banners": {
     "manageBanners": "Gestione Banners",
@@ -643,6 +680,12 @@
           "plan": "Piano:"
         },
         "loading": "Caricamento dettagli abbonamento...",
+        "activeSubscription": "Ultimo Abbonamento Utilizzato",
+        "subscriptionHistory": "Storico Abbonamenti",
+        "noActiveSubscription": {
+          "title": "Nessun abbonamento attivo",
+          "description": "Questo cliente non ha un abbonamento attivo al momento."
+        },
         "tableHeaders": {
           "subscription": "Abbonamento",
           "status": "Stato",

@@ -55,6 +55,11 @@
     "updatedAt": "Updated At",
     "price": "Price",
     "save": "Save",
+    "subscriptionDetails": "Subscription Details",
+    "loadingDetails": "Loading details...",
+    "basicInformation": "Basic Information",
+    "features": "Features",
+    "metadata": "Metadata",
     "chooseCustomColor": "Choose custom color...",
     "colors": {
       "red": "Red",
@@ -73,11 +78,43 @@
       "pricePositive": "Price must be a positive number greater than 0."
     },
     "errors": {
-      "addFailed": "Failed to add subscription. Please try again.",
-      "updateFailed": "Failed to update subscription. Please try again.",
-      "deleteFailed": "Failed to remove subscription. Please try again."
+      "addFailed": "Unable to add subscription. Please try again later.",
+      "updateFailed": "Unable to update subscription. Please try again later.",
+      "deleteFailed": "Unable to delete subscription. Please try again later.",
+      "fetchFailed": "Error loading subscription details"
     },
-    "deletionIrreversible": "This action cannot be undone."
+    "deletionIrreversible": "This action cannot be undone.",
+    "userSubscriptions": {
+      "title": "User subscriptions",
+      "refreshTooltip": "Refresh subscriptions",
+      "noSubscriptionsTitle": "No subscriptions found",
+      "noSubscriptionsDescription": "The user has no active or past subscriptions in the system.",
+      "defaultSubscriptionTitle": "Subscription",
+      "currentSubscription": "Current Subscription",
+      "futureActivation": "Future activation:",
+      "status": {
+        "active": "Active",
+        "expired": "Expired",
+        "suspended": "Suspended",
+        "cancelled": "Cancelled",
+        "unknown": "Unknown",
+        "scheduled": "Scheduled"
+      },
+      "sections": {
+        "period": "PERIOD",
+        "stripePayment": "STRIPE PAYMENT",
+        "subscriptionId": "SUBSCRIPTION ID"
+      },
+      "labels": {
+        "startDate": "Start:",
+        "endDate": "End:",
+        "paymentId": "ID:"
+      },
+      "dates": {
+        "notSpecified": "Not specified",
+        "invalidDate": "Invalid date"
+      }
+    }
   },
   "banners": {
     "manageBanners": "Banners Advertisers",
@@ -658,6 +695,12 @@
           "plan": "Plan:"
         },
         "loading": "Loading subscription details...",
+        "activeSubscription": "Last Used Subscription",
+        "subscriptionHistory": "Subscription History",
+        "noActiveSubscription": {
+          "title": "No active subscription",
+          "description": "This client does not have an active subscription at the moment."
+        },
         "tableHeaders": {
           "subscription": "Subscription",
           "status": "Status",

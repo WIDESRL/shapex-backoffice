@@ -1,8 +1,11 @@
-import React from 'react';
-import { Box, Typography, Chip, Paper, CircularProgress } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Chip, Paper, CircularProgress, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useClientContext } from '../../../../Context/ClientContext';
 import { getContrastColor } from '../../../../utils/colorUtils';
+import UserSubscriptionsDisplay from '../../../../components/UserSubscriptionsDisplay';
+import SubscriptionDetailDialog from '../../../../components/SubscriptionDetailDialog';
+import { useParams } from 'react-router-dom';
 
 const styles = {
   container: {
@@ -92,6 +95,22 @@ const styles = {
 const AbbonamentoTab: React.FC = () => {
   const { t } = useTranslation();
   const { clientAnagrafica, loadingClientAnagrafica } = useClientContext();
+  const { clientId } = useParams<{ clientId: string }>();
+
+  // Dialog state for subscription details
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<number | null>(null);
+
+  // Handle subscription click
+  const handleSubscriptionClick = (subscriptionId: number) => {
+    setSelectedSubscriptionId(subscriptionId);
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setSelectedSubscriptionId(null);
+  };
 
   // Format date helper function
   const formatDate = (dateString: string): string => {
@@ -138,53 +157,95 @@ const AbbonamentoTab: React.FC = () => {
     return <LoadingState />;
   }
 
-  // Check if we should show empty state (no client data or no subscription)
-  if (!clientAnagrafica || !clientAnagrafica.activeSubscription) {
-    return <EmptyState />;
-  }
-
-  const { activeSubscription } = clientAnagrafica;
-
-  // Create subscription data structure using real context data
-  const subscriptionData = {
-    startDate: formatDate(activeSubscription.startDate),
-    endDate: formatDate(activeSubscription.endDate),
-    title: activeSubscription.title,
-    color: activeSubscription.color,
-    status: activeSubscription.status,
-  };
-
   return (
     <Box sx={styles.container}>
-      <Box sx={styles.infoRow}>
-        <Typography sx={styles.label}>{t('client.altro.abbonamento.fields.startDate')}</Typography>
-        <Typography sx={styles.value}>{subscriptionData.startDate}</Typography>
-      </Box>
+      {/* Active Subscription Section */}
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+        {t('client.altro.abbonamento.activeSubscription')}
+      </Typography>
 
-      <Box sx={styles.infoRow}>
-        <Typography sx={styles.label}>{t('client.altro.abbonamento.fields.endDate')}</Typography>
-        <Typography sx={styles.value}>{subscriptionData.endDate}</Typography>
-      </Box>
+      {clientAnagrafica?.activeSubscription?.id ? (
+        <Paper elevation={1} sx={{ p: 3, mb: 4, backgroundColor: '#f8f9fa', borderRadius: 2 }}>
+          <Box sx={styles.infoRow}>
+            <Typography sx={styles.label}>{t('client.altro.abbonamento.fields.startDate')}</Typography>
+            <Typography sx={styles.value}>{formatDate(clientAnagrafica.activeSubscription.startDate)}</Typography>
+          </Box>
 
-      <Box sx={styles.infoRow}>
-        <Typography sx={styles.label}>{t('client.altro.abbonamento.fields.status')}</Typography>
-        <Typography sx={styles.value}>{subscriptionData.status}</Typography>
-      </Box>
+          <Box sx={styles.infoRow}>
+            <Typography sx={styles.label}>{t('client.altro.abbonamento.fields.endDate')}</Typography>
+            <Typography sx={styles.value}>{formatDate(clientAnagrafica.activeSubscription.endDate)}</Typography>
+          </Box>
 
-      <Box sx={styles.infoRow}>
-        <Typography sx={styles.label}>{t('client.altro.abbonamento.fields.plan')}</Typography>
-        <Chip 
-          label={subscriptionData.title}
-          sx={{
-            backgroundColor: subscriptionData.color,
-            color: getContrastColor(subscriptionData.color || '#ffffff'),
-            fontWeight: 500,
-            fontSize: 12,
-            height: 24,
-            borderRadius: 3,
+          <Box sx={styles.infoRow}>
+            <Typography sx={styles.label}>{t('client.altro.abbonamento.fields.status')}</Typography>
+            <Typography sx={styles.value}>{clientAnagrafica.activeSubscription.status}</Typography>
+          </Box>
+
+          <Box sx={styles.infoRow}>
+            <Typography sx={styles.label}>{t('client.altro.abbonamento.fields.plan')}</Typography>
+            <Chip 
+              label={clientAnagrafica.activeSubscription.title}
+              onClick={() => clientAnagrafica?.activeSubscription?.id && handleSubscriptionClick(clientAnagrafica?.activeSubscription?.id)}
+              sx={{
+                backgroundColor: clientAnagrafica.activeSubscription.color,
+                color: getContrastColor(clientAnagrafica.activeSubscription.color || '#ffffff'),
+                fontWeight: 500,
+                fontSize: 12,
+                height: 24,
+                borderRadius: 3,
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: clientAnagrafica.activeSubscription.color,
+                  color: getContrastColor(clientAnagrafica.activeSubscription.color || '#ffffff'),
+                },
+                '&:focus': {
+                  backgroundColor: clientAnagrafica.activeSubscription.color,
+                  color: getContrastColor(clientAnagrafica.activeSubscription.color || '#ffffff'),
+                },
+              }}
+            />
+          </Box>
+        </Paper>
+      ) : (
+        <Paper 
+          elevation={1} 
+          sx={{ 
+            p: 4, 
+            mb: 4, 
+            backgroundColor: '#fff3cd', 
+            borderRadius: 2,
+            border: '1px solid #ffeaa7',
+            textAlign: 'center'
           }}
-        />
-      </Box>
+        >
+          <Typography variant="body1" sx={{ color: '#856404', fontWeight: 500, mb: 1 }}>
+            {t('client.altro.abbonamento.noActiveSubscription.title')}
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#856404' }}>
+            {t('client.altro.abbonamento.noActiveSubscription.description')}
+          </Typography>
+        </Paper>
+      )}
+
+      <Divider sx={{ my: 3 }} />
+
+      {/* All Subscriptions History */}
+      <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+        {t('client.altro.abbonamento.subscriptionHistory')}
+      </Typography>
+      
+      {clientId ? (
+        <UserSubscriptionsDisplay userId={clientId} />
+      ) : (
+        <EmptyState />
+      )}
+
+      {/* Subscription Detail Dialog */}
+      <SubscriptionDetailDialog
+        open={dialogOpen}
+        subscriptionId={selectedSubscriptionId}
+        onClose={handleDialogClose}
+      />
     </Box>
   );
 };

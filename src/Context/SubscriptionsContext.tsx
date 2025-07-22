@@ -21,14 +21,18 @@ export interface Subscription {
     integrationPlan: boolean;
     trainingCard: boolean;
     vip: boolean;
-    price: number
-  }
+    price: number;
+    currency?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
 
 // Define the context type
 interface SubscriptionsContextType {
   subscriptions: Subscription[];
   isLoading: boolean;
   fetchSubscriptions: () => void;
+  fetchSubscription: (subscriptionId: number) => Promise<Subscription>;
   addSubscription: (subscription: Omit<Subscription, 'id'>) => Promise<void>;
   updateSubscription: (subscription: Subscription) => Promise<void>; // Added updateSubscription
   removeSubscription: (id: string) => Promise<void>;
@@ -106,6 +110,16 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
     refetch();
   };
 
+  const fetchSubscription = async (subscriptionId: number): Promise<Subscription> => {
+    try {
+      const response = await api.get(`/subscriptions/${subscriptionId}`);
+      return response;
+    } catch (error) {
+      console.error('Failed to fetch subscription:', error);
+      throw error;
+    }
+  };
+
   const addSubscription = async (subscription: Omit<Subscription, 'id'>) => {
     await addSubscriptionMutation.mutateAsync(subscription);
   };
@@ -124,6 +138,7 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
         subscriptions,
         isLoading,
         fetchSubscriptions,
+        fetchSubscription,
         addSubscription,
         updateSubscription, 
         removeSubscription,
