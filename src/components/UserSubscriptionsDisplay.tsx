@@ -84,7 +84,10 @@ const formatDate = (dateString: string, t: (key: string) => string, language: st
     return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
     });
   } catch {
     return t('subscriptions.userSubscriptions.dates.invalidDate');
