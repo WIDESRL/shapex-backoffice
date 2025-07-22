@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { Box, Typography, Paper, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import ClientsIcon from '../icons/ClientsIcon';
 import DisabledClientsIcon from '../icons/DisabledClientsIcon';
 import CompletedTrainingsIcon from '../icons/CompletedTrainingsIcon';
@@ -15,21 +16,25 @@ const dashboardStatsConfig = [
 		labelKey: 'dashboard.stats.totalClients',
 		icon: <ClientsIcon />,
 		variable: 'totalClients' as DashboardStatsKey,
+		redirect: '/clients',
 	},
 	{
 		labelKey: 'dashboard.stats.deactivatedClients',
 		icon: <DisabledClientsIcon  />,
 		variable: 'deactivatedClients' as DashboardStatsKey,
+		
 	},
 	{
 		labelKey: 'dashboard.stats.totalPrograms',
 		icon: <ProgramsCompletedIcon />,
 		variable: 'totalPrograms' as DashboardStatsKey,
+		redirect: '/training/training-program',
 	},
 	{
 		labelKey: 'dashboard.stats.completedTrainings',
 		icon: <CompletedTrainingsIcon />,
 		variable: 'completedTrainings' as DashboardStatsKey,
+		redirect: '/training/completed-training',
 	},
 ];
 
@@ -63,6 +68,7 @@ const styles = {
 			flex: '0 1 320px',
 			maxWidth: 320,
 			mx: 'auto',
+			cursor: 'pointer',
 		},
 		iconContainer: {
 			width: 40,
@@ -101,6 +107,7 @@ const styles = {
 
 const DashboardPage: React.FC = () => {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const { dashboardStats, statsLoading, fetchDashboardStats } = useStats();
 	
 	useEffect(() => {
@@ -127,6 +134,9 @@ const DashboardPage: React.FC = () => {
 						key={stat.labelKey}
 						elevation={0}
 						sx={styles.statCard}
+						onClick={() => {
+							if (stat.redirect) navigate(stat.redirect);
+						}}
 					>
 						<Box sx={styles.iconContainer}>
 							{stat.icon}
