@@ -365,6 +365,13 @@ const ChatPageContent: React.FC = () => {
 		[handleMessagesScroll]
 	);
 
+	useEffect(() => {
+		setTimeout(() => {
+			const selectedConversation = conversations.find(conv => conv.id === selectedConversationId)
+			if(selectedConversation && selectedConversation.seen === false) setConversationSeen(selectedConversation.id)
+		}, 500)
+	}, [conversations])
+
 	return (
 		<ChatContainer>
 			{/* Sidebar: Conversation List */}
