@@ -7,6 +7,7 @@ import { SubscriptionsProvider } from './Context/SubscriptionsContext';
 import { BannersProvider } from './Context/BannersContext';
 import { MessagesProvider } from './Context/MessagesContext';
 import { TrainingProvider } from './Context/TrainingContext';
+import { GlobalConfigProvider } from './Context/GlobalConfigContext';
 import './i18n/i18n';
 import { requestNotificationPermission, listenForMessages } from './notifications';
 import './splash.css';
@@ -31,19 +32,21 @@ const renderApp = () => {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <SnackbarProvider>
-            <SubscriptionsProvider>
-              <BannersProvider>
-                <MessagesProvider>
-                  <TrainingProvider>
-                    <StatsProvider>
-                      <ClientProvider>
-                        <App />
-                      </ClientProvider>
-                    </StatsProvider>
-                  </TrainingProvider>
-                </MessagesProvider>
-              </BannersProvider>
-            </SubscriptionsProvider>
+            <GlobalConfigProvider>
+              <SubscriptionsProvider>
+                <BannersProvider>
+                  <MessagesProvider>
+                    <TrainingProvider>
+                      <StatsProvider>
+                        <ClientProvider>
+                          <App />
+                        </ClientProvider>
+                      </StatsProvider>
+                    </TrainingProvider>
+                  </MessagesProvider>
+                </BannersProvider>
+              </SubscriptionsProvider>
+            </GlobalConfigProvider>
           </SnackbarProvider>
         </AuthProvider>
       </QueryClientProvider>

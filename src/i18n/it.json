@@ -865,6 +865,30 @@
     "languageRegion": "Lingua e Regione",
     "language": "Lingua",
     "languageChangeEffect": "Le modifiche avranno effetto immediatamente",
+    "globalConfigurations": "Configurazioni Globali",
+    "globalConfig": {
+      "title": "Configurazioni Globali",
+      "description": "Gestisci le impostazioni globali dell'applicazione",
+      "editButton": "Modifica",
+      "checkEditWindow": "Ore per modificare un controllo",
+      "checkEditWindowDescription": "Numero di ore durante le quali un utente può modificare un controllo dopo la creazione",
+      "checkReminderDays": "Giorni di promemoria controllo",
+      "checkReminderDaysDescription": "Numero di giorni prima del prossimo controllo programmato per inviare notifiche di promemoria agli utenti",
+      "confirmDialog": {
+        "title": "Conferma Modifica",
+        "message": "Sei sicuro di voler modificare questa configurazione?",
+        "currentValue": "Valore attuale:",
+        "newValue": "Nuovo valore:",
+        "confirm": "Conferma",
+        "cancel": "Annulla",
+        "invalidValue": "Il valore deve essere un numero positivo maggiore di 0"
+      },
+      "messages": {
+        "updateSuccess": "Configurazione aggiornata con successo",
+        "updateFailed": "Errore nell'aggiornamento della configurazione",
+        "loadFailed": "Errore nel caricamento delle configurazioni"
+      }
+    },
     "messages": {
       "profileUpdatedSuccess": "Profilo aggiornato con successo",
       "profileUpdateFailed": "Errore nell'aggiornamento del profilo",

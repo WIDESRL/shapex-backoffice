@@ -880,6 +880,30 @@
     "languageRegion": "Language & Region",
     "language": "Language",
     "languageChangeEffect": "Changes will take effect immediately",
+    "globalConfigurations": "Global Configurations",
+    "globalConfig": {
+      "title": "Global Configurations",
+      "description": "Manage global application settings",
+      "editButton": "Edit",
+      "checkEditWindow": "Hours to edit a check",
+      "checkEditWindowDescription": "Number of hours during which a user can edit a check after creation",
+      "checkReminderDays": "Check reminder days",
+      "checkReminderDaysDescription": "Number of days before the next scheduled check to send reminder notifications to users",
+      "confirmDialog": {
+        "title": "Confirm Change",
+        "message": "Are you sure you want to modify this configuration?",
+        "currentValue": "Current value:",
+        "newValue": "New value:",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "invalidValue": "Value must be a positive number greater than 0"
+      },
+      "messages": {
+        "updateSuccess": "Configuration updated successfully",
+        "updateFailed": "Failed to update configuration",
+        "loadFailed": "Failed to load configurations"
+      }
+    },
     "messages": {
       "profileUpdatedSuccess": "Profile updated successfully",
       "profileUpdateFailed": "Failed to update profile",
