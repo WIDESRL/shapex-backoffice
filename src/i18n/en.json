@@ -401,7 +401,8 @@
           "title": "Personal Info",
           "items": {
             "information": "Information",
-            "contacts": "Contact Details"
+            "contacts": "Contact Details",
+            "password": "Change Password"
           }
         },
         "allenamenti": {
@@ -455,7 +456,8 @@
       "clientNotFound": "Client not found",
       "tabs": {
         "information": "Information",
-        "contacts": "Contact Details"
+        "contacts": "Contact Details",
+        "password": "Change Password"
       },
       "fields": {
         "firstName": "First Name:",
@@ -464,6 +466,33 @@
         "placeOfBirth": "Place of Birth:",
         "phone": "Phone:",
         "email": "Email:"
+      },
+      "passwordChange": {
+        "title": "Change User Password",
+        "description": "Change the password for this user. The new password must meet security requirements.",
+        "fields": {
+          "newPassword": "New Password",
+          "confirmPassword": "Confirm Password"
+        },
+        "requirements": {
+          "title": "Password requirements:",
+          "minLength": "At least 8 characters",
+          "upperCase": "At least one uppercase letter",
+          "lowerCase": "At least one lowercase letter",
+          "numbers": "At least one number",
+          "specialChar": "At least one special character"
+        },
+        "validation": {
+          "passwordMismatch": "Passwords do not match"
+        },
+        "buttons": {
+          "changePassword": "Change Password",
+          "reset": "Reset"
+        },
+        "messages": {
+          "success": "Password changed successfully",
+          "error": "Error changing password"
+        }
       }
     },
     "allenamenti": {

@@ -611,6 +611,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
               <ul style={styles.modalSectionList}>
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.anagrafica.items.information')}</li>
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.anagrafica.items.contacts')}</li>
+                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.anagrafica.items.password')}</li>
               </ul>
             </Box>
             <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('allenamenti', selectedClient?.id || '')}>

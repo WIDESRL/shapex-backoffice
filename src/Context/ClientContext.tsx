@@ -308,6 +308,7 @@ export type ClientContextType = {
   fetchUserNotifications: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, type?: string, append?: boolean) => Promise<void>;
   fetchUserSubscriptions: (userId: string) => Promise<void>;
   fetchCheckById: (checkId: number) => Promise<void>;
+  changeUserPassword: (userId: string, newPassword: string) => Promise<void>;
 };
 
 const ClientContext = createContext<ClientContextType | undefined>(undefined);
@@ -609,6 +610,17 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
+  const changeUserPassword = useCallback(async (userId: string, newPassword: string): Promise<void> => {
+    try {
+      await axiosInstance.put(`/users/set-password/${userId}`, {
+        newPassword
+      });
+    } catch (error) {
+      console.error('Error changing user password:', error);
+      throw error;
+    }
+  }, []);
+
   return (
     <ClientContext.Provider
       value={{ 
@@ -657,7 +669,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchUserImagesAlbum,
         fetchUserNotifications,
         fetchUserSubscriptions,
-        fetchCheckById
+        fetchCheckById,
+        changeUserPassword
       }}
     >
       {children}

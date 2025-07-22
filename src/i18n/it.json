@@ -385,7 +385,8 @@
           "title": "Anagrafica",
           "items": {
             "information": "Informazioni",
-            "contacts": "Recapiti di Contatto"
+            "contacts": "Recapiti di Contatto",
+            "password": "Cambia Password"
           }
         },
         "allenamenti": {
@@ -439,7 +440,8 @@
       "clientNotFound": "Cliente non trovato",
       "tabs": {
         "information": "Informazioni",
-        "contacts": "Recapiti di Contatto"
+        "contacts": "Recapiti di Contatto",
+        "password": "Cambia Password"
       },
       "fields": {
         "firstName": "Nome:",
@@ -448,6 +450,33 @@
         "placeOfBirth": "Luogo di nascita:",
         "phone": "Telefono:",
         "email": "Email:"
+      },
+      "passwordChange": {
+        "title": "Modifica Password Utente",
+        "description": "Modifica la password per questo utente. La nuova password deve rispettare i requisiti di sicurezza.",
+        "fields": {
+          "newPassword": "Nuova Password",
+          "confirmPassword": "Conferma Password"
+        },
+        "requirements": {
+          "title": "Requisiti password:",
+          "minLength": "Almeno 8 caratteri",
+          "upperCase": "Almeno una lettera maiuscola",
+          "lowerCase": "Almeno una lettera minuscola", 
+          "numbers": "Almeno un numero",
+          "specialChar": "Almeno un carattere speciale"
+        },
+        "validation": {
+          "passwordMismatch": "Le password non corrispondono"
+        },
+        "buttons": {
+          "changePassword": "Cambia Password",
+          "reset": "Reimposta"
+        },
+        "messages": {
+          "success": "Password cambiata con successo",
+          "error": "Errore durante il cambio della password"
+        }
       }
     },
     "allenamenti": {

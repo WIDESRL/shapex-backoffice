@@ -5,6 +5,7 @@ import { Box, Typography, CircularProgress } from '@mui/material';
 import { useClientContext } from '../../Context/ClientContext';
 import TabButton from '../../components/TabButton';
 import BackButton from '../../components/BackButton';
+import UserPasswordChange from '../../components/UserPasswordChange';
 
 const styles = {
   container: {
@@ -120,6 +121,11 @@ const AnagraficaPage: React.FC = () => {
           onClick={() => setTabValue(1)}
           active={tabValue === 1}
         />
+        <TabButton
+          title={t('client.anagraficapage.tabs.password')}
+          onClick={() => setTabValue(2)}
+          active={tabValue === 2}
+        />
       </Box>
 
       <Box sx={styles.formContainer}>
@@ -169,6 +175,10 @@ const AnagraficaPage: React.FC = () => {
               </Typography>
             </Box>
           </Box>
+        )}
+
+        {tabValue === 2 && clientId && (
+          <UserPasswordChange userId={clientId} />
         )}
       </Box>
     </Box>
