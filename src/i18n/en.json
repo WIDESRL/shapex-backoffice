@@ -113,6 +113,9 @@
       "dates": {
         "notSpecified": "Not specified",
         "invalidDate": "Invalid date"
+      },
+      "tooltip": {
+        "historicalPrice": "This may not be the current subscription price but this is the amount paid by Stripe when this subscription was purchased"
       }
     }
   },

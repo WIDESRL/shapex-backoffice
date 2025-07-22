@@ -97,6 +97,9 @@
       "dates": {
         "notSpecified": "Non specificato",
         "invalidDate": "Data non valida"
+      },
+      "tooltip": {
+        "historicalPrice": "Questo potrebbe non essere il prezzo attuale dell'abbonamento ma è l'importo pagato tramite Stripe quando questo abbonamento è stato acquistato"
       }
     }
   },

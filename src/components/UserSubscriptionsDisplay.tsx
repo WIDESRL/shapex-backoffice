@@ -334,9 +334,11 @@ export const UserSubscriptionsDisplay: React.FC<UserSubscriptionsDisplayProps> =
                         {t('subscriptions.userSubscriptions.sections.stripePayment')}
                       </Typography>
                       <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="body2">
-                          {formatCurrency(subscription.stripePaymentData.amount, subscription.stripePaymentData.currency)}
-                        </Typography>
+                        <Tooltip title={t('subscriptions.userSubscriptions.tooltip.historicalPrice')}>
+                          <Typography variant="body2" sx={{ cursor: 'help' }}>
+                            {formatCurrency(subscription.stripePaymentData.amount, subscription.stripePaymentData.currency)}
+                          </Typography>
+                        </Tooltip>
                         {subscription.stripePaymentData.status && (
                           <Chip 
                             label={subscription.stripePaymentData.status}
