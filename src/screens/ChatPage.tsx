@@ -16,6 +16,280 @@ import AvatarCustom from '../components/AvatarCustom';
 import { handleApiError } from '../utils/errorUtils';
 import { useSnackbar } from '../Context/SnackbarContext';
 
+const styles = {
+  searchInput: {
+    background: '#f7f6f3',
+    borderRadius: 8,
+    px: 2,
+    py: 1,
+    fontFamily: 'Montserrat, sans-serif',
+    fontSize: 16,
+    mb: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 120,
+  },
+  loadingSpinner: {
+    color: '#FFD600',
+  },
+  emptyStateContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 120,
+    py: 4,
+  },
+  emptyStateImage: {
+    width: 80,
+    height: 80,
+    opacity: 0.7,
+    marginBottom: 16,
+  },
+  emptyStateTitle: {
+    color: '#bdbdbd',
+    fontWeight: 600,
+    fontSize: 20,
+    mb: 1,
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  emptyStateDescription: {
+    color: '#bdbdbd',
+    fontSize: 15,
+    textAlign: 'center',
+    maxWidth: 220,
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  conversationItemSelected: {
+    background: '#f7e7b6',
+  },
+  avatarContainer: {
+    position: 'relative',
+    display: 'inline-block',
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+  },
+  onlineIndicator: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 13,
+    height: 13,
+    borderRadius: '50%',
+    border: '2px solid #fff',
+    boxShadow: '0 0 0 1px #ececec',
+  },
+  userNamePrimary: {
+    fontWeight: 600,
+    fontSize: 17,
+    color: '#616160',
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  conversationSecondary: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+  },
+  lastMessageText: {
+    fontSize: 14,
+    fontFamily: 'Montserrat, sans-serif',
+    flex: 1,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  messageTimestamp: {
+    fontSize: 12,
+    fontFamily: 'Montserrat, sans-serif',
+    minWidth: 60,
+    textAlign: 'right',
+  },
+  listItemText: {
+    minWidth: 0,
+    maxWidth: 180,
+  },
+  loadMoreButton: {
+    borderRadius: 2,
+    fontWeight: 600,
+    color: '#E6BB4A',
+    borderColor: '#FFD600',
+    '&:hover': {
+      borderColor: '#E6BB4A',
+      background: '#fffbe6',
+    },
+  },
+  loadMoreContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    py: 1,
+    m: 5,
+  },
+  floatingButtonContainer: {
+    position: 'sticky',
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    py: 2,
+    zIndex: 2,
+    background: 'rgba(255,255,255,0.95)',
+  },
+  floatingButton: {
+    background: '#FFD600',
+    color: '#222',
+    fontWeight: 700,
+    borderRadius: '50%',
+    minWidth: 0,
+    width: 48,
+    height: 48,
+    boxShadow: 3,
+    '&:hover': {
+      background: '#ffe066',
+    },
+  },
+  floatingButtonIcon: {
+    fontSize: 32,
+  },
+  progressIndicator: {
+    position: 'relative',
+    width: '100%',
+    zIndex: 10,
+  },
+  progressBar: {
+    width: '100%',
+    height: 4,
+    background: '#FFD600',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  progressSpinner: {
+    color: '#FFD600',
+    position: 'absolute',
+    left: '50%',
+    top: 2,
+    transform: 'translateX(-50%)',
+  },
+  mainLoadingContainer: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
+  },
+  mainLoadingSpinner: {
+    color: '#FFD600',
+  },
+  emptyConversationContainer: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 200,
+  },
+  emptyConversationText: {
+    color: '#bdbdbd',
+    fontSize: 22,
+    fontWeight: 500,
+    fontFamily: 'Montserrat, sans-serif',
+    textAlign: 'center',
+  },
+  loadingMoreContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    py: 1,
+  },
+  loadingMoreSpinner: {
+    color: '#FFD600',
+  },
+  dateSeparatorContainer: {
+    textAlign: 'center',
+    my: 2,
+  },
+  dateSeparator: {
+    display: 'inline-block',
+    background: '#fffbe6',
+    color: '#bfa100',
+    px: 2,
+    py: 0.5,
+    borderRadius: 8,
+    fontWeight: 600,
+    fontSize: 14,
+    boxShadow: '0 1px 4px 0 rgba(230,187,74,0.08)',
+  },
+  imageMessage: {
+    maxWidth: 180,
+    maxHeight: 180,
+    borderRadius: 8,
+    cursor: 'pointer',
+    margin: 2,
+  },
+  fileMessageContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+  },
+  fileIcon: {
+    color: '#E6BB4A',
+  },
+  fileLink: {
+    fontWeight: 500,
+    textDecoration: 'underline',
+    fontSize: 15,
+  },
+  messageMetaTitle: (date: string) => format(parseISO(date), 'dd/MM/yyyy HH:mm:ss'),
+  messageMeta: (date: string) => format(parseISO(date), 'HH:mm'),
+  scrollToBottomContainer: {
+    position: 'fixed',
+    bottom: 90,
+    right: 32,
+    zIndex: 1200,
+  },
+  scrollToBottomButton: {
+    background: '#FFD600',
+    boxShadow: 3,
+  },
+  scrollToBottomIcon: {
+    color: '#fff',
+  },
+  chatInputContainer: {
+    flex: 1,
+    fontSize: 17,
+    fontFamily: 'Montserrat, sans-serif',
+    px: 1,
+  },
+  chatInputProps: {
+    maxLength: 1000,
+  },
+  attachButton: {
+    color: '#E6BB4A',
+    mx: 1,
+  },
+  sendButton: {
+    color: '#E6BB4A',
+    ml: 1,
+  },
+  imagePreviewIcon: {
+    fontSize: 18,
+    verticalAlign: 'middle',
+    mr: 0.5,
+  },
+  attachFileIcon: {
+    fontSize: 18,
+    verticalAlign: 'middle',
+    color: '#E6BB4A',
+  },
+};
+
 // --- Styled Components ---
 const ChatContainer = styled(Box)({
 	display: 'flex',
@@ -382,30 +656,22 @@ const ChatPageContent: React.FC = () => {
 						value={searchInput}
 						onChange={e => setSearchInput(e.target.value)}
 						fullWidth
-						sx={{
-							background: '#f7f6f3',
-							borderRadius: 8,
-							px: 2,
-							py: 1,
-							fontFamily: 'Montserrat, sans-serif',
-							fontSize: 16,
-							mb: 1,
-						}}
+						sx={styles.searchInput}
 					/>
 				</Box>
 				{/* Conversation List and Floating New Button */}
 				<Box sx={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
 					{loadingConversations && conversations.length === 0 ? (
-						<Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 120 }}>
-							<CircularProgress size={40} thickness={4} sx={{ color: '#FFD600' }} />
+						<Box sx={styles.loadingContainer}>
+							<CircularProgress size={40} thickness={4} sx={styles.loadingSpinner} />
 						</Box>
 					) : conversations.length === 0 && !loadingConversations ? (
-						<Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 120, py: 4 }}>
-							<img src="/profile.svg" alt="No conversations" style={{ width: 80, height: 80, opacity: 0.7, marginBottom: 16 }} />
-							<Typography sx={{ color: '#bdbdbd', fontWeight: 600, fontSize: 20, mb: 1, fontFamily: 'Montserrat, sans-serif' }}>
+						<Box sx={styles.emptyStateContainer}>
+							<img src="/profile.svg" alt="No conversations" style={styles.emptyStateImage} />
+							<Typography sx={styles.emptyStateTitle}>
 								{t('chat.noConversationsFound')}
 							</Typography>
-							<Typography sx={{ color: '#bdbdbd', fontSize: 15, textAlign: 'center', maxWidth: 220, fontFamily: 'Montserrat, sans-serif' }}>
+							<Typography sx={styles.emptyStateDescription}>
 								{t('chat.tryDifferentSearch')}
 							</Typography>
 						</Box>
@@ -415,45 +681,33 @@ const ChatPageContent: React.FC = () => {
 								<ConversationItem
 									key={conv.id}
 									onClick={() => handleSelectConversation(conv)}
-									sx={{ background: selectedConversationId === conv.id ? '#f7e7b6' : undefined }}
+									sx={selectedConversationId === conv.id ? styles.conversationItemSelected : undefined}
 								>
 									<ListItemAvatar>
-										<Box sx={{ position: 'relative', display: 'inline-block' }}>
+										<Box sx={styles.avatarContainer}>
 											<AvatarCustom
 												src={conv.user.profilePictureFile?.signedUrl || '/profile.svg'}
 												alt={((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || t('chat.user')}
-												sx={{ width: 48, height: 48 }}
+												sx={styles.avatar}
 												fallback={((conv.user.firstName || '')[0] || '') + ((conv.user.lastName || '')[0] || '')}
 											/>
 											<Box
 												sx={{
-													position: 'absolute',
-													bottom: 2,
-													right: 2,
-													width: 13,
-													height: 13,
-													borderRadius: '50%',
-													border: '2px solid #fff',
+													...styles.onlineIndicator,
 													background: conv.user.online ? '#4caf50' : '#bdbdbd',
-													boxShadow: '0 0 0 1px #ececec',
 												}}
 											/>
 										</Box>
 									</ListItemAvatar>
 									<ListItemText
-										primary={<Typography sx={{ fontWeight: 600, fontSize: 17, color: '#616160', fontFamily: 'Montserrat, sans-serif' }} component="span">{((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || t('chat.user')}</Typography>}
+										primary={<Typography sx={styles.userNamePrimary} component="span">{((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || t('chat.user')}</Typography>}
 										secondary={
-											<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }} component="span">
+											<Box sx={styles.conversationSecondary} component="span">
 												<Typography
 													sx={{
-														fontSize: 14,
+														...styles.lastMessageText,
 														color: !conv.seen ? '#222' : '#bdbdbd',
 														fontWeight: !conv.seen ? 700 : 400,
-														fontFamily: 'Montserrat, sans-serif',
-														flex: 1,
-														whiteSpace: 'nowrap',
-														overflow: 'hidden',
-														textOverflow: 'ellipsis',
 													}}
 													component="span"
 												>
@@ -461,18 +715,15 @@ const ChatPageContent: React.FC = () => {
 														? conv.lastMessage.content
 														: conv.lastMessage?.type === 'file'
 															? (conv.lastMessage.file && conv.lastMessage.file.type && conv.lastMessage.file.type.startsWith('image/')
-																? <ImagePreviewIcon sx={{ fontSize: 18, verticalAlign: 'middle', mr: 0.5 }} colorOverride={conv.seen ? '#bdbdbd' : '#222'} />
-																: <AttachFileIcon sx={{ fontSize: 18, verticalAlign: 'middle', color: '#E6BB4A' }} />)
+																? <ImagePreviewIcon sx={{...styles.imagePreviewIcon, color: conv.seen ? '#bdbdbd' : '#222'}} />
+																: <AttachFileIcon sx={styles.attachFileIcon} />)
 														: ''}
 												</Typography>
 												<Typography
 													sx={{
-														fontSize: 12,
+														...styles.messageTimestamp,
 														color: !conv.seen ? '#222' : '#bdbdbd',
 														fontWeight: !conv.seen ? 700 : 400,
-														fontFamily: 'Montserrat, sans-serif',
-														minWidth: 60,
-														textAlign: 'right',
 													}}
 													component="span"
 												>
@@ -482,7 +733,7 @@ const ChatPageContent: React.FC = () => {
 												</Typography>
 											</Box>
 										}
-										sx={{ minWidth: 0, maxWidth: 180 }}
+										sx={styles.listItemText}
 									/>
 								</ConversationItem>
 							))}
@@ -490,32 +741,22 @@ const ChatPageContent: React.FC = () => {
 					)}
                     {/* Load More Button */}
                     {conversations.length > 0 && conversationHasMore && !loadingConversations && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', py: 1, m: 5 }}>
-                            <Button onClick={() => setConversationPage(page => page + 1)} variant="outlined" sx={{ borderRadius: 2, fontWeight: 600, color: '#E6BB4A', borderColor: '#FFD600', '&:hover': { borderColor: '#E6BB4A', background: '#fffbe6' } }}>
+                        <Box sx={styles.loadMoreContainer}>
+                            <Button onClick={() => setConversationPage(page => page + 1)} variant="outlined" sx={styles.loadMoreButton}>
                                 {t('Load more')}
                             </Button>
                         </Box>
                     )}
 					{/* Floating New Conversation Button at the bottom */}
-					<Box sx={{ position: 'sticky', bottom: 0, left: 0, width: '100%', display: 'flex', justifyContent: 'center', py: 2, zIndex: 2, background: 'rgba(255,255,255,0.95)' }}>
+					<Box sx={styles.floatingButtonContainer}>
 						<Button
 							variant="contained"
-							sx={{
-								background: '#FFD600',
-								color: '#222',
-								fontWeight: 700,
-								borderRadius: '50%',
-								minWidth: 0,
-								width: 48,
-								height: 48,
-								boxShadow: 3,
-								'&:hover': { background: '#ffe066' },
-							}}
+							sx={styles.floatingButton}
 							onClick={() => {
 								setStartDialogOpen(true);
 							}}
 						>
-							<AddIcon sx={{ fontSize: 32 }} />
+							<AddIcon sx={styles.floatingButtonIcon} />
 						</Button>
 					</Box>
 				</Box>
@@ -524,19 +765,19 @@ const ChatPageContent: React.FC = () => {
 			<MainSection>
 				{/* Progress indicator at top of messages list while sending message */}
 				{sendingMessage && (
-					<Box sx={{ position: 'relative', width: '100%', zIndex: 10 }}>
-						<Box sx={{ width: '100%', height: 4, background: '#FFD600', position: 'absolute', top: 0, left: 0 }}>
-							<CircularProgress size={16} thickness={4} sx={{ color: '#FFD600', position: 'absolute', left: '50%', top: 2, transform: 'translateX(-50%)' }} />
+					<Box sx={styles.progressIndicator}>
+						<Box sx={styles.progressBar}>
+							<CircularProgress size={16} thickness={4} sx={styles.progressSpinner} />
 						</Box>
 					</Box>
 				)}
 				{loadingConversations ? (
-					<Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
-						<CircularProgress size={48} thickness={4} sx={{ color: '#FFD600' }} />
+					<Box sx={styles.mainLoadingContainer}>
+						<CircularProgress size={48} thickness={4} sx={styles.mainLoadingSpinner} />
 					</Box>
 				) : !selectedConversation ? (
-					<Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
-						<Typography sx={{ color: '#bdbdbd', fontSize: 22, fontWeight: 500, fontFamily: 'Montserrat, sans-serif', textAlign: 'center' }}>
+					<Box sx={styles.emptyConversationContainer}>
+						<Typography sx={styles.emptyConversationText}>
 							{t('chat.pleaseSelectConversation')}
 						</Typography>
 					</Box>
@@ -544,14 +785,14 @@ const ChatPageContent: React.FC = () => {
 					<MessagesContainer ref={messagesContainerRef} onScroll={debouncedHandleMessagesScroll}>
 						{/* Loading more spinner at top */}
 						{loadingMoreMessages && (
-							<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 1 }}>
-								<CircularProgress size={24} thickness={4} sx={{ color: '#FFD600' }} />
+							<Box sx={styles.loadingMoreContainer}>
+								<CircularProgress size={24} thickness={4} sx={styles.loadingMoreSpinner} />
 							</Box>
 						)}
 						{dateSections.map(([date, msgs]) => (
 							<React.Fragment key={date}>
-								<Box sx={{ textAlign: 'center', my: 2 }}>
-									<Box sx={{ display: 'inline-block', background: '#fffbe6', color: '#bfa100', px: 2, py: 0.5, borderRadius: 8, fontWeight: 600, fontSize: 14, boxShadow: '0 1px 4px 0 rgba(230,187,74,0.08)' }}>
+								<Box sx={styles.dateSeparatorContainer}>
+									<Box sx={styles.dateSeparator}>
 										{date}
 									</Box>
 								</Box>
@@ -565,13 +806,13 @@ const ChatPageContent: React.FC = () => {
 												<ImageCustom
 													src={msg.file.signedUrl}
 													alt={msg.file.fileName || t('chat.image')}
-													style={{ maxWidth: 180, maxHeight: 180, borderRadius: 8, cursor: 'pointer', margin: 2 }}
+													style={styles.imageMessage}
 													onClick={() => msg.file && setFullscreenImage(msg.file.signedUrl)}
 												/>
 											)}
 											{msg.type === 'file' && msg.file && (!msg.file.type || !msg.file.type.startsWith('image/')) && (
-												<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-													<IconButton href={msg.file.signedUrl} target="_blank" rel="noopener noreferrer" size="small" sx={{ color: '#E6BB4A' }}>
+												<Box sx={styles.fileMessageContainer}>
+													<IconButton href={msg.file.signedUrl} target="_blank" rel="noopener noreferrer" size="small" sx={styles.fileIcon}>
 														<AttachFileIcon />
 													</IconButton>
 													<Typography
@@ -579,14 +820,14 @@ const ChatPageContent: React.FC = () => {
 														href={msg.file.signedUrl}
 														target="_blank"
 														rel="noopener noreferrer"
-														sx={{ fontWeight: 500, textDecoration: 'underline', fontSize: 15 }}
+														sx={styles.fileLink}
 													>
 														{msg.file.fileName || t('chat.file')}
 													</Typography>
 												</Box>
 											)}
-											<MessageMeta title={format(parseISO(msg.date), 'dd/MM/yyyy HH:mm:ss')}>
-												{format(parseISO(msg.date), 'HH:mm')}
+											<MessageMeta title={styles.messageMetaTitle(msg.date)}>
+												{styles.messageMeta(msg.date)}
 											</MessageMeta>
 										</MessageBubble>
 										{/* Place the ref on the very last message */}
@@ -599,9 +840,9 @@ const ChatPageContent: React.FC = () => {
 						))}
 						{/* Scroll to bottom indicator */}
 						{showScrollToBottom && (
-							<Box sx={{ position: 'fixed', bottom: 90, right: 32, zIndex: 1200 }}>
-								<IconButton color="primary" sx={{ background: '#FFD600', boxShadow: 3 }} onClick={handleScrollToBottom} size="large">
-									<ArrowDownwardIcon sx={{ color: '#fff' }} />
+							<Box sx={styles.scrollToBottomContainer}>
+								<IconButton color="primary" sx={styles.scrollToBottomButton} onClick={handleScrollToBottom} size="large">
+									<ArrowDownwardIcon sx={styles.scrollToBottomIcon} />
 								</IconButton>
 							</Box>
 						)}
@@ -615,14 +856,14 @@ const ChatPageContent: React.FC = () => {
 							value={message}
 							onChange={e => setMessage(e.target.value)}
 							onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}
-							sx={{ flex: 1, fontSize: 17, fontFamily: 'Montserrat, sans-serif', px: 1 }}
-							inputProps={{ maxLength: 1000 }}
+							sx={styles.chatInputContainer}
+							inputProps={styles.chatInputProps}
 						/>
-						<IconButton component="label" sx={{ color: '#E6BB4A', mx: 1 }}>
+						<IconButton component="label" sx={styles.attachButton}>
 							<input type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" hidden onChange={handleFileUpload} />
 							<AttachFileIcon />
 						</IconButton>
-						<IconButton onClick={handleSend} sx={{ color: '#E6BB4A', ml: 1 }}>
+						<IconButton onClick={handleSend} sx={styles.sendButton}>
 							<SendIcon fontSize="medium" />
 						</IconButton>
 					</ChatInputContainer>
