@@ -44,9 +44,53 @@ const styles = {
 const AllenamentiPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { clientId } = useParams<{ clientId: string }>();
+  const { clientId, tabName } = useParams<{ clientId: string; tabName?: string }>();
   const { clientAnagrafica, loadingClientAnagrafica, fetchClientAnagrafica, fetchTrainingProgramOfUser, fetchHistoricalExercises } = useClientContext();
   const [tabValue, setTabValue] = useState(0);
+
+  // Map tab names to tab indices
+  const getTabIndexFromName = (tabName: string | undefined): number => {
+    switch (tabName) {
+      case 'training-programs':
+        return 0;
+      case 'completed-workouts':
+        return 1;
+      case 'exercise-history':
+        return 2;
+      default:
+        return 0;
+    }
+  };
+
+  // Map tab indices to tab names
+  const getTabNameFromIndex = (tabIndex: number): string => {
+    switch (tabIndex) {
+      case 0:
+        return 'training-programs';
+      case 1:
+        return 'completed-workouts';
+      case 2:
+        return 'exercise-history';
+      default:
+        return 'training-programs';
+    }
+  };
+
+  // Set tab value based on URL parameter
+  useEffect(() => {
+    if (tabName) {
+      const tabIndex = getTabIndexFromName(tabName);
+      if (tabName === 'training-programs' || tabName === 'completed-workouts' || tabName === 'exercise-history') {
+        setTabValue(tabIndex);
+      } else {
+        // Invalid tab name, redirect to first tab
+        navigate(`/clients/${clientId}/allenamenti/training-programs`, { replace: true });
+      }
+    } else {
+      // No tab name in URL, redirect to first tab with tab name
+      navigate(`/clients/${clientId}/allenamenti/training-programs`, { replace: true });
+    }
+  }, [tabName, clientId, navigate]);
 
   useEffect(() => {
     if (clientId) {
@@ -57,10 +101,16 @@ const AllenamentiPage: React.FC = () => {
 
   useEffect(() => {
     if (clientId && tabValue === 2) fetchHistoricalExercises(clientId);
-  }, [tabValue]);
+  }, [tabValue, clientId]);
 
   const handleBackClick = () => {
     navigate('/clients');
+  };
+
+  const handleTabChange = (newTabValue: number) => {
+    setTabValue(newTabValue);
+    const tabName = getTabNameFromIndex(newTabValue);
+    navigate(`/clients/${clientId}/allenamenti/${tabName}`, { replace: true });
   };
 
   if (loadingClientAnagrafica) {
@@ -100,17 +150,17 @@ const AllenamentiPage: React.FC = () => {
       <Box sx={styles.tabContainer}>
         <TabButton
           title={t('client.allenamenti.tabs.programs')}
-          onClick={() => setTabValue(0)}
+          onClick={() => handleTabChange(0)}
           active={tabValue === 0}
         />
         <TabButton
           title={t('client.allenamenti.tabs.completed')}
-          onClick={() => setTabValue(1)}
+          onClick={() => handleTabChange(1)}
           active={tabValue === 1}
         />
         <TabButton
           title={t('client.allenamenti.tabs.history')}
-          onClick={() => setTabValue(2)}
+          onClick={() => handleTabChange(2)}
           active={tabValue === 2}
         />
       </Box>

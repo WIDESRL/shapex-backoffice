@@ -91,6 +91,7 @@ const StoricoEserciziTab: React.FC = () => {
   const { t } = useTranslation();
   const { loadingHistoricalExercises, historicalExercises } = useClientContext();
   const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   // Format date helper function
@@ -106,12 +107,14 @@ const StoricoEserciziTab: React.FC = () => {
   // Modal handlers
   const handleShowDetail = (exercise: HistoricalExercise) => {
     setSelectedExerciseId(exercise.workoutExerciseId);
+    setSelectedAssignmentId(exercise.assignmentId);
     setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
     setSelectedExerciseId(null);
+    setSelectedAssignmentId(null);
   };
 
   // Empty state component
@@ -177,12 +180,16 @@ const StoricoEserciziTab: React.FC = () => {
                 <TableCell sx={styles.tableCell}>{exercise.week}</TableCell>
                 <TableCell sx={styles.tableCell}>Esercizio</TableCell>
                 <TableCell sx={styles.tableCell} align="center">
-                  <IconButton 
-                    sx={styles.detailButton}
-                    onClick={() => handleShowDetail(exercise)}
-                  >
-                    <InfoIcon />
-                  </IconButton>
+                  {exercise.workoutExerciseId && exercise.assignmentId ? (
+                    <IconButton 
+                      sx={styles.detailButton}
+                      onClick={() => handleShowDetail(exercise)}
+                    >
+                      <InfoIcon />
+                    </IconButton>
+                  ) : (
+                    <span style={{ color: '#bdbdbd', fontSize: '12px' }}>-</span>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -191,11 +198,12 @@ const StoricoEserciziTab: React.FC = () => {
       </TableContainer>
 
       {/* Exercise Detail Modal */}
-      {modalOpen && selectedExerciseId && (
+      {modalOpen && selectedExerciseId && selectedAssignmentId && (
         <ExerciseDetailModal
           open={modalOpen}
           onClose={handleCloseModal}
           exerciseId={selectedExerciseId}
+          assignmentId={selectedAssignmentId}
         />
       )}
     </>

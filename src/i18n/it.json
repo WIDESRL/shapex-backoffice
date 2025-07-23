@@ -136,6 +136,7 @@
     "clients": "Clienti",
     "training": "Allenamento",
     "chat": "Chat",
+    "notifications": "Notifiche di Sistema",
     "banners": "Banners pubblicitari",
     "settings": "Impostazioni",
     "logout": "Disconnettersi"
@@ -160,6 +161,63 @@
     "exercise": "Esercizio",
     "trainingProgram": "Programma di Allenamento",
     "completedTraining": "Allenamento Completato"
+  },
+  "systemNotifications": {
+    "title": "Notifiche di Sistema",
+    "subtitle": "Monitora le attività dei clienti e gli eventi del sistema",
+    "markAllRead": "Segna Tutto Come Letto",
+    "filterType": "Tipo",
+    "filterStatus": "Stato",
+    "filters": {
+      "allTypes": "Tutti i Tipi",
+      "trainingCompleted": "Allenamento Completato",
+      "checkCreated": "Check Creato",
+      "checkUpdated": "Check Aggiornato",
+      "exerciseCompleted": "Esercizio Completato",
+      "programAssigned": "Programma Assegnato",
+      "all": "Tutti",
+      "unread": "Non Letti",
+      "read": "Letti",
+      "dateRange": "Intervallo Date",
+      "selectDateRange": "Seleziona intervallo date",
+      "clearAll": "Cancella Tutti i Filtri"
+    },
+    "types": {
+      "trainingCompleted": "Programma di Allenamento Completato",
+      "checkCreated": "Nuovo Check Creato",
+      "checkUpdated": "Check Aggiornato",
+      "exerciseCompleted": "Esercizio Completato",
+      "programAssigned": "Nuovo Programma Assegnato"
+    },
+    "timeLabels": {
+      "justNow": "Proprio ora",
+      "hoursAgo": "ore fa"
+    },
+    "actions": {
+      "markAsRead": "Segna come letto",
+      "markAsUnread": "Segna come non letto",
+      "delete": "Elimina Notifica",
+      "viewDetails": "Visualizza Dettagli"
+    },
+    "confirmDialog": {
+      "markAsReadTitle": "Segna come Letto",
+      "markAsReadMessage": "Sei sicuro di voler segnare questa notifica come letta?",
+      "markAsUnreadTitle": "Segna come Non Letto",
+      "markAsUnreadMessage": "Sei sicuro di voler segnare questa notifica come non letta?",
+      "confirm": "Conferma",
+      "cancel": "Annulla"
+    },
+    "emptyState": {
+      "title": "Nessuna notifica trovata",
+      "description": "Tutto fatto! Nessuna notifica di sistema corrisponde ai filtri correnti."
+    },
+    "loading": "Caricamento notifiche...",
+    "loadMore": "Carica Altro",
+    "loadingMore": "Caricamento...",
+    "count": {
+      "single": "notifica trovata",
+      "multiple": "notifiche trovate"
+    }
   },
   "training": {
     "title": "Allenamento",

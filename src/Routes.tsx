@@ -18,6 +18,7 @@ import TrainingExercisePage from './screens/training/Exercises/TrainingExerciseP
 import TrainingProgramPage from './screens/training/TrainingProgram/TrainingProgramPage';
 import TrainingProgramDetailPage from './screens/training/TrainingProgram/TrainingProgramDetailPage';
 import CompletedTrainingPage from './screens/training/CompletedTrainingPage';
+import SystemNotificationsPage from './screens/SystemNotificationsPage';
 import SettingsPage from './screens/SettingsPage';
 
 const AppRoutes: React.FC = () => {
@@ -34,7 +35,9 @@ const AppRoutes: React.FC = () => {
           <Route path="/clients" element={<ClientsPage />} />
           <Route path="/clients/:clientId/anagrafica" element={<AnagraficaPage />} />
           <Route path="/clients/:clientId/allenamenti" element={<AllenamentiPage />} />
+          <Route path="/clients/:clientId/allenamenti/:tabName" element={<AllenamentiPage />} />
           <Route path="/clients/:clientId/diario" element={<DiarioPage />} />
+          <Route path="/clients/:clientId/diario/:tabName" element={<DiarioPage />} />
           <Route path="/clients/:clientId/alimentazione" element={<AlimentazionePage />} />
           <Route path="/clients/:clientId/altro" element={<AltroPage />} />
           <Route path="/training" element={<TrainingPage />} />
@@ -42,6 +45,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/training/training-program" element={<TrainingProgramPage />} />
           <Route path="/training/training-program/:trainingProgramId" element={<TrainingProgramDetailPage />} />
           <Route path="/training/completed-training" element={<CompletedTrainingPage />} />
+          <Route path="/notifications" element={<SystemNotificationsPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/banners" element={<BannersPage />} />
           <Route path="/settings" element={<SettingsPage />} />

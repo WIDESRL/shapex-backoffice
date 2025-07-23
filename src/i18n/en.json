@@ -152,6 +152,7 @@
     "clients": "Clients",
     "training": "Training",
     "chat": "Chat",
+    "notifications": "System Notifications",
     "banners": "Banners",
     "settings": "Settings",
     "logout": "Logout"
@@ -176,6 +177,63 @@
     "exercise": "Exercise",
     "trainingProgram": "Training Program",
     "completedTraining": "  Completed Training"
+  },
+  "systemNotifications": {
+    "title": "System Notifications",
+    "subtitle": "Monitor client activities and system events",
+    "markAllRead": "Mark All Read",
+    "filterType": "Type",
+    "filterStatus": "Status",
+    "filters": {
+      "allTypes": "All Types",
+      "trainingCompleted": "Training Completed",
+      "checkCreated": "Check Created",
+      "checkUpdated": "Check Updated",
+      "exerciseCompleted": "Exercise Completed",
+      "programAssigned": "Program Assigned",
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read",
+      "dateRange": "Date Range",
+      "selectDateRange": "Select date range",
+      "clearAll": "Clear All Filters"
+    },
+    "types": {
+      "trainingCompleted": "Training Program Completed",
+      "checkCreated": "New Check Created",
+      "checkUpdated": "Check Updated",
+      "exerciseCompleted": "Exercise Completed",
+      "programAssigned": "New Program Assignment"
+    },
+    "timeLabels": {
+      "justNow": "Just now",
+      "hoursAgo": "h ago"
+    },
+    "actions": {
+      "markAsRead": "Mark as read",
+      "markAsUnread": "Mark as unread",
+      "delete": "Delete Notification",
+      "viewDetails": "View Details"
+    },
+    "confirmDialog": {
+      "markAsReadTitle": "Mark as Read",
+      "markAsReadMessage": "Are you sure you want to mark this notification as read?",
+      "markAsUnreadTitle": "Mark as Unread", 
+      "markAsUnreadMessage": "Are you sure you want to mark this notification as unread?",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "emptyState": {
+      "title": "No notifications found",
+      "description": "All caught up! No system notifications match your current filters."
+    },
+    "loading": "Loading notifications...",
+    "loadMore": "Load More",
+    "loadingMore": "Loading more...",
+    "count": {
+      "single": "notification found",
+      "multiple": "notifications found"
+    }
   },
   "training": {
     "title": "Training",

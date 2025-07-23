@@ -44,10 +44,38 @@ const styles = {
 const DiarioPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { clientId } = useParams<{ clientId: string }>();
+  const { clientId, tabName } = useParams<{ clientId: string; tabName?: string }>();
   const { clientAnagrafica, loadingClientAnagrafica, fetchClientAnagrafica, fetchInitialHistory } = useClientContext();
   const [tabValue, setTabValue] = useState(0);
   const [hasInitialFetch, setHasInitialFetch] = useState(false);
+
+  // Map tab names to tab indices
+  const getTabIndexFromName = (tabName: string | undefined): number => {
+    switch (tabName) {
+      case 'anamnesi':
+        return 0;
+      case 'measurements':
+        return 1;
+      case 'photos':
+        return 2;
+      default:
+        return 0;
+    }
+  };
+
+  // Map tab indices to tab names
+  const getTabNameFromIndex = (tabIndex: number): string => {
+    switch (tabIndex) {
+      case 0:
+        return 'anamnesi';
+      case 1:
+        return 'measurements';
+      case 2:
+        return 'photos';
+      default:
+        return 'anamnesi';
+    }
+  };
 
   // Debounced fetch function that calls both API functions together
   const debouncedFetchClientData = useCallback(
@@ -63,6 +91,22 @@ const DiarioPage: React.FC = () => {
     []
   );
 
+  // Set tab value based on URL parameter
+  useEffect(() => {
+    if (tabName) {
+      const tabIndex = getTabIndexFromName(tabName);
+      if (tabName === 'anamnesi' || tabName === 'measurements' || tabName === 'photos') {
+        setTabValue(tabIndex);
+      } else {
+        // Invalid tab name, redirect to first tab
+        navigate(`/clients/${clientId}/diario/anamnesi`, { replace: true });
+      }
+    } else {
+      // No tab name in URL, redirect to first tab with tab name
+      navigate(`/clients/${clientId}/diario/anamnesi`, { replace: true });
+    }
+  }, [tabName, clientId, navigate]);
+
   useEffect(() => {
     if (clientId) {
       const cleanup = debouncedFetchClientData(clientId);
@@ -72,6 +116,12 @@ const DiarioPage: React.FC = () => {
 
   const handleBackClick = () => {
     navigate('/clients');
+  };
+
+  const handleTabChange = (newTabValue: number) => {
+    setTabValue(newTabValue);
+    const tabName = getTabNameFromIndex(newTabValue);
+    navigate(`/clients/${clientId}/diario/${tabName}`, { replace: true });
   };
 
   if (loadingClientAnagrafica || !hasInitialFetch) {
@@ -111,17 +161,17 @@ const DiarioPage: React.FC = () => {
       <Box sx={styles.tabContainer}>
         <TabButton
           title={t('client.diario.tabs.anamnesis')}
-          onClick={() => setTabValue(0)}
+          onClick={() => handleTabChange(0)}
           active={tabValue === 0}
         />
         <TabButton
           title={t('client.diario.tabs.measurements')}
-          onClick={() => setTabValue(1)}
+          onClick={() => handleTabChange(1)}
           active={tabValue === 1}
         />
         <TabButton
           title={t('client.diario.tabs.photos')}
-          onClick={() => setTabValue(2)}
+          onClick={() => handleTabChange(2)}
           active={tabValue === 2}
         />
       </Box>

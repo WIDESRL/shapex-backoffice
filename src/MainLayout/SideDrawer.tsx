@@ -21,11 +21,13 @@ import SubscriptionsIcon from "../icons/Subscriptions";
 import ClientIcon from "../icons/Client";
 import TrainingIcon from "../icons/Training";
 import ChatIcon from "../icons/Chat";
+import PushNotificationsIconWhite from "../icons/PushNotificationsIconWhite";
 import BannersIcon from "../icons/Banners";
 import LogoutIcon from "../icons/Logout";
 import SettingsIcon from "../icons/SettingsIcon";
 import { useAuth } from "../Context/AuthContext";
 import { useMessages } from "../Context/MessagesContext";
+import { useSystemNotificationsContext } from "../Context/SystemNotificationsContext";
 import NotificationBadge from "../components/NotificationBadge";
 
 const menuColor = "#EDB528";
@@ -62,6 +64,7 @@ export enum MainMenu {
   Clienti = "clients",
   Allenamento = "training",
   Chat = "chat",
+  Notifications = "notifications",
   Banners = "banners",
   Settings = "settings",
   Logout = "logout",
@@ -96,6 +99,7 @@ export enum MenuPath {
   TrainingProgram = "/training/training-program",
   CompletedTraining = "/training/completed-training",
   Chat = "/chat",
+  Notifications = "/notifications",
   Banners = "/banners",
   Settings = "/settings",
 }
@@ -106,6 +110,7 @@ export enum ActiveMenu {
   Clients = MainMenu.Clienti,
   Training = MainMenu.Allenamento,
   Chat = MainMenu.Chat,
+  Notifications = MainMenu.Notifications,
   Banners = MainMenu.Banners,
   Settings = MainMenu.Settings,
   None = "",
@@ -124,6 +129,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const { logout } = useAuth();
   const { conversations } = useMessages();
+  const { unreadCount } = useSystemNotificationsContext();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -174,6 +180,8 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
         activeSubmenu = TrainingSubMenu.CompletedTraining;
     } else if (path.startsWith(MenuPath.Chat)) {
       activeMenu = ActiveMenu.Chat;
+    } else if (path.startsWith(MenuPath.Notifications)) {
+      activeMenu = ActiveMenu.Notifications;
     } else if (path.startsWith(MenuPath.Banners)) {
       activeMenu = ActiveMenu.Banners;
     } else if (path.startsWith(MenuPath.Settings)) {
@@ -600,6 +608,55 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             </Box>
             {!miniDrawer && (
               <NotificationBadge count={unreadConversationsCount} />
+            )}
+          </ListItemButton>
+        </ListItem>
+        {/* System Notifications */}
+        <ListItem disablePadding sx={{ mb: 1 }}>
+          <ListItemButton
+            style={{
+              ...styles.listItemButton,
+              color: activeMenu === ActiveMenu.Notifications ? menuColor : undefined,
+            }}
+            onClick={() => handleNavigation(MenuPath.Notifications)}
+            sx={{ 
+              "&:hover": { bgcolor: hoverBg },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <PushNotificationsIconWhite
+                style={{
+                  ...styles.icon,
+                  color:
+                    activeMenu === ActiveMenu.Notifications
+                      ? menuColor
+                      : undefined,
+                  filter:
+                    activeMenu === ActiveMenu.Notifications
+                      ? activeIconFilter
+                      : undefined,
+                }}
+              />
+              {!miniDrawer && (
+                <ListItemText
+                  primary={t("mainMenu.notifications")}
+                  style={{
+                    ...styles.listItemText,
+                    color:
+                      activeMenu === ActiveMenu.Notifications
+                        ? menuColor
+                        : styles.listItemText.color,
+                    fontWeight:
+                      activeMenu === ActiveMenu.Notifications ? 600 : undefined,
+                  }}
+                />
+              )}
+            </Box>
+            {!miniDrawer && (
+              <NotificationBadge count={unreadCount} />
             )}
           </ListItemButton>
         </ListItem>

@@ -336,8 +336,11 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
   // Fetch assignment logs when modal opens
   useEffect(() => {
     if (open) {
-      if(assignmentId) fetchAssignmentLogs(assignmentId);
-      else if (exerciseId) fetchExerciseLog(exerciseId)
+      if (exerciseId && assignmentId) {
+        fetchExerciseLog(exerciseId, assignmentId);
+      } else if (assignmentId) {
+        fetchAssignmentLogs(assignmentId);
+      }
     }
   }, [open, assignmentId, exerciseId, fetchAssignmentLogs, fetchExerciseLog]);
 

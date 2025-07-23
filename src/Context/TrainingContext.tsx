@@ -494,10 +494,10 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
   }, []);
 
   // Fetch exercise logs
-  const fetchExerciseLog = React.useCallback(async (exerciseId: number) => {
+  const fetchExerciseLog = React.useCallback(async (exerciseId: number, assignmentId: number) => {
     setLoadingAssignmentLogs(true);
     try {
-      const url = `/trainning/exercise/${exerciseId}/logs`;
+      const url = `/trainning/exercise/${exerciseId}/assignment/${assignmentId}/logs`;
       const res = await api.get(url);
       console.log('fetchExerciseLog response:', res);
       setAssignmentLogs(res);

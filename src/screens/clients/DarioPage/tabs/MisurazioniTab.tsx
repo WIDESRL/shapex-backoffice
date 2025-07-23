@@ -5,7 +5,7 @@ import { useClientContext } from '../../../../Context/ClientContext';
 import { useParams } from 'react-router-dom';
 import FilterIcon from '../../../../icons/FilterIcon';
 import InfoIcon from '../../../../icons/InfoIcon';
-import CheckImagesDialog from '../../../../components/CheckDetailsDialog';
+import CheckDetailsDialog from '../../../../components/CheckDetailsDialog';
 
 const styles = {
   container: {
@@ -708,7 +708,7 @@ const MisurazioniTab: React.FC = () => {
     </TableContainer>
 
     {/* Image Preview Dialog */}
-    <CheckImagesDialog
+    <CheckDetailsDialog
       open={imageDialogOpen}
       onClose={handleCloseImageDialog}
       checkId={selectedCheckId}

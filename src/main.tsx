@@ -15,6 +15,7 @@ import './global-font.css';
 import { ClientProvider } from './Context/ClientContext';
 import { StatsProvider } from './Context/StatsContext';
 import { SnackbarProvider } from './Context/SnackbarContext';
+import { SystemNotificationsProvider } from './Context/SystemNotificationsContext';
 
 const queryClient = new QueryClient();
 
@@ -39,7 +40,9 @@ const renderApp = () => {
                     <TrainingProvider>
                       <StatsProvider>
                         <ClientProvider>
-                          <App />
+                          <SystemNotificationsProvider>
+                            <App />
+                          </SystemNotificationsProvider>
                         </ClientProvider>
                       </StatsProvider>
                     </TrainingProvider>
