@@ -322,7 +322,9 @@
   },
   "common": {
     "cancel": "Annulla",
-    "confirm": "Conferma"
+    "confirm": "Conferma",
+    "yes": "Sì",
+    "no": "No"
   },
   "trainingPage": {
     "trainingPageTitle": "Allenamento",
@@ -512,13 +514,21 @@
         "contacts": "Recapiti di Contatto",
         "password": "Cambia Password"
       },
+      "sections": {
+        "personalInfo": "Informazioni Personali",
+        "statusInfo": "Informazioni di Stato"
+      },
       "fields": {
         "firstName": "Nome:",
         "lastName": "Cognome:",
         "dateOfBirth": "Data di nascita:",
         "placeOfBirth": "Luogo di nascita:",
         "phone": "Telefono:",
-        "email": "Email:"
+        "email": "Email:",
+        "online": "Online:",
+        "lastLogin": "Ultimo Accesso:",
+        "lastOnline": "Ultima Online:",
+        "createdAt": "Creato il:"
       },
       "passwordChange": {
         "title": "Modifica Password Utente",

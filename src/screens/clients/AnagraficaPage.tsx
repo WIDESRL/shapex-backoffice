@@ -34,6 +34,25 @@ const styles = {
   formContainer: {
     mt: 2,
   },
+  informationTabContainer: {
+    display: 'flex',
+    gap: 3,
+    flex: 1,
+  },
+  informationLeftSection: {
+    flex: 1,
+  },
+  informationRightSection: {
+    flex: 1,
+    pl: 2,
+    borderLeft: '1px solid #e0e0e0',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    color: '#616160',
+    fontWeight: 500,
+    mb: 2,
+  },
   fieldRow: {
     display: 'flex',
     alignItems: 'baseline',
@@ -43,13 +62,19 @@ const styles = {
     fontSize: 14,
     color: '#616160',
     fontWeight: 400,
-    minWidth: 120,
+    minWidth: 80,
     mr: 1,
   },
   fieldValue: {
     fontSize: 14,
     color: '#333',
     fontWeight: 400,
+  },
+  onlineIndicator: {
+    width: 12,
+    height: 12,
+    borderRadius: '50%',
+    mr: 1,
   },
   loadingContainer: {
     display: 'flex',
@@ -61,7 +86,7 @@ const styles = {
 
 const AnagraficaPage: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { clientId } = useParams<{ clientId: string }>();
   const { clientAnagrafica, loadingClientAnagrafica, fetchClientAnagrafica } = useClientContext();
   const [tabValue, setTabValue] = useState(0);
@@ -71,6 +96,37 @@ const AnagraficaPage: React.FC = () => {
       fetchClientAnagrafica(clientId);
     }
   }, [clientId]);
+
+  const formatDate = (dateString: string | null | undefined): string => {
+    if (!dateString) return '---';
+    try {
+      const locale = i18n.language === 'en' ? 'en-US' : 'it-IT';
+      return new Date(dateString).toLocaleDateString(locale, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+    } catch {
+      return '---';
+    }
+  };
+
+  const formatDateOnly = (dateString: string | null | undefined): string => {
+    if (!dateString) return '---';
+    try {
+      const locale = i18n.language === 'en' ? 'en-US' : 'it-IT';
+      return new Date(dateString).toLocaleDateString(locale, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return '---';
+    }
+  };
 
   const handleBackClick = () => {
     navigate('/clients');
@@ -130,32 +186,75 @@ const AnagraficaPage: React.FC = () => {
 
       <Box sx={styles.formContainer}>
         {tabValue === 0 && (
-          <Box>
-            <Box sx={styles.fieldRow}>
-              <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.firstName')}</Typography>
-              <Typography sx={styles.fieldValue}>
-                {clientAnagrafica.firstName}
+          <Box sx={styles.informationTabContainer}>
+            {/* Left Section - Personal Information */}
+            <Box sx={styles.informationLeftSection}>
+              <Typography sx={styles.sectionTitle}>
+                {t('client.anagraficapage.sections.personalInfo')}
               </Typography>
+              <Box sx={styles.fieldRow}>
+                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.firstName')}</Typography>
+                <Typography sx={styles.fieldValue}>
+                  {clientAnagrafica.firstName || '---'}
+                </Typography>
+              </Box>
+              <Box sx={styles.fieldRow}>
+                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastName')}</Typography>
+                <Typography sx={styles.fieldValue}>
+                  {clientAnagrafica.lastName || '---'}
+                </Typography>
+              </Box>
+              <Box sx={styles.fieldRow}>
+                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.dateOfBirth')}</Typography>
+                <Typography sx={styles.fieldValue}>
+                  {formatDateOnly(clientAnagrafica.dateOfBirth)}
+                </Typography>
+              </Box>
+              <Box sx={styles.fieldRow}>
+                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.placeOfBirth')}</Typography>
+                <Typography sx={styles.fieldValue}>
+                  {clientAnagrafica.placeOfBirth || '---'}
+                </Typography>
+              </Box>
             </Box>
-            <Box sx={styles.fieldRow}>
-              <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastName')}</Typography>
-              <Typography sx={styles.fieldValue}>
-                {clientAnagrafica.lastName}
+
+            {/* Right Section - Status Information */}
+            <Box sx={styles.informationRightSection}>
+              <Typography sx={styles.sectionTitle}>
+                {t('client.anagraficapage.sections.statusInfo')}
               </Typography>
-            </Box>
-            <Box sx={styles.fieldRow}>
-              <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.dateOfBirth')}</Typography>
-              <Typography sx={styles.fieldValue}>
-                {clientAnagrafica.dateOfBirth 
-                  ? new Date(clientAnagrafica.dateOfBirth).toLocaleDateString('it-IT') 
-                  : ''}
-              </Typography>
-            </Box>
-            <Box sx={styles.fieldRow}>
-              <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.placeOfBirth')}</Typography>
-              <Typography sx={styles.fieldValue}>
-                {clientAnagrafica.placeOfBirth }
-              </Typography>
+              <Box sx={styles.fieldRow}>
+                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.online')}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box 
+                    sx={{
+                      ...styles.onlineIndicator,
+                      backgroundColor: clientAnagrafica.online ? '#4caf50' : '#9e9e9e'
+                    }}
+                  />
+                  <Typography sx={styles.fieldValue}>
+                    {clientAnagrafica.online ? t('common.yes') : t('common.no')}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box sx={styles.fieldRow}>
+                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastLogin')}</Typography>
+                <Typography sx={styles.fieldValue}>
+                  {formatDate(clientAnagrafica.lastLogin)}
+                </Typography>
+              </Box>
+              <Box sx={styles.fieldRow}>
+                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastOnline')}</Typography>
+                <Typography sx={styles.fieldValue}>
+                  {formatDate(clientAnagrafica.lastOnline)}
+                </Typography>
+              </Box>
+              <Box sx={styles.fieldRow}>
+                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.createdAt')}</Typography>
+                <Typography sx={styles.fieldValue}>
+                  {formatDate(clientAnagrafica.createdAt)}
+                </Typography>
+              </Box>
             </Box>
           </Box>
         )}

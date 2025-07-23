@@ -241,7 +241,7 @@ const styles = {
 };
 
 const SystemNotificationsPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const {
     notifications,
@@ -449,7 +449,8 @@ const SystemNotificationsPage: React.FC = () => {
     } else if (diffInHours < 24) {
       return `${diffInHours}${t('systemNotifications.timeLabels.hoursAgo')}`;
     } else {
-      return date.toLocaleDateString('en-US', { 
+      const locale = i18n.language === 'en' ? 'en-US' : 'it-IT';
+      return date.toLocaleDateString(locale, { 
         month: 'short', 
         day: 'numeric',
         hour: '2-digit',

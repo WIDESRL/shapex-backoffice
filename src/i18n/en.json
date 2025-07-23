@@ -338,7 +338,9 @@
   },
   "common": {
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
   },
   "trainingPage": {
     "trainingPageTitle": "Training",
@@ -528,13 +530,21 @@
         "contacts": "Contact Details",
         "password": "Change Password"
       },
+      "sections": {
+        "personalInfo": "Personal Information",
+        "statusInfo": "Status Information"
+      },
       "fields": {
-        "firstName": "First Name:",
-        "lastName": "Last Name:",
+        "firstName": "Name:",
+        "lastName": "Surname:",
         "dateOfBirth": "Date of Birth:",
         "placeOfBirth": "Place of Birth:",
         "phone": "Phone:",
-        "email": "Email:"
+        "email": "Email:",
+        "online": "Online:",
+        "lastLogin": "Last Login:",
+        "lastOnline": "Last Online:",
+        "createdAt": "Created:"
       },
       "passwordChange": {
         "title": "Change User Password",

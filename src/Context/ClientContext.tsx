@@ -187,6 +187,10 @@ export type ClientAnagrafica = {
   email: string;
   dateOfBirth: string | null;
   placeOfBirth: string | null;
+  lastLogin: string,
+  lastOnline: string,
+  online: boolean,
+  createdAt: string,
   activeSubscription: {
     id: number,
     title: string,
