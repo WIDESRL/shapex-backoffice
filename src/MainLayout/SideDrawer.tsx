@@ -630,13 +630,15 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
               <PushNotificationsIconWhite
                 style={{
                   ...styles.icon,
-                  color:
-                    activeMenu === ActiveMenu.Notifications
-                      ? menuColor
+                color: unreadCount > 0 
+                    ? "#FF4444" 
+                    : activeMenu === ActiveMenu.Notifications 
+                      ? menuColor 
                       : undefined,
-                  filter:
-                    activeMenu === ActiveMenu.Notifications
-                      ? activeIconFilter
+                  filter: unreadCount > 0 && miniDrawer
+                    ? redIconFilter 
+                    : activeMenu === ActiveMenu.Notifications 
+                      ? activeIconFilter 
                       : undefined,
                 }}
               />
