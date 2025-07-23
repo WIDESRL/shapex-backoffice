@@ -361,22 +361,22 @@ const SystemNotificationsPage: React.FC = () => {
     switch (notification.type) {
       case 'training_completed':
         return notification.relatedData.trainingProgram?.title 
-          ? `Completed "${notification.relatedData.trainingProgram.title}" training program`
-          : 'Completed training program';
+          ? t('systemNotifications.descriptions.trainingCompletedWithTitle', { title: notification.relatedData.trainingProgram.title })
+          : t('systemNotifications.descriptions.trainingCompletedGeneric');
       case 'check_created':
-        return 'Created a new check';
+        return t('systemNotifications.descriptions.checkCreated');
       case 'check_updated':
-        return 'Updated check measurements';
+        return t('systemNotifications.descriptions.checkUpdated');
       case 'exercise_completed':
         return notification.relatedData.exercise?.title 
-          ? `Completed "${notification.relatedData.exercise.title}" exercise`
-          : 'Completed exercise';
+          ? t('systemNotifications.descriptions.exerciseCompletedWithTitle', { title: notification.relatedData.exercise.title })
+          : t('systemNotifications.descriptions.exerciseCompletedGeneric');
       case 'program_assigned':
         return notification.relatedData.trainingProgram?.title 
-          ? `Assigned "${notification.relatedData.trainingProgram.title}" program`
-          : 'Assigned training program';
+          ? t('systemNotifications.descriptions.programAssignedWithTitle', { title: notification.relatedData.trainingProgram.title })
+          : t('systemNotifications.descriptions.programAssignedGeneric');
       default:
-        return 'System notification';
+        return t('systemNotifications.descriptions.systemNotificationGeneric');
     }
   };
 
@@ -647,7 +647,6 @@ const SystemNotificationsPage: React.FC = () => {
                   <MenuItem value="check_created">{t('systemNotifications.filters.checkCreated')}</MenuItem>
                   <MenuItem value="check_updated">{t('systemNotifications.filters.checkUpdated')}</MenuItem>
                   <MenuItem value="exercise_completed">{t('systemNotifications.filters.exerciseCompleted')}</MenuItem>
-                  <MenuItem value="program_assigned">{t('systemNotifications.filters.programAssigned')}</MenuItem>
                 </Select>
               </FormControl>
               

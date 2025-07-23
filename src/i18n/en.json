@@ -205,6 +205,17 @@
       "exerciseCompleted": "Exercise Completed",
       "programAssigned": "New Program Assignment"
     },
+    "descriptions": {
+      "trainingCompletedWithTitle": "Completed \"{{title}}\" training program",
+      "trainingCompletedGeneric": "Completed training program",
+      "checkCreated": "Created a new check",
+      "checkUpdated": "Updated check measurements",
+      "exerciseCompletedWithTitle": "Completed \"{{title}}\" exercise",
+      "exerciseCompletedGeneric": "Completed exercise",
+      "programAssignedWithTitle": "Assigned \"{{title}}\" program",
+      "programAssignedGeneric": "Assigned training program",
+      "systemNotificationGeneric": "System notification"
+    },
     "timeLabels": {
       "justNow": "Just now",
       "hoursAgo": "h ago"
@@ -1066,6 +1077,16 @@
     "send": "Send",
     "close": "Close",
     "user": "User"
+  },
+  "chat": {
+    "pleaseSelectConversation": "Please select a conversation",
+    "user": "User",
+    "file": "File",
+    "image": "image",
+    "searchPlaceholder": "Search people with name or email...",
+    "noConversationsFound": "No conversations found",
+    "tryDifferentSearch": "Try a different name or email.",
+    "typePlaceholder": "Type a message..."
   },
   "login": {
     "title": "Log in",

@@ -378,7 +378,7 @@ const ChatPageContent: React.FC = () => {
 			<Sidebar>
 				<Box sx={{ p: 2, pb: 0, display: 'flex', alignItems: 'center', gap: 1 }}>
 					<InputBase
-						placeholder={t('Search people with name or email...')}
+						placeholder={t('chat.searchPlaceholder')}
 						value={searchInput}
 						onChange={e => setSearchInput(e.target.value)}
 						fullWidth
@@ -403,10 +403,10 @@ const ChatPageContent: React.FC = () => {
 						<Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 120, py: 4 }}>
 							<img src="/profile.svg" alt="No conversations" style={{ width: 80, height: 80, opacity: 0.7, marginBottom: 16 }} />
 							<Typography sx={{ color: '#bdbdbd', fontWeight: 600, fontSize: 20, mb: 1, fontFamily: 'Montserrat, sans-serif' }}>
-								{t('No conversations found')}
+								{t('chat.noConversationsFound')}
 							</Typography>
 							<Typography sx={{ color: '#bdbdbd', fontSize: 15, textAlign: 'center', maxWidth: 220, fontFamily: 'Montserrat, sans-serif' }}>
-								{t('Try a different name or email.')}
+								{t('chat.tryDifferentSearch')}
 							</Typography>
 						</Box>
 					) : (
@@ -421,7 +421,7 @@ const ChatPageContent: React.FC = () => {
 										<Box sx={{ position: 'relative', display: 'inline-block' }}>
 											<AvatarCustom
 												src={conv.user.profilePictureFile?.signedUrl || '/profile.svg'}
-												alt={((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || 'User'}
+												alt={((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || t('chat.user')}
 												sx={{ width: 48, height: 48 }}
 												fallback={((conv.user.firstName || '')[0] || '') + ((conv.user.lastName || '')[0] || '')}
 											/>
@@ -441,7 +441,7 @@ const ChatPageContent: React.FC = () => {
 										</Box>
 									</ListItemAvatar>
 									<ListItemText
-										primary={<Typography sx={{ fontWeight: 600, fontSize: 17, color: '#616160', fontFamily: 'Montserrat, sans-serif' }} component="span">{((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || 'User'}</Typography>}
+										primary={<Typography sx={{ fontWeight: 600, fontSize: 17, color: '#616160', fontFamily: 'Montserrat, sans-serif' }} component="span">{((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || t('chat.user')}</Typography>}
 										secondary={
 											<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }} component="span">
 												<Typography
@@ -537,7 +537,7 @@ const ChatPageContent: React.FC = () => {
 				) : !selectedConversation ? (
 					<Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
 						<Typography sx={{ color: '#bdbdbd', fontSize: 22, fontWeight: 500, fontFamily: 'Montserrat, sans-serif', textAlign: 'center' }}>
-							{t('Please select a conversation')}
+							{t('chat.pleaseSelectConversation')}
 						</Typography>
 					</Box>
 				) : (
@@ -564,7 +564,7 @@ const ChatPageContent: React.FC = () => {
 											{msg.type === 'file' && msg.file && msg.file.type && msg.file.type.startsWith('image/') && (	
 												<ImageCustom
 													src={msg.file.signedUrl}
-													alt={msg.file.fileName || 'image'}
+													alt={msg.file.fileName || t('chat.image')}
 													style={{ maxWidth: 180, maxHeight: 180, borderRadius: 8, cursor: 'pointer', margin: 2 }}
 													onClick={() => msg.file && setFullscreenImage(msg.file.signedUrl)}
 												/>
@@ -581,7 +581,7 @@ const ChatPageContent: React.FC = () => {
 														rel="noopener noreferrer"
 														sx={{ fontWeight: 500, textDecoration: 'underline', fontSize: 15 }}
 													>
-														{msg.file.fileName || 'File'}
+														{msg.file.fileName || t('chat.file')}
 													</Typography>
 												</Box>
 											)}
@@ -611,7 +611,7 @@ const ChatPageContent: React.FC = () => {
 				{!!selectedConversation && !loadingConversations && (
 					<ChatInputContainer elevation={0}>
 						<InputBase
-							placeholder={t('Type a message...')}
+							placeholder={t('chat.typePlaceholder')}
 							value={message}
 							onChange={e => setMessage(e.target.value)}
 							onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}

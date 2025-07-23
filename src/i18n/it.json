@@ -189,6 +189,17 @@
       "exerciseCompleted": "Esercizio Completato",
       "programAssigned": "Nuovo Programma Assegnato"
     },
+    "descriptions": {
+      "trainingCompletedWithTitle": "Completato il programma di allenamento \"{{title}}\"",
+      "trainingCompletedGeneric": "Completato programma di allenamento",
+      "checkCreated": "Creato un nuovo check",
+      "checkUpdated": "Aggiornate le misurazioni del check",
+      "exerciseCompletedWithTitle": "Completato l'esercizio \"{{title}}\"",
+      "exerciseCompletedGeneric": "Completato esercizio",
+      "programAssignedWithTitle": "Assegnato il programma \"{{title}}\"",
+      "programAssignedGeneric": "Assegnato programma di allenamento",
+      "systemNotificationGeneric": "Notifica di sistema"
+    },
     "timeLabels": {
       "justNow": "Proprio ora",
       "hoursAgo": "ore fa"
@@ -1051,6 +1062,16 @@
     "send": "Invia",
     "close": "Chiudi",
     "user": "Utente"
+  },
+  "chat": {
+    "pleaseSelectConversation": "Per favore seleziona una conversazione",
+    "user": "Utente",
+    "file": "File",
+    "image": "immagine",
+    "searchPlaceholder": "Cerca persone per nome o email...",
+    "noConversationsFound": "Nessuna conversazione trovata",
+    "tryDifferentSearch": "Prova un nome o email diverso.",
+    "typePlaceholder": "Scrivi un messaggio..."
   },
   "login": {
     "title": "Accedi",
