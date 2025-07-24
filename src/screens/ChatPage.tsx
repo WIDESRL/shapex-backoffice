@@ -742,7 +742,9 @@ const ChatPageContent: React.FC = () => {
 									<Tooltip title={t('chat.openOffCanvas', 'Open in floating window')}>
 										<IconButton
 											onClick={(e) => {
+												e.preventDefault();
 												e.stopPropagation();
+												e.nativeEvent.stopImmediatePropagation();
 												openChat(conv);
 											}}
 											size="small"

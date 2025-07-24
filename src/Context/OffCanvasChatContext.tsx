@@ -36,23 +36,44 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
   const { 
     sendTextMessage, 
     sendFileMessage, 
-    messages, 
-    selectedConversationId, 
-    setSelectedConversationId 
+    messagesByConversationId, // Use this instead of messages
+    setSelectedConversationId,
+    onNewMessageReceived, // Add this to listen for new messages
+    conversations // Add this to sync online status
   } = useMessages();
 
-  // Sync messages from main context to individual chats
+  // Sync messages from messagesByConversationId to individual chats (real-time updates)
   useEffect(() => {
-    if (selectedConversationId) {
-      setActiveChats(prev => 
-        prev.map(chat => 
-          chat.conversation.id === selectedConversationId
-            ? { ...chat, messages: messages }
-            : chat
-        )
-      );
-    }
-  }, [messages, selectedConversationId]);
+    setActiveChats(prev => 
+      prev.map(chat => {
+        const conversationMessages = messagesByConversationId[chat.conversation.id] || [];
+        return {
+          ...chat,
+          messages: conversationMessages
+        };
+      })
+    );
+  }, [messagesByConversationId]);
+
+  // Sync conversation data (including online status) to individual chats (real-time updates)
+  useEffect(() => {
+    setActiveChats(prev => 
+      prev.map(chat => {
+        const updatedConversation = conversations.find(c => c.id === chat.conversation.id);
+        if (updatedConversation) {
+          // Only log when online status actually changes
+          if (chat.conversation.user.online !== updatedConversation.user.online) {
+            console.log(`👤 User ${updatedConversation.user.firstName} is now ${updatedConversation.user.online ? 'online' : 'offline'}`);
+          }
+          return {
+            ...chat,
+            conversation: updatedConversation // This includes the updated user.online status
+          };
+        }
+        return chat;
+      })
+    );
+  }, [conversations]);
 
   const openChat = useCallback((conversation: ApiConversation) => {
     setActiveChats(prev => {
@@ -73,7 +94,7 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
         conversation,
         isCollapsed: false,
         position: prev.length, // Position from right
-        messages: [],
+        messages: messagesByConversationId[conversation.id] || [], // Initialize with existing messages
         isLoadingMessages: false,
       };
 
@@ -84,7 +105,12 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
         position: index,
       }));
     });
-  }, []);
+
+    // Load messages for this conversation if not already loaded
+    if (!messagesByConversationId[conversation.id]) {
+      setSelectedConversationId(conversation.id);
+    }
+  }, [messagesByConversationId, setSelectedConversationId]);
 
   const closeChat = useCallback((chatId: string) => {
     setActiveChats(prev => {
@@ -158,6 +184,32 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
       );
     }
   }, [activeChats, setSelectedConversationId]);
+
+  // Auto-open chats when new messages are received
+  useEffect(() => {
+    const cleanup = onNewMessageReceived((_message, conversation) => {
+      if (!conversation) return;
+      
+      // Check if chat is already open
+      const isAlreadyOpen = activeChats.some(chat => chat.conversation.id === conversation.id);
+      
+      if (!isAlreadyOpen) {
+        // Open new chat window automatically
+        openChat(conversation);
+      } else {
+        // If chat exists but is collapsed, expand it
+        setActiveChats(prev => 
+          prev.map(chat => 
+            chat.conversation.id === conversation.id 
+              ? { ...chat, isCollapsed: false }
+              : chat
+          )
+        );
+      }
+    });
+
+    return cleanup;
+  }, [onNewMessageReceived, activeChats, openChat]);
 
   return (
     <OffCanvasChatContext.Provider value={{

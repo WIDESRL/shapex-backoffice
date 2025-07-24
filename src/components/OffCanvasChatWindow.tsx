@@ -71,6 +71,7 @@ const ChatHeader = styled(Box)({
 const MessagesContainer = styled(Box)({
   flex: 1,
   overflowY: 'auto',
+  overscrollBehavior: 'contain', // Prevent scroll chaining
   padding: '8px',
   display: 'flex',
   flexDirection: 'column',
@@ -215,6 +216,39 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     }
   }, [handleSend]);
 
+  // Prevent scroll events from bubbling to parent when at boundaries
+  const handleMessagesScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const element = e.currentTarget;
+    const { scrollTop, scrollHeight, clientHeight } = element;
+    
+    // Check if we're at the top or bottom of the scroll container
+    const atTop = scrollTop === 0;
+    const atBottom = scrollTop + clientHeight >= scrollHeight - 1; // -1 for floating point precision
+    
+    // If we're at boundaries and trying to scroll further, prevent the event from bubbling
+    if ((atTop && e.nativeEvent instanceof WheelEvent && e.nativeEvent.deltaY < 0) || 
+        (atBottom && e.nativeEvent instanceof WheelEvent && e.nativeEvent.deltaY > 0)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, []);
+
+  // More reliable wheel event handler to prevent scroll propagation
+  const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    const element = e.currentTarget;
+    const { scrollTop, scrollHeight, clientHeight } = element;
+    
+    // Check if we're at the top or bottom of the scroll container
+    const atTop = scrollTop === 0;
+    const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
+    
+    // Prevent scroll propagation when at boundaries
+    if ((atTop && e.deltaY < 0) || (atBottom && e.deltaY > 0)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, []);
+
   const userName = `${chat.conversation.user.firstName || ''} ${chat.conversation.user.lastName || ''}`.trim() 
     || t('chat.user');
 
@@ -291,7 +325,7 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
       {/* Messages (only visible when not collapsed) */}
       {!chat.isCollapsed && (
         <>
-          <MessagesContainer>
+          <MessagesContainer onScroll={handleMessagesScroll} onWheel={handleWheel}>
             {conversationMessages.length === 0 ? (
               <Box sx={{ 
                 display: 'flex', 

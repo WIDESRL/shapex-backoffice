@@ -95,6 +95,7 @@ interface MessagesContextType {
     setConversationSeen: (id: number) => void;
     setConversations: React.Dispatch<React.SetStateAction<ApiConversation[]>>;
     messages: Message[];
+    messagesByConversationId: Record<number, Message[]>; // Add this to access all messages by conversation
     sendTextMessage: (convId: number | undefined, content: string, userId?: number) => Promise<void>;
     sendFileMessage: (convId: number | undefined, file: File, userId?: number) => Promise<void>;
     sendingMessage: boolean;
@@ -119,6 +120,8 @@ interface MessagesContextType {
     resetConversationSearch: () => void;
     loadMoreMessages: (conversationId: number, beforeId: number) => Promise<void>;
     messagesPerPage: number;
+    // New message callback for off-canvas chat auto-opening
+    onNewMessageReceived: (callback: (message: Message & { conversationId: number }, conversation: ApiConversation | undefined) => void) => () => void;
 }
 
 export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -139,6 +142,9 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [loadingConversations, setLoadingConversations] = useState(false);
     const [messagesPerPage] = useState(10);
     const {socketInstance, isAuth } = useAuth();
+
+    // Callback for new message notifications
+    const [newMessageCallbacks, setNewMessageCallbacks] = useState<Array<(message: Message & { conversationId: number }, conversation: ApiConversation | undefined) => void>>([]);
 
 
     const updateUserOnlineStatus = useCallback((user: { id: number }, online: boolean) => {
@@ -184,6 +190,21 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             }
             return { ...prev, [convId]: newMessages };
         });
+
+        // Notify callbacks about new message (for auto-opening off-canvas chats)
+        const conversation = conversations.find(c => c.id === msg.conversationId);
+        newMessageCallbacks.forEach(callback => {
+            callback(msg, conversation);
+        });
+    }, [conversations, newMessageCallbacks]);
+
+    const onNewMessageReceived = useCallback((callback: (message: Message & { conversationId: number }, conversation: ApiConversation | undefined) => void) => {
+        setNewMessageCallbacks(prev => [...prev, callback]);
+        
+        // Return cleanup function
+        return () => {
+            setNewMessageCallbacks(prev => prev.filter(cb => cb !== callback));
+        };
     }, []);
 
     useEffect(() => {
@@ -202,7 +223,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
                 socketInstance.off('newMessage');
             }
         };
-    }, [socketInstance]);
+    }, [socketInstance, setUserOffline, setUserOnline, upsertConversation, upsertMessage]);
 
 
     useEffect(() => {
@@ -381,6 +402,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             setConversationSeen,
             setConversations,
             messages,
+            messagesByConversationId, // Add this line
             sendTextMessage,
             sendFileMessage,
             sendingMessage,
@@ -404,6 +426,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
             resetConversationSearch,
             loadMoreMessages,
             messagesPerPage,
+            onNewMessageReceived, // Add the callback registration function
         }}>
             {children}
         </MessagesContext.Provider>
