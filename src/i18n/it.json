@@ -1136,7 +1136,9 @@
     "searchPlaceholder": "Cerca persone per nome o email...",
     "noConversationsFound": "Nessuna conversazione trovata",
     "tryDifferentSearch": "Prova un nome o email diverso.",
-    "typePlaceholder": "Scrivi un messaggio..."
+    "typePlaceholder": "Scrivi un messaggio...",
+    "noMessages": "Nessun messaggio ancora",
+    "yesterday": "Ieri"
   },
   "login": {
     "title": "Accedi",

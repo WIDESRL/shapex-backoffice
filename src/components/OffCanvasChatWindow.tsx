@@ -18,7 +18,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { format, parseISO } from 'date-fns';
 import { OffCanvasChat, useOffCanvasChat } from '../Context/OffCanvasChatContext';
-import { Message } from '../Context/MessagesContext';
+import { Message, useMessages } from '../Context/MessagesContext';
 import { useSnackbar } from '../Context/SnackbarContext';
 import { handleApiError } from '../utils/errorUtils';
 import AvatarCustom from './AvatarCustom';
@@ -143,15 +143,39 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     loadMessagesForChat 
   } = useOffCanvasChat();
 
+  // Import loadMoreMessages from MessagesContext
+  const { loadMoreMessages } = useMessages();
+
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const justSentMessageRef = useRef(false);
   const hasLoadedMessagesRef = useRef(false);
+  const firstVisibleMsgRef = useRef<{ id: number; offset: number } | null>(null);
+  const scrollHeightBeforeLoadRef = useRef<number>(0);
+  const lastLoadedMessageIdRef = useRef<number | null>(null);
+  const isLoadingRef = useRef(false);
+  const scrollDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use messages from the chat object instead of global context
   const conversationMessages = chat.messages;
+
+  // Sort messages by date to ensure proper chronological order and remove duplicates
+  const sortedMessages = React.useMemo(() => {
+    // First deduplicate by id, then sort by date
+    const uniqueMessages = conversationMessages.filter((message, index, arr) => 
+      arr.findIndex(m => m.id === message.id) === index
+    );
+    
+    return uniqueMessages.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return dateA - dateB; // Ascending order (oldest first)
+    });
+  }, [conversationMessages]);
 
   // Load messages for this conversation when chat opens (only once)
   useEffect(() => {
@@ -161,13 +185,33 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     }
   }, [chat.id, chat.isCollapsed, chat.isLoadingMessages, conversationMessages.length, loadMessagesForChat]);
 
-  // Auto-scroll to bottom when new messages arrive or when expanding
+  // Auto-scroll to bottom when new messages arrive or when expanding (but not when loading more)
   useEffect(() => {
-    if (!chat.isCollapsed && messagesEndRef.current && (justSentMessageRef.current || conversationMessages.length > 0)) {
+    if (!chat.isCollapsed && messagesEndRef.current && justSentMessageRef.current) {
+      // Only scroll to bottom if we just sent a message
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
       justSentMessageRef.current = false;
     }
-  }, [conversationMessages, chat.isCollapsed]);
+  }, [sortedMessages, chat.isCollapsed]);
+
+  // Auto-scroll to bottom only when chat is first opened or when receiving new messages (not loading more)
+  useEffect(() => {
+    if (!chat.isCollapsed && messagesEndRef.current && !loadingMoreMessages) {
+      // Check if we're near the bottom (within 100px) before auto-scrolling
+      const container = messagesContainerRef.current;
+      if (container) {
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+        
+        // Only auto-scroll if we're near the bottom (user is actively viewing recent messages)
+        if (isNearBottom) {
+          setTimeout(() => {
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
+      }
+    }
+  }, [sortedMessages.length, chat.isCollapsed, loadingMoreMessages]); // Only trigger on message count change
 
   // Scroll to bottom when expanding chat
   useEffect(() => {
@@ -216,22 +260,162 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     }
   }, [handleSend]);
 
-  // Prevent scroll events from bubbling to parent when at boundaries
-  const handleMessagesScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+  // Combined scroll handler for both infinite scroll and boundary prevention
+  const handleCombinedScroll = useCallback(async (e: React.UIEvent<HTMLDivElement>) => {
     const element = e.currentTarget;
     const { scrollTop, scrollHeight, clientHeight } = element;
     
-    // Check if we're at the top or bottom of the scroll container
-    const atTop = scrollTop === 0;
-    const atBottom = scrollTop + clientHeight >= scrollHeight - 1; // -1 for floating point precision
+    // Clear any existing debounce timeout
+    if (scrollDebounceRef.current) {
+      clearTimeout(scrollDebounceRef.current);
+    }
     
-    // If we're at boundaries and trying to scroll further, prevent the event from bubbling
+    // 1. Handle infinite scroll (load more messages) - with debouncing
+    if (scrollTop < 80 && !loadingMoreMessages && !isLoadingRef.current && sortedMessages.length > 0) {
+      const lowestId = Math.min(...sortedMessages.map(m => m.id));
+      
+      // Prevent loading the same messages multiple times
+      if (lastLoadedMessageIdRef.current === lowestId) {
+        return;
+      }
+      
+      // Only load more if we haven't reached the firstMessageId
+      if (lowestId > chat.conversation.firstMessageId) {
+        // Debounce the loading to prevent rapid-fire requests
+        scrollDebounceRef.current = setTimeout(async () => {
+          // Double-check conditions after debounce
+          if (isLoadingRef.current || loadingMoreMessages) {
+            return;
+          }
+          
+          // Set both state and ref to prevent race conditions
+          setLoadingMoreMessages(true);
+          isLoadingRef.current = true;
+          lastLoadedMessageIdRef.current = lowestId;
+          
+          // Store the current scroll height before loading new messages
+          scrollHeightBeforeLoadRef.current = element.scrollHeight;
+          
+          // Find the first visible message to maintain scroll position
+          const children = Array.from(element.querySelectorAll('[data-msg-id]'));
+          let firstVisible: HTMLElement | null = null;
+          for (const el of children) {
+            const rect = (el as HTMLElement).getBoundingClientRect();
+            const containerRect = element.getBoundingClientRect();
+            if (rect.top >= containerRect.top && rect.bottom <= containerRect.bottom) {
+              firstVisible = el as HTMLElement;
+              break;
+            }
+          }
+          
+          // If no fully visible message, find the first partially visible one
+          if (!firstVisible) {
+            for (const el of children) {
+              const rect = (el as HTMLElement).getBoundingClientRect();
+              const containerRect = element.getBoundingClientRect();
+              if (rect.bottom > containerRect.top) {
+                firstVisible = el as HTMLElement;
+                break;
+              }
+            }
+          }
+          
+          if (firstVisible) {
+            firstVisibleMsgRef.current = {
+              id: Number(firstVisible.getAttribute('data-msg-id')),
+              offset: firstVisible.offsetTop,
+            };
+          } else {
+            firstVisibleMsgRef.current = null;
+          }
+          
+          try {
+            console.log(`Loading more messages for conversation ${chat.conversation.id}, before message ID ${lowestId}`);
+            await loadMoreMessages(chat.conversation.id, lowestId);
+            console.log(`Successfully loaded more messages for conversation ${chat.conversation.id}`);
+          } catch (error) {
+            console.error('Error loading more messages:', error);
+            // Reset the lastLoadedMessageIdRef on error so user can retry
+            lastLoadedMessageIdRef.current = null;
+          } finally {
+            setLoadingMoreMessages(false);
+            isLoadingRef.current = false;
+          }
+        }, 150); // 150ms debounce
+      }
+    }
+    
+    // 2. Handle boundary scroll prevention
+    const atTop = scrollTop === 0;
+    const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
+    
     if ((atTop && e.nativeEvent instanceof WheelEvent && e.nativeEvent.deltaY < 0) || 
         (atBottom && e.nativeEvent instanceof WheelEvent && e.nativeEvent.deltaY > 0)) {
       e.preventDefault();
       e.stopPropagation();
     }
+  }, [chat.conversation.id, chat.conversation.firstMessageId, sortedMessages, loadingMoreMessages, loadMoreMessages]);
+
+  // Reset loading refs when chat changes
+  useEffect(() => {
+    lastLoadedMessageIdRef.current = null;
+    isLoadingRef.current = false;
+    scrollHeightBeforeLoadRef.current = 0;
+    // Clear any pending debounce timeout
+    if (scrollDebounceRef.current) {
+      clearTimeout(scrollDebounceRef.current);
+      scrollDebounceRef.current = null;
+    }
+  }, [chat.conversation.id]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollDebounceRef.current) {
+        clearTimeout(scrollDebounceRef.current);
+      }
+    };
   }, []);
+
+  // Adjust scroll position after loading more messages
+  useEffect(() => {
+    if (!loadingMoreMessages && messagesContainerRef.current) {
+      const container = messagesContainerRef.current;
+      
+      if (firstVisibleMsgRef.current) {
+        // Method 1: Try to maintain position relative to a specific message
+        const { id, offset } = firstVisibleMsgRef.current;
+        const el = container.querySelector(`[data-msg-id="${id}"]`) as HTMLElement | null;
+        if (el) {
+          // Calculate the new scroll position to maintain the same visual position
+          const newScrollTop = el.offsetTop - offset;
+          container.scrollTop = Math.max(0, newScrollTop);
+        }
+        firstVisibleMsgRef.current = null;
+      } else if (scrollHeightBeforeLoadRef.current > 0) {
+        // Method 2: Use scroll height difference to maintain position
+        const currentScrollHeight = container.scrollHeight;
+        const heightDifference = currentScrollHeight - scrollHeightBeforeLoadRef.current;
+        if (heightDifference > 0) {
+          container.scrollTop = container.scrollTop + heightDifference;
+        }
+        scrollHeightBeforeLoadRef.current = 0;
+      }
+    }
+  }, [loadingMoreMessages, sortedMessages]);
+
+  // Reset loading state if messages change unexpectedly
+  useEffect(() => {
+    if (loadingMoreMessages && isLoadingRef.current && sortedMessages.length > 0) {
+      // Check if we actually got new messages
+      const currentLowestId = Math.min(...sortedMessages.map(m => m.id));
+      if (lastLoadedMessageIdRef.current && currentLowestId < lastLoadedMessageIdRef.current) {
+        // We got new messages, reset loading state
+        setLoadingMoreMessages(false);
+        isLoadingRef.current = false;
+      }
+    }
+  }, [sortedMessages, loadingMoreMessages]);
 
   // More reliable wheel event handler to prevent scroll propagation
   const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
@@ -252,9 +436,25 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
   const userName = `${chat.conversation.user.firstName || ''} ${chat.conversation.user.lastName || ''}`.trim() 
     || t('chat.user');
 
-  const getMessageTime = (dateString: string) => {
+  const getMessageDateTime = (dateString: string) => {
     try {
-      return format(parseISO(dateString), 'HH:mm');
+      const messageDate = parseISO(dateString);
+      const today = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      // Check if it's today
+      if (messageDate.toDateString() === today.toDateString()) {
+        return format(messageDate, 'HH:mm');
+      }
+      // Check if it's yesterday
+      else if (messageDate.toDateString() === yesterday.toDateString()) {
+        return `${t('chat.yesterday')} ${format(messageDate, 'HH:mm')}`;
+      }
+      // For older messages, show date and time
+      else {
+        return format(messageDate, 'MMM dd, HH:mm');
+      }
     } catch {
       return '';
     }
@@ -325,7 +525,17 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
       {/* Messages (only visible when not collapsed) */}
       {!chat.isCollapsed && (
         <>
-          <MessagesContainer onScroll={handleMessagesScroll} onWheel={handleWheel}>
+          <MessagesContainer 
+            ref={messagesContainerRef}
+            onScroll={handleCombinedScroll} 
+            onWheel={handleWheel}
+          >
+            {/* Loading more spinner at top */}
+            {loadingMoreMessages && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
+                <CircularProgress size={16} sx={{ color: '#E6BB4A' }} />
+              </Box>
+            )}
             {conversationMessages.length === 0 ? (
               <Box sx={{ 
                 display: 'flex', 
@@ -339,8 +549,8 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
                 {t('chat.noMessages')}
               </Box>
             ) : (
-              conversationMessages.map((msg: Message) => (
-                <Box key={msg.id} sx={{ display: 'flex', flexDirection: 'column' }}>
+              sortedMessages.map((msg: Message, index: number) => (
+                <Box key={`${msg.id}-${msg.date}-${index}`} data-msg-id={msg.id} sx={{ display: 'flex', flexDirection: 'column' }}>
                   <MessageBubble isMe={msg.fromAdminId != null}>
                     {msg.type === 'text' && msg.content}
                     {msg.type === 'file' && msg.file && (
@@ -379,7 +589,7 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
                       </>
                     )}
                     <MessageMeta>
-                      {getMessageTime(msg.date)}
+                      {getMessageDateTime(msg.date)}
                     </MessageMeta>
                   </MessageBubble>
                 </Box>

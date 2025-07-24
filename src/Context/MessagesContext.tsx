@@ -140,7 +140,7 @@ export const MessagesProvider: React.FC<{ children: ReactNode }> = ({ children }
     const [usersWithoutConversationPageSize] = useState(10);
     const [conversationHasMore, setConversationHasMore] = useState(true);
     const [loadingConversations, setLoadingConversations] = useState(false);
-    const [messagesPerPage] = useState(10);
+    const [messagesPerPage] = useState(100);
     const {socketInstance, isAuth } = useAuth();
 
     // Callback for new message notifications

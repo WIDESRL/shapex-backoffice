@@ -1151,7 +1151,9 @@
     "searchPlaceholder": "Search people with name or email...",
     "noConversationsFound": "No conversations found",
     "tryDifferentSearch": "Try a different name or email.",
-    "typePlaceholder": "Type a message..."
+    "typePlaceholder": "Type a message...",
+    "noMessages": "No messages yet",
+    "yesterday": "Yesterday"
   },
   "login": {
     "title": "Log in",
