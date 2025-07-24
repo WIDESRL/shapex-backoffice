@@ -16,19 +16,16 @@ const OffCanvasChatContainer: React.FC = () => {
         right: 16,
         zIndex: 1300,
         display: 'flex',
-        alignItems: 'flex-end', // Align chat windows to the bottom
+        alignItems: 'flex-end', 
         gap: 1,
         maxWidth: 'calc(100vw - 32px)',
         overflowX: 'auto',
         overflowY: 'visible',
         paddingBottom: 0,
         scrollBehavior: 'smooth',
-        // Ensure horizontal scrolling works
         flexWrap: 'nowrap',
-        // Make container only as wide as needed
         width: 'fit-content',
         pointerEvents: 'none',
-        // Custom scrollbar styling
         '&::-webkit-scrollbar': {
           height: 8,
         },

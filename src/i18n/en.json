@@ -1153,7 +1153,9 @@
     "tryDifferentSearch": "Try a different name or email.",
     "typePlaceholder": "Type a message...",
     "noMessages": "No messages yet",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "loadingMore": "Loading more...",
+    "noMoreMessages": "No more messages"
   },
   "login": {
     "title": "Log in",

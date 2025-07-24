@@ -1138,7 +1138,9 @@
     "tryDifferentSearch": "Prova un nome o email diverso.",
     "typePlaceholder": "Scrivi un messaggio...",
     "noMessages": "Nessun messaggio ancora",
-    "yesterday": "Ieri"
+    "yesterday": "Ieri",
+    "loadingMore": "Caricamento...",
+    "noMoreMessages": "Nessun altro messaggio"
   },
   "login": {
     "title": "Accedi",

@@ -26,9 +26,17 @@ import AvatarCustom from './AvatarCustom';
 import ImageCustom from './ImageCustom';
 import FullscreenImageDialog from './FullscreenImageDialog';
 
+// ===========================
+// TYPES & INTERFACES
+// ===========================
+
 interface OffCanvasChatWindowProps {
   chat: OffCanvasChat;
 }
+
+// ===========================
+// CONSTANTS & STYLED COMPONENTS
+// ===========================
 
 const CHAT_WIDTH = 280;
 const CHAT_HEIGHT_EXPANDED = 400;
@@ -37,11 +45,11 @@ const CHAT_HEIGHT_COLLAPSED = 50;
 const ChatWindow = styled(Paper, {
   shouldForwardProp: (prop) => prop !== 'isCollapsed' && prop !== 'position',
 })<{ isCollapsed: boolean; position: number }>(({ isCollapsed }) => ({
-  position: 'relative', // Changed from fixed to relative
-  bottom: 'auto', // Remove bottom positioning
-  right: 'auto', // Remove right positioning
+  position: 'relative', 
+  bottom: 'auto',
+  right: 'auto', 
   width: CHAT_WIDTH,
-  minWidth: CHAT_WIDTH, // Ensure minimum width for horizontal scrolling
+  minWidth: CHAT_WIDTH,
   height: isCollapsed ? CHAT_HEIGHT_COLLAPSED : CHAT_HEIGHT_EXPANDED,
   backgroundColor: '#fff',
   borderRadius: '8px 8px 0 0',
@@ -51,7 +59,7 @@ const ChatWindow = styled(Paper, {
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
-  flexShrink: 0, // Prevent shrinking for horizontal scrolling
+  flexShrink: 0, 
   transition: 'all 0.3s ease',
   pointerEvents: 'all'
 }));
@@ -89,7 +97,9 @@ const MessagesContainer = styled(Box)({
   },
 });
 
-const MessageBubble = styled(Box)<{ isMe: boolean }>(({ isMe }) => ({
+const MessageBubble = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isMe',
+})<{ isMe: boolean }>(({ isMe }) => ({
   alignSelf: isMe ? 'flex-end' : 'flex-start',
   backgroundColor: isMe ? '#E6BB4A' : '#fff',
   color: isMe ? '#fff' : '#333',
@@ -134,6 +144,134 @@ const InputField = styled(InputBase)({
   },
 });
 
+// Header components
+const HeaderUserContainer = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8, // 1 * 8px
+  minWidth: 0,
+});
+
+const HeaderAvatar = styled(AvatarCustom)({
+  width: 24,
+  height: 24,
+  fontSize: '10px',
+});
+
+const HeaderUserName = styled(Typography)({
+  fontWeight: 600,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  fontSize: '13px',
+  fontFamily: 'Montserrat, sans-serif',
+});
+
+const OnlineIndicator = styled(Box)({
+  width: 8,
+  height: 8,
+  borderRadius: '50%',
+  backgroundColor: '#4caf50',
+  border: '1px solid #fff',
+});
+
+const HeaderActions = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4, // 0.5 * 8px
+});
+
+const HeaderButton = styled(IconButton)({
+  color: '#fff',
+  padding: 4, // 0.5 * 8px
+});
+
+// Messages components
+const MessagesContainerWithHeight = styled(MessagesContainer)({
+  height: 308, 
+  overflow: 'hidden',
+});
+
+const NoMessagesContainer = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  color: '#999',
+  fontSize: '12px',
+  fontFamily: 'Montserrat, sans-serif',
+});
+
+const LoadingContainer = styled(Box)({
+  display: 'flex',
+  justifyContent: 'center',
+  paddingTop: 8, // py: 1
+  paddingBottom: 8, // py: 1
+});
+
+const LoadingText = styled(Typography)({
+  marginLeft: 8, // ml: 1
+});
+
+const EndMessageContainer = styled(Box)({
+  display: 'flex',
+  justifyContent: 'center',
+  paddingTop: 24, // pt: 3
+  paddingBottom: 16, // py: 2
+});
+
+const MessageContainer = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const ImageMessage = styled(ImageCustom)({
+  maxWidth: '120px',
+  maxHeight: '80px',
+  borderRadius: '6px',
+  cursor: 'pointer',
+});
+
+const FileMessage = styled('a')({
+  color: 'inherit',
+  textDecoration: 'underline',
+  fontSize: '11px',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4, // 0.5 * 8px
+  fontFamily: 'inherit',
+});
+
+const FileIcon = styled(AttachFileIcon)({
+  fontSize: '12px',
+});
+
+const LoadingIndicator = styled(CircularProgress)({
+  color: '#E6BB4A',
+});
+
+// Input components
+const FileUploadButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'component',
+})<{ component?: React.ElementType }>({
+  color: '#E6BB4A',
+  padding: 4,
+});
+
+const SendButton = styled(IconButton)({
+  color: '#E6BB4A',
+  padding: 4, 
+});
+
+const infiniteScrollStyles = {
+  display: 'flex',
+  flexDirection: 'column-reverse' as const, 
+  gap: '4px',
+  padding: '8px',
+  paddingTop: '16px', 
+  backgroundColor: '#f7f6f3',
+  overscrollBehavior: 'contain' as const, 
+};
 const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
@@ -146,33 +284,23 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     loadMoreMessagesForChat 
   } = useOffCanvasChat();
 
-  // Remove loadMoreMessages from MessagesContext as we're now using our own
-  // const { loadMoreMessages } = useMessages();
-
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
 
-  // Debug effect for hasMoreMessages
-  useEffect(() => {
-    console.log('📋 hasMoreMessages state changed:', hasMoreMessages);
-  }, [hasMoreMessages]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const justSentMessageRef = useRef(false);
   const hasLoadedMessagesRef = useRef(false);
-  const shouldScrollToBottomRef = useRef(true); // Track if we should auto-scroll
-  const lastLoadedMessageIdRef = useRef<number | null>(null); // Track last loaded message to prevent duplicate calls
+  const shouldScrollToBottomRef = useRef(true); 
+  const lastLoadedMessageIdRef = useRef<number | null>(null); 
 
-  // Use messages from the chat object instead of global context
-  const conversationMessages = chat.messages;
+  const conversationMessages = React.useMemo(() => chat.messages, [chat.messages]);
 
-  // Process messages: deduplicate, sort, and reverse for inverse scroll rendering
   const reversedMessages = React.useMemo(() => {
-    // First deduplicate by id, then sort by date
     const uniqueMessages = conversationMessages.filter((message, index, arr) => 
       arr.findIndex(m => m.id === message.id) === index
     );
@@ -180,68 +308,57 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     const sorted = uniqueMessages.sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
-      return dateA - dateB; // Ascending order (oldest first)
+      return dateA - dateB; 
     });
 
-    return sorted.reverse(); // Reverse for inverse scroll rendering
+    return sorted.reverse(); 
   }, [conversationMessages]);
 
-  // Initialize hasMoreMessages based on conversation data
   useEffect(() => {
     if (reversedMessages.length > 0 && chat.conversation.firstMessageId) {
       const lowestId = Math.min(...reversedMessages.map(m => m.id));
       const canLoadMore = lowestId > chat.conversation.firstMessageId;
-      console.log('🔄 Initializing hasMoreMessages:', { lowestId, firstMessageId: chat.conversation.firstMessageId, canLoadMore });
       setHasMoreMessages(canLoadMore);
     } else if (reversedMessages.length === 0) {
-      // If no messages yet, assume we can load
       setHasMoreMessages(true);
     }
-  }, [reversedMessages.length, chat.conversation.firstMessageId]);
+  }, [reversedMessages, chat.conversation.firstMessageId]);
 
-  // Load messages for this conversation when chat opens (only once)
   useEffect(() => {
     if (!chat.isCollapsed && conversationMessages.length === 0 && !chat.isLoadingMessages && !hasLoadedMessagesRef.current) {
       hasLoadedMessagesRef.current = true;
-      shouldScrollToBottomRef.current = true; // Ensure we scroll to bottom after loading
+      shouldScrollToBottomRef.current = true;
       loadMessagesForChat(chat.id);
     }
   }, [chat.id, chat.isCollapsed, chat.isLoadingMessages, conversationMessages.length, loadMessagesForChat]);
 
-  // Immediate scroll to bottom when messages first load (without animation)
   useEffect(() => {
     if (!chat.isCollapsed && reversedMessages.length > 0 && shouldScrollToBottomRef.current && messagesEndRef.current) {
-      // Use scrollIntoView without behavior for immediate positioning
       messagesEndRef.current.scrollIntoView({ block: 'end' });
     }
   }, [reversedMessages.length, chat.isCollapsed]);
 
-  // Auto-scroll to bottom when new messages arrive or when expanding (but not when loading more)
   useEffect(() => {
     if (!chat.isCollapsed && messagesEndRef.current && justSentMessageRef.current) {
-      // Always scroll to bottom when user sends a message
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
       justSentMessageRef.current = false;
-      shouldScrollToBottomRef.current = true; // Re-enable auto-scroll
+      shouldScrollToBottomRef.current = true;
     }
-  }, [reversedMessages.length, chat.isCollapsed]); // Only trigger on message count, not entire array
+  }, [reversedMessages.length, chat.isCollapsed]); 
 
-  // Auto-scroll to bottom only when receiving new messages (if user wants auto-scroll)
   useEffect(() => {
     if (!chat.isCollapsed && messagesEndRef.current && !loadingMoreMessages && shouldScrollToBottomRef.current) {
-      // Only auto-scroll if user wants to stay at bottom
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     }
-  }, [reversedMessages.length, chat.isCollapsed, loadingMoreMessages]); // Only trigger on message COUNT change, not content
+  }, [reversedMessages.length, chat.isCollapsed, loadingMoreMessages]);
 
-  // Scroll to bottom when expanding chat (if should auto-scroll)
   useEffect(() => {
     if (!chat.isCollapsed && messagesEndRef.current && shouldScrollToBottomRef.current) {
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ block: 'end' });
-      }, 300); // Wait for animation to complete
+      }, 300); 
     }
   }, [chat.isCollapsed]);
 
@@ -287,69 +404,31 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     setMessage(e.target.value);
   }, []);
 
-  // Load more messages function with scroll position preservation
   const loadMoreMessagesHandler = useCallback(async () => {
-    console.log('🔄 loadMoreMessagesHandler called', {
-      loadingMoreMessages,
-      reversedMessagesLength: reversedMessages.length,
-      hasMoreMessages,
-      conversationId: chat.conversation.id,
-      timestamp: Date.now()
-    });
-
-    // Multiple guards to prevent repeated calls
-    if (loadingMoreMessages) {
-      console.log('❌ Already loading messages, skipping');
-      return;
-    }
-
-    if (reversedMessages.length === 0) {
-      console.log('❌ No messages yet, skipping');
-      return;
-    }
-
-    if (!hasMoreMessages) {
-      console.log('❌ No more messages available, skipping');
-      return;
-    }
+    if (loadingMoreMessages) return;
+    if (reversedMessages.length === 0) return;
+    if (!hasMoreMessages) return;
 
     const lowestId = Math.min(...reversedMessages.map(m => m.id));
-    console.log('📊 Message info:', {
-      lowestId,
-      firstMessageId: chat.conversation.firstMessageId,
-      canLoadMore: lowestId > chat.conversation.firstMessageId,
-      lastLoadedId: lastLoadedMessageIdRef.current
-    });
-
-    // Prevent duplicate calls for the same message ID
-    if (lastLoadedMessageIdRef.current === lowestId) {
-      console.log('❌ Already loaded messages for this ID, skipping');
-      return;
-    }
+    if (lastLoadedMessageIdRef.current === lowestId) return;
     
-    // Check if we've reached the first message
     if (lowestId <= chat.conversation.firstMessageId) {
-      console.log('🚫 Reached first message, no more to load');
       setHasMoreMessages(false);
       return;
     }
 
-    console.log('✅ Proceeding with load more messages');
-    lastLoadedMessageIdRef.current = lowestId; // Mark this ID as being loaded
+    lastLoadedMessageIdRef.current = lowestId;
     setLoadingMoreMessages(true);
     
     try {
-      console.log(`🔽 Loading more messages for conversation ${chat.conversation.id}, before message ID ${lowestId}`);
       await loadMoreMessagesForChat(chat.id, lowestId);
-      console.log(`✅ Successfully loaded more messages for conversation ${chat.conversation.id}`);
-    } catch (error) {
-      console.error('❌ Error loading more messages:', error);
-    } finally {
+    }  
+    finally {
       setLoadingMoreMessages(false);
     }
-  }, [chat.conversation.id, chat.conversation.firstMessageId, reversedMessages, loadingMoreMessages, loadMoreMessagesForChat, hasMoreMessages, chat.id]);
+  }, [chat.conversation.firstMessageId, reversedMessages, loadingMoreMessages, loadMoreMessagesForChat, hasMoreMessages, chat.id]);
 
-  // Check if there are more messages to load
+
   useEffect(() => {
     if (reversedMessages.length > 0) {
       const lowestId = Math.min(...reversedMessages.map(m => m.id));
@@ -357,7 +436,6 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     }
   }, [reversedMessages, chat.conversation.firstMessageId]);
 
-  // Auto-load more messages if container is not full (for better UX)
   useEffect(() => {
     if (!chat.isCollapsed && 
         reversedMessages.length > 0 && 
@@ -365,18 +443,11 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
         !loadingMoreMessages && 
         !chat.isLoadingMessages) {
       
-      // Check if the container has enough content to be scrollable
       const container = messagesContainerRef.current?.querySelector('[style*="overflow"]') as HTMLElement;
       if (container) {
         const { scrollHeight, clientHeight } = container;
         
-        // If content doesn't fill the container (no scrollbar), load more automatically
-        if (scrollHeight <= clientHeight + 10) { // 10px tolerance
-          console.log('🔄 Container not full, auto-loading more messages', {
-            scrollHeight,
-            clientHeight,
-            messagesCount: reversedMessages.length
-          });
+        if (scrollHeight <= clientHeight + 10) { 
           loadMoreMessagesHandler();
         }
       }
@@ -414,162 +485,99 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     <ChatWindow isCollapsed={chat.isCollapsed} position={chat.position}>
       {/* Header */}
       <ChatHeader onClick={() => toggleChat(chat.id)}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-          <AvatarCustom
+        <HeaderUserContainer>
+          <HeaderAvatar
             src={chat.conversation.user.profilePictureFile?.signedUrl || '/profile.svg'}
             alt={userName}
-            sx={{ width: 24, height: 24, fontSize: '10px' }}
             fallback={`${chat.conversation.user.firstName?.[0] || ''}${chat.conversation.user.lastName?.[0] || ''}`}
           />
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              fontWeight: 600, 
-              overflow: 'hidden', 
-              textOverflow: 'ellipsis', 
-              whiteSpace: 'nowrap',
-              fontSize: '13px',
-              fontFamily: 'Montserrat, sans-serif',
-            }}
-          >
+          <HeaderUserName variant="body2">
             {userName}
-          </Typography>
+          </HeaderUserName>
           {/* Online indicator */}
-          {chat.conversation.user.online && (
-            <Box
-              sx={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                backgroundColor: '#4caf50',
-                border: '1px solid #fff',
-              }}
-            />
-          )}
-        </Box>
+          {chat.conversation.user.online && <OnlineIndicator />}
+        </HeaderUserContainer>
         
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <IconButton
+        <HeaderActions>
+          <HeaderButton
             size="small"
             onClick={(e) => {
               e.stopPropagation();
               toggleChat(chat.id);
             }}
-            sx={{ color: '#fff', p: 0.5 }}
           >
             {chat.isCollapsed ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
-          </IconButton>
-          <IconButton
+          </HeaderButton>
+          <HeaderButton
             size="small"
             onClick={(e) => {
               e.stopPropagation();
               closeChat(chat.id);
             }}
-            sx={{ color: '#fff', p: 0.5 }}
           >
             <CloseIcon fontSize="small" />
-          </IconButton>
-        </Box>
+          </HeaderButton>
+        </HeaderActions>
       </ChatHeader>
 
       {/* Messages (only visible when not collapsed) */}
       {!chat.isCollapsed && (
         <>
-          <MessagesContainer 
+          <MessagesContainerWithHeight 
             ref={messagesContainerRef}
             id="messagesContainer"
-            sx={{ 
-              height: 308, // Calculated: 400 - 50 - 42 (total - header - input)
-              overflow: 'hidden', // Let InfiniteScroll handle the scrolling
-            }}
           >
             {conversationMessages.length === 0 ? (
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                height: '100%',
-                color: '#999',
-                fontSize: '12px',
-                fontFamily: 'Montserrat, sans-serif',
-              }}>
+              <NoMessagesContainer>
                 {t('chat.noMessages')}
-              </Box>
+              </NoMessagesContainer>
             ) : (
               <InfiniteScroll
                 dataLength={reversedMessages.length}
                 next={() => {
-                  console.log('🚀 InfiniteScroll next() called!', {
-                    hasMore: hasMoreMessages,
-                    loading: loadingMoreMessages,
-                    messagesLength: reversedMessages.length
-                  });
                   loadMoreMessagesHandler();
                 }}
                 hasMore={hasMoreMessages && !loadingMoreMessages}
                 loader={
-                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
-                    <CircularProgress size={16} sx={{ color: '#E6BB4A' }} />
-                    <Typography variant="caption" sx={{ ml: 1 }}>Loading more...</Typography>
-                  </Box>
+                  <LoadingContainer>
+                    <LoadingIndicator size={16} />
+                    <LoadingText variant="caption">{t('chat.loadingMore')}</LoadingText>
+                  </LoadingContainer>
                 }
                 endMessage={
-                  <Box sx={{ display: 'flex', justifyContent: 'center', py: 2, pt: 3 }}>
+                  <EndMessageContainer>
                     <Typography variant="caption" color="text.secondary">
-                      {t('chat.noMoreMessages', 'No more messages')}
+                      {t('chat.noMoreMessages')}
                     </Typography>
-                  </Box>
+                  </EndMessageContainer>
                 }
                 inverse={true}
-                scrollThreshold={0.7} // More sensitive threshold (was 0.9)
-                height={308} // Explicit height for InfiniteScroll
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column-reverse', // This ensures newest messages are at bottom
-                  gap: '4px',
-                  padding: '8px',
-                  paddingTop: '16px', // Extra padding at top to prevent content going under header
-                  backgroundColor: '#f7f6f3',
-                  overscrollBehavior: 'contain', // Prevent scroll chaining to parent
-                }}
+                scrollThreshold={0.7} 
+                height={308}
+                style={infiniteScrollStyles}
               >
                 {/* Render messages using memoized reversed array */}
                 {reversedMessages.map((msg: Message, index: number) => (
-                  <Box key={`${msg.id}-${msg.date}-${index}`} data-msg-id={msg.id} sx={{ display: 'flex', flexDirection: 'column' }}>
+                  <MessageContainer key={`${msg.id}-${msg.date}-${index}`} data-msg-id={msg.id}>
                     <MessageBubble isMe={msg.fromAdminId != null}>
                       {msg.type === 'text' && msg.content}
                       {msg.type === 'file' && msg.file && (
                         <>
                           {msg.file.type?.startsWith('image/') ? (
-                            <ImageCustom
+                            <ImageMessage
                               src={msg.file.signedUrl}
                               alt={msg.file.fileName || t('chat.image')}
-                              style={{ 
-                                maxWidth: '120px', 
-                                maxHeight: '80px', 
-                                borderRadius: '6px',
-                                cursor: 'pointer',
-                              }}
                               onClick={() => msg.file && setFullscreenImage(msg.file.signedUrl)}
                             />
                           ) : (
-                            <Typography
-                              component="a"
+                            <FileMessage
                               href={msg.file.signedUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              sx={{ 
-                                color: 'inherit', 
-                                textDecoration: 'underline',
-                                fontSize: '11px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 0.5,
-                              }}
                             >
-                              <AttachFileIcon sx={{ fontSize: '12px' }} />
+                              <FileIcon />
                               {msg.file.fileName || t('chat.file')}
-                            </Typography>
+                            </FileMessage>
                           )}
                         </>
                       )}
@@ -577,17 +585,17 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
                         {getMessageDateTime(msg.date)}
                       </MessageMeta>
                     </MessageBubble>
-                  </Box>
+                  </MessageContainer>
                 ))}
               </InfiniteScroll>
             )}
             {isLoading && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
-                <CircularProgress size={16} sx={{ color: '#E6BB4A' }} />
-              </Box>
+              <LoadingContainer>
+                <LoadingIndicator size={16} />
+              </LoadingContainer>
             )}
             <div ref={messagesEndRef} />
-          </MessagesContainer>
+          </MessagesContainerWithHeight>
 
           {/* Input */}
           <ChatInput>
@@ -600,10 +608,9 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
               maxRows={3}
               disabled={isLoading}
             />
-            <IconButton
+            <FileUploadButton
               component="label"
               size="small"
-              sx={{ color: '#E6BB4A', p: 0.5 }}
               disabled={isLoading}
             >
               <input
@@ -613,15 +620,14 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
                 onChange={handleFileUpload}
               />
               <AttachFileIcon fontSize="small" />
-            </IconButton>
-            <IconButton
+            </FileUploadButton>
+            <SendButton
               onClick={handleSend}
               size="small"
-              sx={{ color: '#E6BB4A', p: 0.5 }}
               disabled={!message.trim() || isLoading}
             >
               <SendIcon fontSize="small" />
-            </IconButton>
+            </SendButton>
           </ChatInput>
         </>
       )}
