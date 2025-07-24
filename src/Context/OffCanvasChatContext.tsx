@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { ApiConversation, Message, useMessages } from './MessagesContext';
+import axiosInstance from '../utils/axiosInstance';
 
 export interface OffCanvasChat {
   id: string;
@@ -19,6 +20,7 @@ interface OffCanvasChatContextType {
   sendMessageToChat: (chatId: string, message: string) => Promise<void>;
   sendFileToChat: (chatId: string, file: File) => Promise<void>;
   loadMessagesForChat: (chatId: string) => Promise<void>;
+  loadMoreMessagesForChat: (chatId: string, beforeId: number) => Promise<void>;
 }
 
 const OffCanvasChatContext = createContext<OffCanvasChatContextType | undefined>(undefined);
@@ -36,24 +38,14 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
   const { 
     sendTextMessage, 
     sendFileMessage, 
-    messagesByConversationId, // Use this instead of messages
-    setSelectedConversationId,
+    messagesByConversationId, // Only use this for initial sync, not ongoing updates
     onNewMessageReceived, // Add this to listen for new messages
     conversations // Add this to sync online status
   } = useMessages();
 
-  // Sync messages from messagesByConversationId to individual chats (real-time updates)
-  useEffect(() => {
-    setActiveChats(prev => 
-      prev.map(chat => {
-        const conversationMessages = messagesByConversationId[chat.conversation.id] || [];
-        return {
-          ...chat,
-          messages: conversationMessages
-        };
-      })
-    );
-  }, [messagesByConversationId]);
+  // Initial sync of messages from messagesByConversationId (only when chat is first opened)
+  // This ensures we get any messages that were already loaded in the main Chat page
+  // Now handled directly in openChat function
 
   // Sync conversation data (including online status) to individual chats (real-time updates)
   useEffect(() => {
@@ -75,11 +67,102 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
     );
   }, [conversations]);
 
+  // Direct loading function that can be called immediately without dependency issues
+  const loadMessagesForChatDirect = async (chatId: string, userId: number) => {
+    console.log('🔄 Direct loading messages for chat:', chatId, 'userId:', userId);
+
+    try {
+      // Load messages using the correct API endpoint
+      const response = await axiosInstance.get(`/messages/admin/${userId}`);
+      
+      const messages = response.data || [];
+      console.log('✅ Direct loaded', messages.length, 'messages for chat:', chatId);
+      
+      // Update messages for this specific chat only
+      setActiveChats(prev => 
+        prev.map(c => 
+          c.id === chatId 
+            ? { ...c, messages: messages, isLoadingMessages: false }
+            : c
+        )
+      );
+    } catch (error) {
+      console.error('❌ Failed to direct load messages for chat:', chatId, error);
+      setActiveChats(prev => 
+        prev.map(c => 
+          c.id === chatId ? { ...c, isLoadingMessages: false } : c
+        )
+      );
+    }
+  };
+
+  const loadMessagesForChat = useCallback(async (chatId: string) => {
+    const chat = activeChats.find(c => c.id === chatId);
+    if (!chat) {
+      console.log('❌ Chat not found for ID:', chatId);
+      return;
+    }
+    
+    // Check if we're already in a loading process for this specific chat
+    const isCurrentlyLoading = activeChats.some(c => c.id === chatId && c.isLoadingMessages);
+    if (isCurrentlyLoading) {
+      console.log('⏳ Messages are already being loaded for chat:', chatId);
+      // Instead of returning, let's check if we can proceed
+      // Only return if we're in the middle of an API call
+    }
+
+    console.log('🔄 Loading messages for chat:', chatId, 'conversation:', chat.conversation.id, 'userId:', chat.conversation.userId);
+
+    // Set loading state to false first to prevent the auto-loading effect from triggering again
+    setActiveChats(prev => 
+      prev.map(c => 
+        c.id === chatId ? { ...c, isLoadingMessages: false } : c
+      )
+    );
+
+    try {
+      // Load messages using the correct API endpoint (userId, not conversationId)
+      const response = await axiosInstance.get(`/messages/admin/${chat.conversation.userId}`);
+      
+      const messages = response.data || [];
+      console.log('✅ Loaded', messages.length, 'messages for chat:', chatId);
+      
+      // Update messages for this specific chat only
+      setActiveChats(prev => 
+        prev.map(c => 
+          c.id === chatId 
+            ? { ...c, messages: messages, isLoadingMessages: false }
+            : c
+        )
+      );
+    } catch (error) {
+      console.error('❌ Failed to load messages for chat:', chatId, error);
+      setActiveChats(prev => 
+        prev.map(c => 
+          c.id === chatId ? { ...c, isLoadingMessages: false } : c
+        )
+      );
+    }
+  }, [activeChats]);
+
+  // Auto-load messages for chats that are still in loading state (fallback)
+  useEffect(() => {
+    activeChats.forEach(chat => {
+      if (chat.isLoadingMessages && !chat.isCollapsed && chat.messages.length === 0) {
+        console.log('🔄 Fallback auto-loading for chat:', chat.id);
+        loadMessagesForChat(chat.id);
+      }
+    });
+  }, [activeChats, loadMessagesForChat]);
+
   const openChat = useCallback((conversation: ApiConversation) => {
+    console.log('🔵 Opening chat for conversation:', conversation.id, 'userId:', conversation.userId);
+    
     setActiveChats(prev => {
       // Check if chat is already open
       const existingChat = prev.find(chat => chat.conversation.id === conversation.id);
       if (existingChat) {
+        console.log('💡 Chat already exists, expanding:', existingChat.id);
         // If already open, just expand it
         return prev.map(chat => 
           chat.id === existingChat.id 
@@ -88,15 +171,33 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
         );
       }
 
-      // Create new chat window
+      // Create new chat window with initial messages from global context if available
+      const initialMessages = messagesByConversationId[conversation.id] || [];
+      console.log('📝 Initial messages for conversation', conversation.id, ':', initialMessages.length);
+      
       const newChat: OffCanvasChat = {
         id: `chat-${conversation.id}-${Date.now()}`,
         conversation,
         isCollapsed: false,
         position: prev.length, // Position from right
-        messages: messagesByConversationId[conversation.id] || [], // Initialize with existing messages
-        isLoadingMessages: false,
+        messages: initialMessages, // Use initial messages but manage separately
+        isLoadingMessages: false, // Set to false initially
       };
+
+      console.log('✨ Created new chat:', {
+        id: newChat.id,
+        conversationId: conversation.id,
+        messagesLength: initialMessages.length,
+        isLoadingMessages: newChat.isLoadingMessages
+      });
+
+      // If no initial messages, load them immediately using setTimeout to avoid state update conflicts
+      if (initialMessages.length === 0) {
+        console.log('🚀 Triggering immediate message load for:', newChat.id);
+        setTimeout(() => {
+          loadMessagesForChatDirect(newChat.id, conversation.userId);
+        }, 0);
+      }
 
       // Add new chat and reorder positions
       const newChats = [...prev, newChat];
@@ -105,12 +206,7 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
         position: index,
       }));
     });
-
-    // Load messages for this conversation if not already loaded
-    if (!messagesByConversationId[conversation.id]) {
-      setSelectedConversationId(conversation.id);
-    }
-  }, [messagesByConversationId, setSelectedConversationId]);
+  }, [messagesByConversationId]);
 
   const closeChat = useCallback((chatId: string) => {
     setActiveChats(prev => {
@@ -141,8 +237,7 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
 
     try {
       await sendTextMessage(chat.conversation.id, message);
-      // The message will be updated through the main context, 
-      // but we could also add it locally for immediate feedback
+      // The message will be updated through the socket listener in real-time
     } catch (error) {
       console.error('Failed to send message:', error);
     }
@@ -154,41 +249,66 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
 
     try {
       await sendFileMessage(chat.conversation.id, file);
+      // The message will be updated through the socket listener in real-time
     } catch (error) {
       console.error('Failed to send file:', error);
     }
   }, [activeChats, sendFileMessage]);
 
-  const loadMessagesForChat = useCallback(async (chatId: string) => {
+  const loadMoreMessagesForChat = useCallback(async (chatId: string, beforeId: number) => {
     const chat = activeChats.find(c => c.id === chatId);
     if (!chat || chat.isLoadingMessages) return;
 
-    // Set loading state
-    setActiveChats(prev => 
-      prev.map(c => 
-        c.id === chatId ? { ...c, isLoadingMessages: true } : c
-      )
-    );
+    console.log('🔄 Loading more messages for chat:', chatId, 'before message ID:', beforeId);
 
     try {
-      // Set this conversation as selected to load its messages
-      setSelectedConversationId(chat.conversation.id);
+      // Load more messages using the correct API endpoint and parameters
+      const response = await axiosInstance.get(`/messages/admin/${chat.conversation.userId}`, {
+        params: { 
+          lastMessageId: beforeId,
+          perPage: 100 // Load 100 more messages
+        }
+      });
+      
+      const newMessages = response.data || [];
+      console.log('✅ Loaded', newMessages.length, 'more messages for chat:', chatId);
+      
+      if (newMessages.length > 0) {
+        // Prepend new messages to existing ones
+        setActiveChats(prev => 
+          prev.map(c => 
+            c.id === chatId 
+              ? { ...c, messages: [...newMessages, ...c.messages] }
+              : c
+          )
+        );
+      }
     } catch (error) {
-      console.error('Failed to load messages:', error);
-    } finally {
-      // Clear loading state
-      setActiveChats(prev => 
-        prev.map(c => 
-          c.id === chatId ? { ...c, isLoadingMessages: false } : c
-        )
-      );
+      console.error('❌ Failed to load more messages for chat:', chatId, error);
     }
-  }, [activeChats, setSelectedConversationId]);
+  }, [activeChats]);
 
   // Auto-open chats when new messages are received (only when NOT on chat page)
   useEffect(() => {
-    const cleanup = onNewMessageReceived((_message, conversation) => {
+    const cleanup = onNewMessageReceived((message, conversation) => {
       if (!conversation) return;
+      
+      // Update existing chats with new messages
+      setActiveChats(prev => 
+        prev.map(chat => {
+          if (chat.conversation.id === conversation.id) {
+            // Add new message to this chat's messages
+            const messageExists = chat.messages.some(m => m.id === message.id);
+            if (!messageExists) {
+              return {
+                ...chat,
+                messages: [...chat.messages, message]
+              };
+            }
+          }
+          return chat;
+        })
+      );
       
       // Don't auto-open if user is currently on the chat page
       const isOnChatPage = window.location.pathname === '/chat';
@@ -227,6 +347,7 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
       sendMessageToChat,
       sendFileToChat,
       loadMessagesForChat,
+      loadMoreMessagesForChat,
     }}>
       {children}
     </OffCanvasChatContext.Provider>
