@@ -98,6 +98,15 @@ export type SystemNotificationFilters = {
   endDate?: string;
 };
 
+// Type for filter state
+export type SystemNotificationFilterState = {
+  filterType: string;
+  filterStatus: string;
+  filterUserId: number | null;
+  dateRange: { startDate: Date | null; endDate: Date | null };
+  showFilters: boolean;
+};
+
 export type SystemNotificationsContextType = {
   notifications: SystemNotification[];
   unreadCount: number;
@@ -108,11 +117,14 @@ export type SystemNotificationsContextType = {
   loading: boolean;
   loadingUnreadCount: boolean;
   loadingStatusUpdate: boolean;
+  filterState: SystemNotificationFilterState;
   fetchSystemNotifications: (filters?: SystemNotificationFilters, append?: boolean) => Promise<void>;
   fetchUnreadCount: () => Promise<void>;
   updateNotificationStatus: (notificationId: number, seen: boolean) => Promise<void>;
   setPage: (page: number) => void;
   clearNotifications: () => void;
+  updateFilterState: (newState: Partial<SystemNotificationFilterState>) => void;
+  resetFilters: () => void;
 };
 
 const SystemNotificationsContext = createContext<SystemNotificationsContextType | undefined>(undefined);
@@ -127,6 +139,15 @@ export const SystemNotificationsProvider: React.FC<{ children: React.ReactNode }
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingUnreadCount, setLoadingUnreadCount] = useState<boolean>(false);
   const [loadingStatusUpdate, setLoadingStatusUpdate] = useState<boolean>(false);
+  
+  // Filter state
+  const [filterState, setFilterState] = useState<SystemNotificationFilterState>({
+    filterType: 'all',
+    filterStatus: 'all',
+    filterUserId: null,
+    dateRange: { startDate: null, endDate: null },
+    showFilters: false,
+  });
   
   const { socketInstance, isAuth } = useAuth();
 
@@ -260,7 +281,24 @@ export const SystemNotificationsProvider: React.FC<{ children: React.ReactNode }
     } finally {
       setLoadingStatusUpdate(false);
     }
-  }, [notifications]);
+  }, []);
+
+  // Update filter state
+  const updateFilterState = useCallback((newState: Partial<SystemNotificationFilterState>) => {
+    setFilterState(prev => ({ ...prev, ...newState }));
+  }, []);
+
+  // Reset filters to default values
+  const resetFilters = useCallback(() => {
+    setFilterState({
+      filterType: 'all',
+      filterStatus: 'all',
+      filterUserId: null,
+      dateRange: { startDate: null, endDate: null },
+      showFilters: false,
+    });
+    setPage(1);
+  }, []);
 
   // Clear all notifications (useful for logout or reset)
   const clearNotifications = useCallback(() => {
@@ -288,11 +326,14 @@ export const SystemNotificationsProvider: React.FC<{ children: React.ReactNode }
         loading,
         loadingUnreadCount,
         loadingStatusUpdate,
+        filterState,
         fetchSystemNotifications,
         fetchUnreadCount,
         updateNotificationStatus,
         setPage,
         clearNotifications,
+        updateFilterState,
+        resetFilters,
       }}
     >
       {children}

@@ -277,6 +277,9 @@ const SystemNotificationsPage: React.FC = () => {
     totalPages,
     totalCount,
     clearNotifications,
+    filterState,
+    updateFilterState,
+    resetFilters,
   } = useSystemNotificationsContext();
 
   const { 
@@ -285,14 +288,8 @@ const SystemNotificationsPage: React.FC = () => {
     fetchAllUsers,
   } = useTraining();
 
-  const [filterType, setFilterType] = useState<string>('all');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [filterUserId, setFilterUserId] = useState<number | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
-  const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({ 
-    startDate: null, 
-    endDate: null 
-  });
+  // Extract filter state for easier access
+  const { filterType, filterStatus, filterUserId, dateRange, showFilters } = filterState;
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     notificationId: number | null;
@@ -358,7 +355,7 @@ const SystemNotificationsPage: React.FC = () => {
     }
     
     return filters;
-  }, [filterType, filterStatus, filterUserId, dateRange]);
+  }, [filterType, filterStatus, filterUserId, dateRange.startDate, dateRange.endDate]);
 
   // Load notifications when filters change (reset to page 1)
   useEffect(() => {
@@ -552,16 +549,16 @@ const SystemNotificationsPage: React.FC = () => {
 
   // Handle filter changes
   const handleTypeFilterChange = (event: SelectChangeEvent<string>) => {
-    setFilterType(event.target.value);
+    updateFilterState({ filterType: event.target.value });
   };
 
   const handleStatusFilterChange = (event: SelectChangeEvent<string>) => {
-    setFilterStatus(event.target.value);
+    updateFilterState({ filterStatus: event.target.value });
   };
 
   // Handler for date range changes
   const handleDateRangeChange = (newDateRange: { startDate: Date | null; endDate: Date | null }) => {
-    setDateRange(newDateRange);
+    updateFilterState({ dateRange: newDateRange });
   };
 
   // Get users formatted for autocomplete - memoized to prevent unnecessary recalculations
@@ -576,7 +573,7 @@ const SystemNotificationsPage: React.FC = () => {
 
   // Handler for client selection change
   const handleClientChange = (_: React.SyntheticEvent, newValue: { id: number; name: string } | null) => {
-    setFilterUserId(newValue ? newValue.id : null);
+    updateFilterState({ filterUserId: newValue ? newValue.id : null });
   };
 
   // Check if any filters are applied (not in default state)
@@ -592,12 +589,7 @@ const SystemNotificationsPage: React.FC = () => {
 
   // Clear all filters
   const handleClearFilters = () => {
-    setFilterType('all');
-    setFilterStatus('all');
-    setFilterUserId(null);
-    setDateRange({ startDate: null, endDate: null });
-    setPage(1); // Reset to first page when clearing filters
-    
+    resetFilters();
     // Clear the notifications list to prevent appending old data
     clearNotifications();
   };
@@ -745,7 +737,7 @@ const SystemNotificationsPage: React.FC = () => {
           </Box>
           <IconButton 
             sx={styles.filterButton}
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => updateFilterState({ showFilters: !showFilters })}
           >
             <FilterIcon style={{ color: '#bdbdbd', fontSize: 28 }} />
           </IconButton>
