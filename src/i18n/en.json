@@ -196,6 +196,8 @@
       "all": "All",
       "unread": "Unread",
       "read": "Read",
+      "user": "User",
+      "searchUsers": "Search users...",
       "dateRange": "Date Range",
       "selectDateRange": "Select date range",
       "clearAll": "Clear All Filters"
@@ -244,6 +246,12 @@
     "emptyState": {
       "title": "No notifications found",
       "description": "All caught up! No system notifications match your current filters."
+    },
+    "autocomplete": {
+      "noUsersFound": "No users found",
+      "clear": "Clear",
+      "open": "Open",
+      "close": "Close"
     },
     "loading": "Loading notifications...",
     "loadMore": "Load More",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -16,6 +16,8 @@ import {
   Fade,
   Collapse,
   CircularProgress,
+  Autocomplete,
+  TextField,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +34,7 @@ import DeleteConfirmationDialog from './Subscription/DeleteConfirmationDialog';
 import CheckDetailsDialog from '../components/CheckDetailsDialog';
 import ExerciseDetailModal from './training/ExerciseDetailModal';
 import { useSystemNotificationsContext, SystemNotification as SystemNotificationType, SystemNotificationFilters } from '../Context/SystemNotificationsContext';
+import { useTraining } from '../Context/TrainingContext';
 
 const styles = {
   container: {
@@ -87,6 +90,23 @@ const styles = {
   filterControl: {
     minWidth: 200,
     flex: 1,
+    '@media (min-width: 1200px)': {
+      flex: '1 1 calc(33.333% - 16px)', // Three columns on large screens
+    },
+    '@media (min-width: 900px) and (max-width: 1199px)': {
+      flex: '1 1 calc(50% - 8px)', // Two columns on medium screens
+    },
+    '@media (max-width: 899px)': {
+      flex: '1 1 100%', // Single column on small screens
+    },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      background: '#fff',
+    },
+    '& .MuiAutocomplete-root .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      background: '#fff',
+    },
   },
   dateRangeContainer: {
     flex: 1,
@@ -259,8 +279,15 @@ const SystemNotificationsPage: React.FC = () => {
     clearNotifications,
   } = useSystemNotificationsContext();
 
+  const { 
+    availableUsers, 
+    loadingAvailableUsers, 
+    fetchAllUsers,
+  } = useTraining();
+
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterUserId, setFilterUserId] = useState<number | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({ 
     startDate: null, 
@@ -283,6 +310,29 @@ const SystemNotificationsPage: React.FC = () => {
   const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
 
+  // Refs to track debounce timeouts
+  const fetchUnreadCountTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const fetchAllUsersTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Debounced fetch functions
+  const debouncedFetchUnreadCount = useCallback(() => {
+    if (fetchUnreadCountTimeoutRef.current) {
+      clearTimeout(fetchUnreadCountTimeoutRef.current);
+    }
+    fetchUnreadCountTimeoutRef.current = setTimeout(() => {
+      fetchUnreadCount();
+    }, 500);
+  }, [fetchUnreadCount]);
+
+  const debouncedFetchAllUsers = useCallback(() => {
+    if (fetchAllUsersTimeoutRef.current) {
+      clearTimeout(fetchAllUsersTimeoutRef.current);
+    }
+    fetchAllUsersTimeoutRef.current = setTimeout(() => {
+      fetchAllUsers();
+    }, 500);
+  }, [fetchAllUsers]);
+
   // Create filters object based on current state
   const buildFilters = useCallback((): SystemNotificationFilters => {
     const filters: SystemNotificationFilters = {};
@@ -294,6 +344,10 @@ const SystemNotificationsPage: React.FC = () => {
     if (filterStatus !== 'all') {
       filters.seen = filterStatus === 'read';
     }
+
+    if (filterUserId) {
+      filters.userId = filterUserId;
+    }
     
     if (dateRange.startDate) {
       filters.startDate = dateRange.startDate.toISOString().split('T')[0];
@@ -304,7 +358,7 @@ const SystemNotificationsPage: React.FC = () => {
     }
     
     return filters;
-  }, [filterType, filterStatus, dateRange]);
+  }, [filterType, filterStatus, filterUserId, dateRange]);
 
   // Load notifications when filters change (reset to page 1)
   useEffect(() => {
@@ -315,7 +369,7 @@ const SystemNotificationsPage: React.FC = () => {
       fetchSystemNotifications(filters, false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterType, filterStatus, dateRange.startDate, dateRange.endDate]); // Don't include page/isPageChange to avoid loops
+  }, [filterType, filterStatus, filterUserId, dateRange.startDate, dateRange.endDate]); // Don't include page/isPageChange to avoid loops
 
   // Load more notifications when page changes (and it's a page change, not filter change)
   useEffect(() => {
@@ -329,8 +383,25 @@ const SystemNotificationsPage: React.FC = () => {
 
   // Fetch unread count when component mounts
   useEffect(() => {
-    fetchUnreadCount();
-  }, [fetchUnreadCount]);
+    debouncedFetchUnreadCount();
+    
+    return () => {
+      if (fetchUnreadCountTimeoutRef.current) {
+        clearTimeout(fetchUnreadCountTimeoutRef.current);
+      }
+    };
+  }, [debouncedFetchUnreadCount]); // Empty dependency array to run only once on mount
+
+  // Fetch users for the filter dropdown
+  useEffect(() => {
+    debouncedFetchAllUsers();
+    
+    return () => {
+      if (fetchAllUsersTimeoutRef.current) {
+        clearTimeout(fetchAllUsersTimeoutRef.current);
+      }
+    };
+  }, [debouncedFetchAllUsers]); // Empty dependency array to run only once on mount
 
   // Load more function
   const handleLoadMore = () => {
@@ -493,20 +564,37 @@ const SystemNotificationsPage: React.FC = () => {
     setDateRange(newDateRange);
   };
 
+  // Get users formatted for autocomplete - memoized to prevent unnecessary recalculations
+  const clientOptions = useMemo(() => {
+    return availableUsers.map(user => ({
+      id: user.id,
+      name: user.firstName && user.lastName 
+        ? `${user.firstName} ${user.lastName}` 
+        : user.username
+    }));
+  }, [availableUsers]);
+
+  // Handler for client selection change
+  const handleClientChange = (_: React.SyntheticEvent, newValue: { id: number; name: string } | null) => {
+    setFilterUserId(newValue ? newValue.id : null);
+  };
+
   // Check if any filters are applied (not in default state)
   const hasActiveFilters = useCallback(() => {
     return (
       filterType !== 'all' ||
       filterStatus !== 'all' ||
+      filterUserId !== null ||
       dateRange.startDate !== null ||
       dateRange.endDate !== null
     );
-  }, [filterType, filterStatus, dateRange.startDate, dateRange.endDate]);
+  }, [filterType, filterStatus, filterUserId, dateRange.startDate, dateRange.endDate]);
 
   // Clear all filters
   const handleClearFilters = () => {
     setFilterType('all');
     setFilterStatus('all');
+    setFilterUserId(null);
     setDateRange({ startDate: null, endDate: null });
     setPage(1); // Reset to first page when clearing filters
     
@@ -666,7 +754,7 @@ const SystemNotificationsPage: React.FC = () => {
         {/* Collapsible Filter Section */}
         <Collapse in={showFilters}>
           <Paper sx={styles.filterContainer} elevation={0}>
-            {/* First Row - Type and Status Filters */}
+            {/* First Row - Type, Status, and User Filters */}
             <Box sx={styles.filterRow}>
               <FormControl sx={styles.filterControl} size="small">
                 <InputLabel>{t('systemNotifications.filterType')}</InputLabel>
@@ -689,6 +777,27 @@ const SystemNotificationsPage: React.FC = () => {
                   <MenuItem value="read">{t('systemNotifications.filters.read')}</MenuItem>
                 </Select>
               </FormControl>
+
+              <Autocomplete
+                size="small"
+                sx={styles.filterControl}
+                options={clientOptions}
+                getOptionLabel={(option) => option.name}
+                value={clientOptions.find(client => client.id === filterUserId) || null}
+                onChange={handleClientChange}
+                loading={loadingAvailableUsers}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t('systemNotifications.filters.user')}
+                    placeholder={t('systemNotifications.filters.searchUsers')}
+                  />
+                )}
+                noOptionsText={t('systemNotifications.autocomplete.noUsersFound')}
+                clearText={t('systemNotifications.autocomplete.clear')}
+                openText={t('systemNotifications.autocomplete.open')}
+                closeText={t('systemNotifications.autocomplete.close')}
+              />
             </Box>
 
             {/* Second Row - Date Range */}

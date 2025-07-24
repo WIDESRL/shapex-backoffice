@@ -180,6 +180,8 @@
       "all": "Tutti",
       "unread": "Non Letti",
       "read": "Letti",
+      "user": "Utente",
+      "searchUsers": "Cerca utenti...",
       "dateRange": "Intervallo Date",
       "selectDateRange": "Seleziona intervallo date",
       "clearAll": "Cancella Tutti i Filtri"
@@ -228,6 +230,12 @@
     "emptyState": {
       "title": "Nessuna notifica trovata",
       "description": "Tutto fatto! Nessuna notifica di sistema corrisponde ai filtri correnti."
+    },
+    "autocomplete": {
+      "noUsersFound": "Nessun utente trovato",
+      "clear": "Cancella",
+      "open": "Apri",
+      "close": "Chiudi"
     },
     "loading": "Caricamento notifiche...",
     "loadMore": "Carica Altro",

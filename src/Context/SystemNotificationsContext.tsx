@@ -91,6 +91,7 @@ export type UnreadCountResponse = {
 export type SystemNotificationFilters = {
   seen?: boolean;
   type?: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription';
+  userId?: number;
   page?: number;
   limit?: number;
   startDate?: string;
@@ -183,6 +184,7 @@ export const SystemNotificationsProvider: React.FC<{ children: React.ReactNode }
         const params = new URLSearchParams();
         if (filters?.seen !== undefined) params.append('seen', filters.seen.toString());
         if (filters?.type) params.append('type', filters.type);
+        if (filters?.userId) params.append('userId', filters.userId.toString());
         params.append('page', (filters?.page ?? page).toString());
         params.append('limit', (filters?.limit ?? limit).toString());
         if (filters?.startDate) params.append('startDate', filters.startDate);
