@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, List, ListItem, ListItemAvatar, ListItemText, IconButton, InputBase, Paper, CircularProgress, Button } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemAvatar, ListItemText, IconButton, InputBase, Paper, CircularProgress, Button, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import FullscreenImageDialog from '../components/FullscreenImageDialog';
 import { useTranslation } from 'react-i18next';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import SendIcon from '@mui/icons-material/Send';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { format, parseISO } from 'date-fns';
 import { ApiConversation, Message, useMessages } from '../Context/MessagesContext';
+import { useOffCanvasChat } from '../Context/OffCanvasChatContext';
 import ImagePreviewIcon from '../icons/ImagePreviewIcon';
 import StartConversationDialog from '../components/StartConversationDialog';
 import AddIcon from '@mui/icons-material/Add';
@@ -464,6 +466,8 @@ const ChatPageContent: React.FC = () => {
         // resetConversationSearch,
 		loadMoreMessages,
 	} = useMessages();
+
+	const { openChat } = useOffCanvasChat();
 	const [message, setMessage] = useState('');
 	const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 	const [searchInput, setSearchInput] = useState(conversationSearch);
@@ -735,6 +739,24 @@ const ChatPageContent: React.FC = () => {
 										}
 										sx={styles.listItemText}
 									/>
+									<Tooltip title={t('chat.openOffCanvas', 'Open in floating window')}>
+										<IconButton
+											onClick={(e) => {
+												e.stopPropagation();
+												openChat(conv);
+											}}
+											size="small"
+											sx={{
+												marginLeft: 1,
+												color: 'primary.main',
+												'&:hover': {
+													backgroundColor: 'rgba(25, 118, 210, 0.04)'
+												}
+											}}
+										>
+											<OpenInNewIcon fontSize="small" />
+										</IconButton>
+									</Tooltip>
 								</ConversationItem>
 							))}
 						</ConversationList>

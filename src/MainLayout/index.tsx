@@ -4,8 +4,8 @@ import { Box, CssBaseline, useMediaQuery } from '@mui/material';
 import { useAuth } from '../Context/AuthContext';
 import AppRoutes from '../Routes';
 import { useTheme } from '@mui/material/styles';
-import SideDrawer
- from './SideDrawer';
+import SideDrawer from './SideDrawer';
+import OffCanvasChatContainer from '../components/OffCanvasChatContainer';
 const drawerWidth = 240;
 const miniDrawerWidth = 65;
 
@@ -63,6 +63,9 @@ const MainLayout: React.FC = () => {
       >
         <AppRoutes />
       </Box>
+      
+      {/* Off-canvas chat windows */}
+      <OffCanvasChatContainer />
     </Box>
   );
 };

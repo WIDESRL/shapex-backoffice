@@ -6,6 +6,7 @@ import { AuthProvider } from './Context/AuthContext';
 import { SubscriptionsProvider } from './Context/SubscriptionsContext';
 import { BannersProvider } from './Context/BannersContext';
 import { MessagesProvider } from './Context/MessagesContext';
+import { OffCanvasChatProvider } from './Context/OffCanvasChatContext';
 import { TrainingProvider } from './Context/TrainingContext';
 import { GlobalConfigProvider } from './Context/GlobalConfigContext';
 import { PushNotificationProvider } from './Context/PushNotificationContext';
@@ -39,15 +40,17 @@ const renderApp = () => {
                 <SubscriptionsProvider>
                 <BannersProvider>
                   <MessagesProvider>
-                    <TrainingProvider>
-                      <StatsProvider>
-                        <ClientProvider>
-                          <SystemNotificationsProvider>
-                            <App />
-                          </SystemNotificationsProvider>
-                        </ClientProvider>
-                      </StatsProvider>
-                    </TrainingProvider>
+                    <OffCanvasChatProvider>
+                      <TrainingProvider>
+                        <StatsProvider>
+                          <ClientProvider>
+                            <SystemNotificationsProvider>
+                              <App />
+                            </SystemNotificationsProvider>
+                          </ClientProvider>
+                        </StatsProvider>
+                      </TrainingProvider>
+                    </OffCanvasChatProvider>
                   </MessagesProvider>
                 </BannersProvider>
               </SubscriptionsProvider>
