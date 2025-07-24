@@ -44,6 +44,10 @@ export type NotificationRelatedData = {
   check?: {
     id: number;
   };
+  subscription: {
+    id: number;
+    title: string;
+  }
 };
 
 // Type for notification metadata
@@ -53,13 +57,14 @@ export type NotificationMetadata = {
   exerciseId?: number;
   workoutExerciseId?: number;
   checkId?: number;
+  subscriptionId?: number;
 };
 
 // Type for system notification
 export type SystemNotification = {
   id: number;
   userId: number;
-  type: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned';
+  type: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription';
   seen: boolean;
   metadata: NotificationMetadata;
   createdAt: string;
@@ -85,7 +90,7 @@ export type UnreadCountResponse = {
 // Type for filters
 export type SystemNotificationFilters = {
   seen?: boolean;
-  type?: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned';
+  type?: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription';
   page?: number;
   limit?: number;
   startDate?: string;
@@ -246,18 +251,7 @@ export const SystemNotificationsProvider: React.FC<{ children: React.ReactNode }
             : notification
         )
       );
-
-      // Update unread count locally
-      const notification = notifications.find(n => n.id === notificationId);
-      if (notification) {
-        if (notification.seen && !seen) {
-          // Was seen, now unseen - increment unread count
-          setUnreadCount(prev => prev + 1);
-        } else if (!notification.seen && seen) {
-          // Was unseen, now seen - decrement unread count
-          setUnreadCount(prev => Math.max(0, prev - 1));
-        }
-      }
+      
     } catch (error) {
       console.error('Error updating notification status:', error);
       throw error;

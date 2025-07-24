@@ -191,6 +191,8 @@
       "checkUpdated": "Check Updated",
       "exerciseCompleted": "Exercise Completed",
       "programAssigned": "Program Assigned",
+      "userCompletedProfile": "User Complete Profile",
+      "userPurchasedSubscription": "User Purchased Subscription",
       "all": "All",
       "unread": "Unread",
       "read": "Read",
@@ -203,7 +205,9 @@
       "checkCreated": "New Check Created",
       "checkUpdated": "Check Updated",
       "exerciseCompleted": "Exercise Completed",
-      "programAssigned": "New Program Assignment"
+      "programAssigned": "New Program Assignment",
+      "userCompletedProfile": "User Complete Profile",
+      "userPurchasedSubscription": "User Purchased Subscription"
     },
     "descriptions": {
       "trainingCompletedWithTitle": "Completed \"{{title}}\" training program",
@@ -214,6 +218,9 @@
       "exerciseCompletedGeneric": "Completed exercise",
       "programAssignedWithTitle": "Assigned \"{{title}}\" program",
       "programAssignedGeneric": "Assigned training program",
+      "userCompletedProfile": "User has completed their profile information",
+      "userPurchasedSubscriptionWithTitle": "User has purchased subscription: \"{{title}}\"",
+      "userPurchasedSubscriptionGeneric": "User has purchased a subscription",
       "systemNotificationGeneric": "System notification"
     },
     "timeLabels": {
@@ -990,10 +997,50 @@
     "saveChanges": "Save Changes",
     "changePassword": "Change Password",
     "uploadProfilePicture": "Click to upload profile picture",
+    "profilePictureTooltip": "This image will be displayed as your admin avatar in the chat section of the app",
     "languageRegion": "Language & Region",
     "language": "Language",
     "languageChangeEffect": "Changes will take effect immediately",
     "globalConfigurations": "Global Configurations",
+    "pushNotifications": {
+      "title": "Push Notification Settings",
+      "infoAlert": {
+        "title": "Push Notification Configuration",
+        "description": "These settings control when you receive push notifications on your device. Changes are applied immediately."
+      },
+      "description": {
+        "paragraph1": "Push notifications help you stay informed about important activities in your app without constantly checking the dashboard. You'll receive real-time alerts for the events you choose below.",
+        "paragraph2": "Configure which user actions should trigger push notifications to your device. You can enable or disable each notification type based on your preferences and workflow needs."
+      },
+      "userMessages": {
+        "title": "User Messages",
+        "description": "Receive notifications when users send you messages in the chat"
+      },
+      "userCompletedCheck": {
+        "title": "User Completed Check",
+        "description": "Get notified when users complete their scheduled body measurements and progress checks"
+      },
+      "userUpdatedCheck": {
+        "title": "User Updated Check",
+        "description": "Receive alerts when users modify or update their existing check data"
+      },
+      "userCompletedExercise": {
+        "title": "User Completed Exercise",
+        "description": "Get notified when users finish individual exercises during their workouts"
+      },
+      "userCompletedTrainingProgram": {
+        "title": "User Completed Training Program",
+        "description": "Receive notifications when users complete entire training programs or workout sessions"
+      },
+      "userCompletedProfile": {
+        "title": "New User Completed Profile",
+        "description": "Get notified when new users finish setting up their complete profile information"
+      },
+      "userPurchasedSubscription": {
+        "title": "User Purchased Subscription",
+        "description": "Receive alerts when users purchase or renew their subscription plans"
+      }
+    },
     "globalConfig": {
       "title": "Global Configurations",
       "description": "Manage global application settings",

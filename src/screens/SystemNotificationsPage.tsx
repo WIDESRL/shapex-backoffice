@@ -25,6 +25,8 @@ import FitnessIcon from '@mui/icons-material/FitnessCenter';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PersonIcon from '@mui/icons-material/Person';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DateRangePicker from '../components/DateRangePicker';
 import DeleteConfirmationDialog from './Subscription/DeleteConfirmationDialog';
 import CheckDetailsDialog from '../components/CheckDetailsDialog';
@@ -286,7 +288,7 @@ const SystemNotificationsPage: React.FC = () => {
     const filters: SystemNotificationFilters = {};
     
     if (filterType !== 'all') {
-      filters.type = filterType as 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned';
+      filters.type = filterType as 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription';
     }
     
     if (filterStatus !== 'all') {
@@ -351,6 +353,10 @@ const SystemNotificationsPage: React.FC = () => {
         return t('systemNotifications.types.exerciseCompleted');
       case 'program_assigned':
         return t('systemNotifications.types.programAssigned');
+      case 'user_completed_profile':
+        return t('systemNotifications.types.userCompletedProfile');
+      case 'user_purchased_subscription':
+        return t('systemNotifications.types.userPurchasedSubscription');
       default:
         return 'System Notification';
     }
@@ -375,6 +381,12 @@ const SystemNotificationsPage: React.FC = () => {
         return notification.relatedData.trainingProgram?.title 
           ? t('systemNotifications.descriptions.programAssignedWithTitle', { title: notification.relatedData.trainingProgram.title })
           : t('systemNotifications.descriptions.programAssignedGeneric');
+      case 'user_completed_profile':
+        return t('systemNotifications.descriptions.userCompletedProfile');
+      case 'user_purchased_subscription':
+        return notification.relatedData.subscription?.title 
+          ? t('systemNotifications.descriptions.userPurchasedSubscriptionWithTitle', { title: notification.relatedData.subscription.title })
+          : t('systemNotifications.descriptions.userPurchasedSubscriptionGeneric');
       default:
         return t('systemNotifications.descriptions.systemNotificationGeneric');
     }
@@ -388,6 +400,10 @@ const SystemNotificationsPage: React.FC = () => {
       notification.type === 'training_completed'
     ) || (
       notification.type === 'exercise_completed'
+    ) || (
+      notification.type === 'user_completed_profile'
+    ) || (
+      notification.type === 'user_purchased_subscription'
     );
   };
 
@@ -433,6 +449,10 @@ const SystemNotificationsPage: React.FC = () => {
         return <FitnessIcon sx={styles.typeIcon} />;
       case 'program_assigned':
         return <AssignmentIcon sx={styles.typeIcon} />;
+      case 'user_completed_profile':
+        return <PersonIcon sx={styles.typeIcon} />;
+      case 'user_purchased_subscription':
+        return <ShoppingCartIcon sx={styles.typeIcon} />;
       default:
         return <InfoIcon style={styles.typeIcon} />;
     }
@@ -559,6 +579,14 @@ const SystemNotificationsPage: React.FC = () => {
         }
         break;
       }
+      case 'user_completed_profile': {
+        navigate(`/clients/${notification.user.id}/diario/anamnesi`);
+        break;
+      }
+      case 'user_purchased_subscription': {
+        navigate(`/clients/${notification.user.id}/altro`);
+        break;
+      }
       default:
         // Do nothing for other types
         break;
@@ -648,6 +676,8 @@ const SystemNotificationsPage: React.FC = () => {
                   <MenuItem value="check_created">{t('systemNotifications.filters.checkCreated')}</MenuItem>
                   <MenuItem value="check_updated">{t('systemNotifications.filters.checkUpdated')}</MenuItem>
                   <MenuItem value="exercise_completed">{t('systemNotifications.filters.exerciseCompleted')}</MenuItem>
+                  <MenuItem value="user_completed_profile">{t('systemNotifications.filters.userCompletedProfile')}</MenuItem>
+                  <MenuItem value="user_purchased_subscription">{t('systemNotifications.filters.userPurchasedSubscription')}</MenuItem>
                 </Select>
               </FormControl>
               

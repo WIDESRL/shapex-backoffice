@@ -8,6 +8,7 @@ import { BannersProvider } from './Context/BannersContext';
 import { MessagesProvider } from './Context/MessagesContext';
 import { TrainingProvider } from './Context/TrainingContext';
 import { GlobalConfigProvider } from './Context/GlobalConfigContext';
+import { PushNotificationProvider } from './Context/PushNotificationContext';
 import './i18n/i18n';
 import { requestNotificationPermission, listenForMessages } from './notifications';
 import './splash.css';
@@ -34,7 +35,8 @@ const renderApp = () => {
         <AuthProvider>
           <SnackbarProvider>
             <GlobalConfigProvider>
-              <SubscriptionsProvider>
+              <PushNotificationProvider>
+                <SubscriptionsProvider>
                 <BannersProvider>
                   <MessagesProvider>
                     <TrainingProvider>
@@ -49,6 +51,7 @@ const renderApp = () => {
                   </MessagesProvider>
                 </BannersProvider>
               </SubscriptionsProvider>
+              </PushNotificationProvider>
             </GlobalConfigProvider>
           </SnackbarProvider>
         </AuthProvider>

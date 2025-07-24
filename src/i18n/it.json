@@ -175,6 +175,8 @@
       "checkUpdated": "Check Aggiornato",
       "exerciseCompleted": "Esercizio Completato",
       "programAssigned": "Programma Assegnato",
+      "userCompletedProfile": "Utente Ha Completato Profilo",
+      "userPurchasedSubscription": "Utente Ha Acquistato Abbonamento",
       "all": "Tutti",
       "unread": "Non Letti",
       "read": "Letti",
@@ -187,7 +189,9 @@
       "checkCreated": "Nuovo Check Creato",
       "checkUpdated": "Check Aggiornato",
       "exerciseCompleted": "Esercizio Completato",
-      "programAssigned": "Nuovo Programma Assegnato"
+      "programAssigned": "Nuovo Programma Assegnato",
+      "userCompletedProfile": "Utente Ha Completato Profilo",
+      "userPurchasedSubscription": "Utente Ha Acquistato Abbonamento"
     },
     "descriptions": {
       "trainingCompletedWithTitle": "Completato il programma di allenamento \"{{title}}\"",
@@ -198,6 +202,9 @@
       "exerciseCompletedGeneric": "Completato esercizio",
       "programAssignedWithTitle": "Assegnato il programma \"{{title}}\"",
       "programAssignedGeneric": "Assegnato programma di allenamento",
+      "userCompletedProfile": "L'utente ha completato le informazioni del profilo",
+      "userPurchasedSubscriptionWithTitle": "L'utente ha acquistato l'abbonamento: \"{{title}}\"",
+      "userPurchasedSubscriptionGeneric": "L'utente ha acquistato un abbonamento",
       "systemNotificationGeneric": "Notifica di sistema"
     },
     "timeLabels": {
@@ -975,10 +982,50 @@
     "saveChanges": "Salva Modifiche",
     "changePassword": "Cambia Password",
     "uploadProfilePicture": "Clicca per caricare foto profilo",
+    "profilePictureTooltip": "Questa immagine sarà visualizzata come il tuo avatar admin nella sezione chat dell'app",
     "languageRegion": "Lingua e Regione",
     "language": "Lingua",
     "languageChangeEffect": "Le modifiche avranno effetto immediatamente",
     "globalConfigurations": "Configurazioni Globali",
+    "pushNotifications": {
+      "title": "Impostazioni Notifiche Push",
+      "infoAlert": {
+        "title": "Configurazione Notifiche Push",
+        "description": "Queste impostazioni controllano quando ricevi notifiche push sul tuo dispositivo. Le modifiche vengono applicate immediatamente."
+      },
+      "description": {
+        "paragraph1": "Le notifiche push ti aiutano a rimanere informato sulle attività importanti nella tua app senza dover controllare costantemente la dashboard. Riceverai avvisi in tempo reale per gli eventi che scegli di seguito.",
+        "paragraph2": "Configura quali azioni degli utenti dovrebbero attivare notifiche push sul tuo dispositivo. Puoi abilitare o disabilitare ogni tipo di notifica in base alle tue preferenze e alle esigenze del tuo flusso di lavoro."
+      },
+      "userMessages": {
+        "title": "Messaggi Utente",
+        "description": "Ricevi notifiche quando gli utenti ti inviano messaggi nella chat"
+      },
+      "userCompletedCheck": {
+        "title": "Controllo Completato dall'Utente",
+        "description": "Ricevi notifiche quando gli utenti completano le loro misurazioni corporee programmate e i controlli dei progressi"
+      },
+      "userUpdatedCheck": {
+        "title": "Controllo Aggiornato dall'Utente",
+        "description": "Ricevi avvisi quando gli utenti modificano o aggiornano i loro dati di controllo esistenti"
+      },
+      "userCompletedExercise": {
+        "title": "Esercizio Completato dall'Utente",
+        "description": "Ricevi notifiche quando gli utenti terminano singoli esercizi durante i loro allenamenti"
+      },
+      "userCompletedTrainingProgram": {
+        "title": "Programma di Allenamento Completato dall'Utente",
+        "description": "Ricevi notifiche quando gli utenti completano interi programmi di allenamento o sessioni di workout"
+      },
+      "userCompletedProfile": {
+        "title": "Nuovo Utente ha Completato il Profilo",
+        "description": "Ricevi notifiche quando i nuovi utenti finiscono di impostare le informazioni complete del loro profilo"
+      },
+      "userPurchasedSubscription": {
+        "title": "Utente ha Acquistato un Abbonamento",
+        "description": "Ricevi avvisi quando gli utenti acquistano o rinnovano i loro piani di abbonamento"
+      }
+    },
     "globalConfig": {
       "title": "Configurazioni Globali",
       "description": "Gestisci le impostazioni globali dell'applicazione",
