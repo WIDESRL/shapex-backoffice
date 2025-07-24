@@ -366,7 +366,7 @@ const SystemNotificationsPage: React.FC = () => {
   const getNotificationDescription = (notification: SystemNotificationType) => {
     switch (notification.type) {
       case 'training_completed':
-        return notification.relatedData.trainingProgram?.title 
+        return notification.relatedData?.trainingProgram?.title 
           ? t('systemNotifications.descriptions.trainingCompletedWithTitle', { title: notification.relatedData.trainingProgram.title })
           : t('systemNotifications.descriptions.trainingCompletedGeneric');
       case 'check_created':
@@ -374,17 +374,17 @@ const SystemNotificationsPage: React.FC = () => {
       case 'check_updated':
         return t('systemNotifications.descriptions.checkUpdated');
       case 'exercise_completed':
-        return notification.relatedData.exercise?.title 
+        return notification.relatedData?.exercise?.title 
           ? t('systemNotifications.descriptions.exerciseCompletedWithTitle', { title: notification.relatedData.exercise.title })
           : t('systemNotifications.descriptions.exerciseCompletedGeneric');
       case 'program_assigned':
-        return notification.relatedData.trainingProgram?.title 
+        return notification.relatedData?.trainingProgram?.title 
           ? t('systemNotifications.descriptions.programAssignedWithTitle', { title: notification.relatedData.trainingProgram.title })
           : t('systemNotifications.descriptions.programAssignedGeneric');
       case 'user_completed_profile':
         return t('systemNotifications.descriptions.userCompletedProfile');
       case 'user_purchased_subscription':
-        return notification.relatedData.subscription?.title 
+        return notification.relatedData?.subscription?.title 
           ? t('systemNotifications.descriptions.userPurchasedSubscriptionWithTitle', { title: notification.relatedData.subscription.title })
           : t('systemNotifications.descriptions.userPurchasedSubscriptionGeneric');
       default:
