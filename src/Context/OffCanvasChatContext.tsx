@@ -185,10 +185,16 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
     }
   }, [activeChats, setSelectedConversationId]);
 
-  // Auto-open chats when new messages are received
+  // Auto-open chats when new messages are received (only when NOT on chat page)
   useEffect(() => {
     const cleanup = onNewMessageReceived((_message, conversation) => {
       if (!conversation) return;
+      
+      // Don't auto-open if user is currently on the chat page
+      const isOnChatPage = window.location.pathname === '/chat';
+      if (isOnChatPage) {
+        return; // Exit early, don't auto-open on chat page
+      }
       
       // Check if chat is already open
       const isAlreadyOpen = activeChats.some(chat => chat.conversation.id === conversation.id);
