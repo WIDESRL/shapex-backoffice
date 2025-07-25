@@ -295,7 +295,7 @@ const styles = {
 // --- Styled Components ---
 const ChatContainer = styled(Box)({
 	display: 'flex',
-	height: '100vh',
+	height: '100%',
 	background: '#f7f6f3',
 	fontFamily: 'Montserrat, sans-serif',
 });
@@ -322,7 +322,7 @@ const Sidebar = styled(Box)(({ theme }) => ({
 
 const ConversationList = styled(List)(({ theme }) => ({
 	flex: 1,
-	overflow: 'hidden',
+	overflowX: 'hidden',
 	padding: 0,
 	[theme.breakpoints.down('sm')]: {
 		display: 'flex',
@@ -331,6 +331,14 @@ const ConversationList = styled(List)(({ theme }) => ({
 		height: 90,
 	},
 }));
+
+const ConversationListContainer = styled(Box)({
+	position: 'relative',
+	flex: 1,
+	display: 'flex',
+	flexDirection: 'column',
+	overflow: 'scroll',
+});
 
 const ConversationItem = styled(ListItem)(({ theme }) => ({
 	cursor: 'pointer',
@@ -664,7 +672,7 @@ const ChatPageContent: React.FC = () => {
 					/>
 				</Box>
 				{/* Conversation List and Floating New Button */}
-				<Box sx={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column' }}>
+				<ConversationListContainer>
 					{loadingConversations && conversations.length === 0 ? (
 						<Box sx={styles.loadingContainer}>
 							<CircularProgress size={40} thickness={4} sx={styles.loadingSpinner} />
@@ -783,7 +791,7 @@ const ChatPageContent: React.FC = () => {
 							<AddIcon sx={styles.floatingButtonIcon} />
 						</Button>
 					</Box>
-				</Box>
+				</ConversationListContainer>
 			</Sidebar>
 			{/* Main Section: Messages */}
 			<MainSection>
