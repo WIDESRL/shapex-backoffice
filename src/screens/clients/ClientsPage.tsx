@@ -142,8 +142,8 @@ const styles = {
     verticalAlign: 'middle',
   },
   pageContainer: {
-    p: 3,
-    height: '95vh',
+    p: 2,
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
   },

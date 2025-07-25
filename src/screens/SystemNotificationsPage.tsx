@@ -41,7 +41,7 @@ const styles = {
     p: 3,
     display: 'flex',
     flexDirection: 'column',
-    height: '100vh',
+    height: '100%',
   },
   title: {
     fontSize: 32,
