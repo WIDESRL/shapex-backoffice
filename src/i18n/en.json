@@ -355,7 +355,9 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "close": "Close",
+    "reload": "Reload"
   },
   "trainingPage": {
     "trainingPageTitle": "Training",
@@ -785,7 +787,8 @@
       "loading": "Loading...",
       "sections": {
         "mealPlan": "Meal Plan",
-        "supplementation": "Nutritional Supplementation"
+        "supplementation": "Nutritional Supplementation",
+        "history": "Diet History"
       },
       "placeholders": {
         "mealPlan": "Enter the meal plan...",
@@ -804,6 +807,15 @@
       "featureNotEnabled": {
         "mealPlan": "Meal Plan feature is not enabled in this user's subscription",
         "supplementation": "Nutritional Supplementation feature is not enabled in this user's subscription"
+      },
+      "noHistory": "No diet history available",
+      "table": {
+        "mealPlan": "Meal Plan",
+        "supplements": "Food Supplements",
+        "updatedAt": "Available Period",
+        "viewContent": "View Content",
+        "empty": "Empty",
+        "present": "Present"
       }
     },
     "altro": {

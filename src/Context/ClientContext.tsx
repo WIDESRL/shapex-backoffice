@@ -35,6 +35,16 @@ export type Diet = {
   foodSupplements: string;
 };
 
+// Type for diet history data
+export type DietHistory = {
+  id: number;
+  mealPlan: string | null;
+  foodSupplements: string | null;
+  mealPlanUpdatedAt: string | null;
+  foodSupplementsUpdatedAt: string | null;
+  createdAt: string;
+};
+
 // Type for file/image data
 export type FileData = {
   id: number;
@@ -274,6 +284,7 @@ export type ClientContextType = {
   trainingProgramOfUser: TrainingProgramOfUser[];
   historicalExercises: HistoricalExercise[];
   diet: Diet | null;
+  dietHistory: DietHistory[];
   initialHistory: InitialHistory | null;
   userChecks: UserCheck[];
   userImagesAlbum: UserAlbumImage[];
@@ -288,6 +299,7 @@ export type ClientContextType = {
   loadingTrainingPrograms: boolean;
   loadingHistoricalExercises: boolean;
   loadingDiet: boolean;
+  loadingDietHistory: boolean;
   loadingInitialHistory: boolean;
   loadingUserChecks: boolean;
   loadingUserImagesAlbum: boolean;
@@ -307,6 +319,7 @@ export type ClientContextType = {
   fetchTrainingProgramOfUser: (userId: string) => Promise<void>;
   fetchHistoricalExercises: (userId: string) => Promise<void>;
   fetchDiet: (userId: string) => Promise<void>;
+  fetchDietHistory: (userId: string) => Promise<void>;
   createOrUpdateDiet: (userId: string, mealPlan?: string, foodSupplements?: string) => Promise<void>;
   fetchInitialHistory: (userId: string) => Promise<void>;
   fetchUserChecks: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
@@ -326,6 +339,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [trainingProgramOfUser, setTrainingProgramOfUser] = useState<TrainingProgramOfUser[]>([]);
   const [historicalExercises, setHistoricalExercises] = useState<HistoricalExercise[]>([]);
   const [diet, setDiet] = useState<Diet | null>(null);
+  const [dietHistory, setDietHistory] = useState<DietHistory[]>([]);
   const [initialHistory, setInitialHistory] = useState<InitialHistory | null>(null);
   const [userChecks, setUserChecks] = useState<UserCheck[]>([]);
   const [userImagesAlbum, setUserImagesAlbum] = useState<UserAlbumImage[]>([]);
@@ -340,6 +354,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingTrainingPrograms, setLoadingTrainingPrograms] = useState(false);
   const [loadingHistoricalExercises, setLoadingHistoricalExercises] = useState(false);
   const [loadingDiet, setLoadingDiet] = useState(false);
+  const [loadingDietHistory, setLoadingDietHistory] = useState(false);
   const [loadingInitialHistory, setLoadingInitialHistory] = useState(false);
   const [loadingUserChecks, setLoadingUserChecks] = useState(false);
   const [loadingUserImagesAlbum, setLoadingUserImagesAlbum] = useState(false);
@@ -466,6 +481,21 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       throw error;
     } finally {
       setLoadingDiet(false);
+    }
+  };
+
+  const fetchDietHistory = async (userId: string): Promise<void> => {
+    try {
+      setLoadingDietHistory(true);
+      const response = await axiosInstance.get(`/diet/${userId}/history?limit=1000`);
+      
+      setDietHistory(response.data || []);
+    } catch (error) {
+      console.error('Error fetching diet history:', error);
+      setDietHistory([]);
+      throw error;
+    } finally {
+      setLoadingDietHistory(false);
     }
   };
 
@@ -636,6 +666,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         trainingProgramOfUser,
         historicalExercises,
         diet,
+        dietHistory,
         initialHistory,
         userChecks,
         userImagesAlbum,
@@ -650,6 +681,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingTrainingPrograms,
         loadingHistoricalExercises,
         loadingDiet,
+        loadingDietHistory,
         loadingInitialHistory,
         loadingUserChecks,
         loadingUserImagesAlbum,
@@ -669,6 +701,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchTrainingProgramOfUser,
         fetchHistoricalExercises,
         fetchDiet,
+        fetchDietHistory,
         createOrUpdateDiet,
         fetchInitialHistory,
         fetchUserChecks,

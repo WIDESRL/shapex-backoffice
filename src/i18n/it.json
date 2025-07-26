@@ -339,7 +339,9 @@
     "cancel": "Annulla",
     "confirm": "Conferma",
     "yes": "Sì",
-    "no": "No"
+    "no": "No",
+    "close": "Chiudi",
+    "reload": "Ricaricare"
   },
   "trainingPage": {
     "trainingPageTitle": "Allenamento",
@@ -770,7 +772,8 @@
       "loading": "Caricamento...",
       "sections": {
         "mealPlan": "Piano alimentare",
-        "supplementation": "Integrazione alimentare"
+        "supplementation": "Integrazione alimentare",
+        "history": "Storico Dieta"
       },
       "placeholders": {
         "mealPlan": "Inserisci il piano alimentare...",
@@ -789,6 +792,15 @@
       "featureNotEnabled": {
         "mealPlan": "La funzionalità Piano Alimentare non è abilitata nell'abbonamento di questo utente",
         "supplementation": "La funzionalità Integrazione Alimentare non è abilitata nell'abbonamento di questo utente"
+      },
+      "noHistory": "Nessuno storico dieta disponibile",
+      "table": {
+        "mealPlan": "Piano Alimentare",
+        "supplements": "Integrazione Alimentare",
+        "updatedAt": "Periodo Disponibile",
+        "viewContent": "Visualizza Contenuto",
+        "empty": "Vuoto",
+        "present": "Presente"
       }
     },
     "altro": {
