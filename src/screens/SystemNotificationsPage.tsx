@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import InfoIcon from '../icons/InfoIcon';
 import FilterIcon from '../icons/FilterIcon';
+import ImageCustom from '../components/ImageCustom';
 import FitnessIcon from '@mui/icons-material/FitnessCenter';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -171,6 +172,13 @@ const styles = {
     color: '#fff',
     fontWeight: 600,
     fontSize: 16,
+  },
+  avatarImage: {
+    width: 48,
+    height: 48,
+    borderRadius: '50%',
+    objectFit: 'cover' as const,
+    marginRight: 12,
   },
   notificationBody: {
     flex: 1,
@@ -861,12 +869,18 @@ const SystemNotificationsPage: React.FC = () => {
                       </Box>
 
                       {/* Client Avatar */}
-                      <Avatar 
-                        sx={styles.avatar}
-                        src={notification.user.profilePictureFile?.signedUrl}
-                      >
-                        {clientAvatar}
-                      </Avatar>
+                      {notification.user.profilePictureFile?.signedUrl ? (
+                        <ImageCustom
+                          src={notification.user.profilePictureFile.signedUrl}
+                          alt={clientName}
+                          style={styles.avatarImage}
+                          spinnerSize={20}
+                        />
+                      ) : (
+                        <Avatar sx={styles.avatar}>
+                          {clientAvatar}
+                        </Avatar>
+                      )}
 
                       {/* Notification Content */}
                       <Box sx={styles.notificationBody}>

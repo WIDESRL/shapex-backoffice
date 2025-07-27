@@ -71,6 +71,7 @@ const ImageCustom: React.FC<ImageCustomProps> = ({
           className={className}
           style={{
             ...style,
+            opacity: loading ? 0 : 1,
             display: 'block',
           }}
           onLoad={handleLoad}
