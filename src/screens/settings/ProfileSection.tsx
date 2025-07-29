@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import DialogCloseIcon from '../../icons/DialogCloseIcon2';
 import { useAuth } from '../../Context/AuthContext';
 import { useSnackbar } from '../../Context/SnackbarContext';
-import { uploadFileAndGetId } from '../../utils/uploadFileAndGetId';
+import { compressImage, uploadFileAndGetId } from '../../utils/uploadFileAndGetId';
 
 interface ProfileSectionProps {
   styles: Record<string, Record<string, unknown>>;
@@ -66,7 +66,11 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ styles }) => {
       let profilePictureId = userData?.profilePicture;
       
       if (profilePictureFile) {
-        profilePictureId = await uploadFileAndGetId(profilePictureFile);
+        profilePictureId = await uploadFileAndGetId(
+            profilePictureFile?.type?.startsWith('image/') 
+            ? await compressImage(profilePictureFile, 0.7) 
+            : profilePictureFile
+        );
       }
       
       await updateUserProfile({
