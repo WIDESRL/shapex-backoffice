@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
+import { useAuth } from './AuthContext';
 
 export type UserNeedingReminder = {
   userId: number;
@@ -38,13 +39,21 @@ export type UserWithOverdueCheck = {
   daysOverdue: number;
 };
 
+export type NotificationCounts = {
+  totalCount: number;
+  reminderCount: number;
+  overdueCount: number;
+};
+
 export type ReminderContextType = {
   usersNeedingReminders: UserNeedingReminder[];
   usersWithOverdueChecks: UserWithOverdueCheck[];
+  notificationCounts: NotificationCounts;
   loading: boolean;
   overdueLoading: boolean;
   fetchUsersNeedingReminders: () => Promise<void>;
   fetchUsersWithOverdueChecks: () => Promise<void>;
+  fetchAllData: () => Promise<void>;
 };
 
 const ReminderContext = createContext<ReminderContextType | undefined>(undefined);
@@ -54,6 +63,17 @@ export const ReminderProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [usersWithOverdueChecks, setUsersWithOverdueChecks] = useState<UserWithOverdueCheck[]>([]);
   const [loading, setLoading] = useState(false);
   const [overdueLoading, setOverdueLoading] = useState(false);
+  const { isAuth } = useAuth();
+
+  const notificationCounts: NotificationCounts = useMemo(() => {
+    const usersNeedingRemindersLength = usersNeedingReminders.length
+    const usersWithOverdueChecksLength = usersWithOverdueChecks.length
+    return {
+        totalCount: usersNeedingRemindersLength + usersWithOverdueChecksLength,
+        reminderCount: usersNeedingRemindersLength,
+        overdueCount: usersWithOverdueChecksLength,
+    }
+  }, [usersNeedingReminders, usersWithOverdueChecks])
 
   const fetchUsersNeedingReminders = useCallback(async (): Promise<void> => {
     try {
@@ -83,15 +103,33 @@ export const ReminderProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, []);
 
+  const fetchAllData = useCallback(async (): Promise<void> => {
+    try {
+      await Promise.all([
+        fetchUsersNeedingReminders(),
+        fetchUsersWithOverdueChecks()
+      ]);
+    } catch (error) {
+      console.error('Error fetching reminder data on initialization:', error);
+    }
+  }, [fetchUsersNeedingReminders, fetchUsersWithOverdueChecks]);
+
+  useEffect(() => {
+    if(isAuth) fetchAllData();
+  }, [fetchAllData, isAuth]);
+
+
   return (
     <ReminderContext.Provider
       value={{
         usersNeedingReminders,
         usersWithOverdueChecks,
+        notificationCounts,
         loading,
         overdueLoading,
         fetchUsersNeedingReminders,
         fetchUsersWithOverdueChecks,
+        fetchAllData,
       }}
     >
       {children}

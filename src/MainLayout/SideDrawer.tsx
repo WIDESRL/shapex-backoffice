@@ -22,13 +22,14 @@ import ClientIcon from "../icons/Client";
 import TrainingIcon from "../icons/Training";
 import ChatIcon from "../icons/Chat";
 import PushNotificationsIconWhite from "../icons/PushNotificationsIconWhite";
-import NotesIcon from "../icons/NotesIcon";
+import RemindersIcon from "../icons/RemindersIcon";
 import BannersIcon from "../icons/Banners";
 import LogoutIcon from "../icons/Logout";
 import SettingsIcon from "../icons/SettingsIcon";
 import { useAuth } from "../Context/AuthContext";
 import { useMessages } from "../Context/MessagesContext";
 import { useSystemNotificationsContext } from "../Context/SystemNotificationsContext";
+import { useReminderContext } from "../Context/ReminderContext";
 import NotificationBadge from "../components/NotificationBadge";
 
 const menuColor = "#EDB528";
@@ -134,6 +135,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
   const { logout } = useAuth();
   const { conversations } = useMessages();
   const { unreadCount } = useSystemNotificationsContext();
+  const { notificationCounts } = useReminderContext();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -207,7 +209,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       setOpenSubmenu(null);
     }
   }, [activeMenu]);
-
+  
   const handleNavigation = (path: string) => {
     navigate(path);
     if (isSmallScreen) toggleDrawer(false);
@@ -676,33 +678,47 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
               color: activeMenu === ActiveMenu.Reminders ? menuColor : undefined,
             }}
             onClick={() => handleNavigation(MenuPath.Reminders)}
-            sx={{ "&:hover": { bgcolor: hoverBg } }}
+            sx={{ 
+              "&:hover": { bgcolor: hoverBg },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
-            <NotesIcon
-              stroke={"#FFF"}
-              style={{
-                ...styles.icon,
-                color:
-                  activeMenu === ActiveMenu.Reminders ? menuColor : "#fff",
-                filter:
-                  activeMenu === ActiveMenu.Reminders
-                    ? activeIconFilter
-                    : undefined,
-              }}
-            />
-            {!miniDrawer && (
-              <ListItemText
-                primary={t("mainMenu.reminders")}
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <RemindersIcon
+                stroke={"#FFF"}
                 style={{
-                  ...styles.listItemText,
-                  color:
-                    activeMenu === ActiveMenu.Reminders
-                      ? menuColor
-                      : styles.listItemText.color,
-                  fontWeight:
-                    activeMenu === ActiveMenu.Reminders ? 600 : undefined,
+                  ...styles.icon,
+                  color: notificationCounts.totalCount > 0 
+                    ? "#FF4444" 
+                    : activeMenu === ActiveMenu.Reminders 
+                      ? menuColor 
+                      : "#fff",
+                  filter: notificationCounts.totalCount > 0 && miniDrawer
+                    ? redIconFilter 
+                    : activeMenu === ActiveMenu.Reminders 
+                      ? activeIconFilter 
+                      : undefined,
                 }}
               />
+              {!miniDrawer && (
+                <ListItemText
+                  primary={t("mainMenu.reminders")}
+                  style={{
+                    ...styles.listItemText,
+                    color:
+                      activeMenu === ActiveMenu.Reminders
+                        ? menuColor
+                        : styles.listItemText.color,
+                    fontWeight:
+                      activeMenu === ActiveMenu.Reminders ? 600 : undefined,
+                  }}
+                />
+              )}
+            </Box>
+            {!miniDrawer && (
+              <NotificationBadge count={notificationCounts.totalCount} />
             )}
           </ListItemButton>
         </ListItem>

@@ -148,7 +148,7 @@
   },
   "reminders": {
     "title": "Reminders",
-    "subtitle": "Users that need to be reminded for their next check",
+    "subtitle": "Users that have active subscription and need to be reminded for their next check",
     "subtitle.withDays": "Users that have their checks in {{days}} days",
     "subtitle.descriptive": "These are the customers that will be/are notified by the system today because they need to do a check in {{days}} days (configured in global settings)",
     "count": {
@@ -157,7 +157,7 @@
     },
     "emptyState": {
       "title": "No reminders needed",
-      "description": "All users are up to date with their check schedules. No reminders are needed at this time."
+      "description": "No reminders are needed today."
     },
     "table": {
       "user": "User",
@@ -168,7 +168,7 @@
     },
     "overdue": {
       "title": "Overdue Checks",
-      "subtitle": "Users who have missed their scheduled check dates",
+      "subtitle": "Users who have active subscription and missed their scheduled check dates",
       "count": {
         "single": "user has overdue check",
         "multiple": "users have overdue checks"

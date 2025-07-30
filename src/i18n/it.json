@@ -132,7 +132,7 @@
   },
   "reminders": {
     "title": "Promemoria",
-    "subtitle": "Utenti che devono essere ricordati per il prossimo controllo",
+    "subtitle": "Utenti che hanno un abbonamento attivo e devono essere ricordati per il prossimo controllo",
     "subtitle.withDays": "Utenti che hanno i loro controlli tra {{days}} giorni",
     "subtitle.descriptive": "Questi sono i clienti che saranno/sono notificati dal sistema oggi perché devono fare un controllo tra {{days}} giorni (configurato nelle impostazioni globali)",
     "count": {
@@ -141,7 +141,7 @@
     },
     "emptyState": {
       "title": "Nessun promemoria necessario",
-      "description": "Tutti gli utenti sono aggiornati con i loro programmi di controllo. Nessun promemoria è necessario in questo momento."
+      "description": "Nessun promemoria è necessario oggi."
     },
     "table": {
       "user": "Utente",
@@ -152,7 +152,7 @@
     },
     "overdue": {
       "title": "Controlli in Ritardo",
-      "subtitle": "Utenti che hanno perso le loro date di controllo programmate",
+      "subtitle": "Utenti che hanno un abbonamento attivo e hanno perso le loro date di controllo programmate",
       "count": {
         "single": "utente ha controllo in ritardo",
         "multiple": "utenti hanno controlli in ritardo"
