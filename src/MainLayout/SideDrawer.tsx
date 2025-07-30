@@ -22,6 +22,7 @@ import ClientIcon from "../icons/Client";
 import TrainingIcon from "../icons/Training";
 import ChatIcon from "../icons/Chat";
 import PushNotificationsIconWhite from "../icons/PushNotificationsIconWhite";
+import NotesIcon from "../icons/NotesIcon";
 import BannersIcon from "../icons/Banners";
 import LogoutIcon from "../icons/Logout";
 import SettingsIcon from "../icons/SettingsIcon";
@@ -65,6 +66,7 @@ export enum MainMenu {
   Allenamento = "training",
   Chat = "chat",
   Notifications = "notifications",
+  Reminders = "reminders",
   Banners = "banners",
   Settings = "settings",
   Logout = "logout",
@@ -100,6 +102,7 @@ export enum MenuPath {
   CompletedTraining = "/training/completed-training",
   Chat = "/chat",
   Notifications = "/notifications",
+  Reminders = "/reminders",
   Banners = "/banners",
   Settings = "/settings",
 }
@@ -111,6 +114,7 @@ export enum ActiveMenu {
   Training = MainMenu.Allenamento,
   Chat = MainMenu.Chat,
   Notifications = MainMenu.Notifications,
+  Reminders = MainMenu.Reminders,
   Banners = MainMenu.Banners,
   Settings = MainMenu.Settings,
   None = "",
@@ -182,6 +186,8 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       activeMenu = ActiveMenu.Chat;
     } else if (path.startsWith(MenuPath.Notifications)) {
       activeMenu = ActiveMenu.Notifications;
+    } else if (path.startsWith(MenuPath.Reminders)) {
+      activeMenu = ActiveMenu.Reminders;
     } else if (path.startsWith(MenuPath.Banners)) {
       activeMenu = ActiveMenu.Banners;
     } else if (path.startsWith(MenuPath.Settings)) {
@@ -659,6 +665,44 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             </Box>
             {!miniDrawer && (
               <NotificationBadge count={unreadCount} />
+            )}
+          </ListItemButton>
+        </ListItem>
+        {/* Reminders */}
+        <ListItem disablePadding sx={{ mb: 1 }}>
+          <ListItemButton
+            style={{
+              ...styles.listItemButton,
+              color: activeMenu === ActiveMenu.Reminders ? menuColor : undefined,
+            }}
+            onClick={() => handleNavigation(MenuPath.Reminders)}
+            sx={{ "&:hover": { bgcolor: hoverBg } }}
+          >
+            <NotesIcon
+              stroke={"#FFF"}
+              style={{
+                ...styles.icon,
+                color:
+                  activeMenu === ActiveMenu.Reminders ? menuColor : "#fff",
+                filter:
+                  activeMenu === ActiveMenu.Reminders
+                    ? activeIconFilter
+                    : undefined,
+              }}
+            />
+            {!miniDrawer && (
+              <ListItemText
+                primary={t("mainMenu.reminders")}
+                style={{
+                  ...styles.listItemText,
+                  color:
+                    activeMenu === ActiveMenu.Reminders
+                      ? menuColor
+                      : styles.listItemText.color,
+                  fontWeight:
+                    activeMenu === ActiveMenu.Reminders ? 600 : undefined,
+                }}
+              />
             )}
           </ListItemButton>
         </ListItem>

@@ -130,6 +130,46 @@
     "noImage": "Nessuna immagine",
     "search": "Cerca"
   },
+  "reminders": {
+    "title": "Promemoria",
+    "subtitle": "Utenti che devono essere ricordati per il prossimo controllo",
+    "subtitle.withDays": "Utenti che hanno i loro controlli tra {{days}} giorni",
+    "subtitle.descriptive": "Questi sono i clienti che saranno/sono notificati dal sistema oggi perché devono fare un controllo tra {{days}} giorni (configurato nelle impostazioni globali)",
+    "count": {
+      "single": "utente ha bisogno di promemoria",
+      "multiple": "utenti hanno bisogno di promemoria"
+    },
+    "emptyState": {
+      "title": "Nessun promemoria necessario",
+      "description": "Tutti gli utenti sono aggiornati con i loro programmi di controllo. Nessun promemoria è necessario in questo momento."
+    },
+    "table": {
+      "user": "Utente",
+      "subscription": "Abbonamento",
+      "nextCheckDate": "Data Prossimo Controllo",
+      "daysBetween": "Giorni Tra Controlli",
+      "days": "giorni"
+    },
+    "overdue": {
+      "title": "Controlli in Ritardo",
+      "subtitle": "Utenti che hanno perso le loro date di controllo programmate",
+      "count": {
+        "single": "utente ha controllo in ritardo",
+        "multiple": "utenti hanno controlli in ritardo"
+      },
+      "emptyState": {
+        "title": "Nessun controllo in ritardo",
+        "description": "Ottimo! Tutti gli utenti sono in pari con i loro programmi di controllo. Nessun controllo in ritardo trovato."
+      },
+      "table": {
+        "user": "Utente",
+        "subscription": "Abbonamento",
+        "scheduledDate": "Data Programmata",
+        "daysOverdue": "Giorni di Ritardo",
+        "days": "giorni di ritardo"
+      }
+    }
+  },
   "mainMenu": {
     "dashboard": "Dashboard",
     "subscriptions": "Abbonamenti",
@@ -137,6 +177,7 @@
     "training": "Allenamento",
     "chat": "Chat",
     "notifications": "Notifiche di Sistema",
+    "reminders": "Promemoria",
     "banners": "Banners pubblicitari",
     "settings": "Impostazioni",
     "logout": "Disconnettersi"
@@ -341,7 +382,9 @@
     "yes": "Sì",
     "no": "No",
     "close": "Chiudi",
-    "reload": "Ricaricare"
+    "reload": "Ricaricare",
+    "loading": "Caricamento...",
+    "refresh": "Aggiorna"
   },
   "trainingPage": {
     "trainingPageTitle": "Allenamento",

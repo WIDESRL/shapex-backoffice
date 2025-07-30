@@ -18,6 +18,7 @@ import { ClientProvider } from './Context/ClientContext';
 import { StatsProvider } from './Context/StatsContext';
 import { SnackbarProvider } from './Context/SnackbarContext';
 import { SystemNotificationsProvider } from './Context/SystemNotificationsContext';
+import { ReminderProvider } from './Context/ReminderContext';
 
 const queryClient = new QueryClient();
 
@@ -45,7 +46,9 @@ const renderApp = () => {
                         <StatsProvider>
                           <ClientProvider>
                             <SystemNotificationsProvider>
-                              <App />
+                              <ReminderProvider>
+                                <App />
+                              </ReminderProvider>
                             </SystemNotificationsProvider>
                           </ClientProvider>
                         </StatsProvider>

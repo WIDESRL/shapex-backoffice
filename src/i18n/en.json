@@ -146,6 +146,46 @@
     "noImage": "No image",
     "search": "Search"
   },
+  "reminders": {
+    "title": "Reminders",
+    "subtitle": "Users that need to be reminded for their next check",
+    "subtitle.withDays": "Users that have their checks in {{days}} days",
+    "subtitle.descriptive": "These are the customers that will be/are notified by the system today because they need to do a check in {{days}} days (configured in global settings)",
+    "count": {
+      "single": "user needs reminder",
+      "multiple": "users need reminders"
+    },
+    "emptyState": {
+      "title": "No reminders needed",
+      "description": "All users are up to date with their check schedules. No reminders are needed at this time."
+    },
+    "table": {
+      "user": "User",
+      "subscription": "Subscription",
+      "nextCheckDate": "Next Check Date",
+      "daysBetween": "Days Between Checks",
+      "days": "days"
+    },
+    "overdue": {
+      "title": "Overdue Checks",
+      "subtitle": "Users who have missed their scheduled check dates",
+      "count": {
+        "single": "user has overdue check",
+        "multiple": "users have overdue checks"
+      },
+      "emptyState": {
+        "title": "No overdue checks",
+        "description": "Great! All users are on track with their check schedules. No overdue checks found."
+      },
+      "table": {
+        "user": "User",
+        "subscription": "Subscription",
+        "scheduledDate": "Scheduled Date",
+        "daysOverdue": "Days Overdue",
+        "days": "days overdue"
+      }
+    }
+  },
   "mainMenu": {
     "dashboard": "Dashboard",
     "subscriptions": "Subscriptions",
@@ -153,6 +193,7 @@
     "training": "Training",
     "chat": "Chat",
     "notifications": "System Notifications",
+    "reminders": "Reminders",
     "banners": "Banners",
     "settings": "Settings",
     "logout": "Logout"
@@ -357,7 +398,9 @@
     "yes": "Yes",
     "no": "No",
     "close": "Close",
-    "reload": "Reload"
+    "reload": "Reload",
+    "loading": "Loading...",
+    "refresh": "Refresh"
   },
   "trainingPage": {
     "trainingPageTitle": "Training",
