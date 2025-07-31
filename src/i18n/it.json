@@ -781,6 +781,10 @@
           "title": "Nessuna misurazione registrata",
           "description": "Non sono ancora state registrate misurazioni corporee. Le misurazioni appariranno qui man mano che vengono effettuate durante i controlli.",
           "subtitle": "Monitora i progressi attraverso misurazioni regolari"
+        },
+        "nextCheckDate": {
+          "title": "Prossima Data Check",
+          "overdue": "in ritardo"
         }
       },
       "albumFotografico": {

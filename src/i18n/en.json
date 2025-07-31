@@ -796,6 +796,10 @@
           "title": "No measurements recorded",
           "description": "No body measurements have been recorded yet. Measurements will appear here as they are taken during check-ups.",
           "subtitle": "Track progress through regular measurements"
+        },
+        "nextCheckDate": {
+          "title": "Next Check Date",
+          "overdue": "overdue"
         }
       },
       "albumFotografico": {

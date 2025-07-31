@@ -159,6 +159,12 @@ export type UserCheckDetailed = UserCheck & {
   optionalImage5?: FileData | null;
 };
 
+export type UserNextCheckDate = {
+  nextCheckDate: string;
+  daysBetweenChecks: number;
+  subscriptionTitle: string;
+};
+
 export type TrainingProgramOfUser = {
   id: number;
   title: string;
@@ -293,6 +299,7 @@ export type ClientContextType = {
   notificationsPagination: Pagination | null;
   userImagesAlbumPagination: Pagination | null;
   selectedCheckDetailed: UserCheckDetailed | null;
+  userNextCheckDate: UserNextCheckDate | null;
   loading: boolean;
   loadingClientNames: boolean;
   loadingClientAnagrafica: boolean;
@@ -306,6 +313,7 @@ export type ClientContextType = {
   loadingUserNotifications: boolean;
   loadingUserSubscriptions: boolean;
   loadingSelectedCheck: boolean;
+  loadingUserNextCheckDate: boolean;
   page: number;
   pageSize: number;
   total: number;
@@ -327,6 +335,7 @@ export type ClientContextType = {
   fetchUserNotifications: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, type?: string, append?: boolean) => Promise<void>;
   fetchUserSubscriptions: (userId: string) => Promise<void>;
   fetchCheckById: (checkId: number) => Promise<void>;
+  fetchUserNextCheckDate: (clientId: string) => Promise<void>;
   changeUserPassword: (userId: string, newPassword: string) => Promise<void>;
 };
 
@@ -348,6 +357,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [notificationsPagination, setNotificationsPagination] = useState<Pagination | null>(null);
   const [userImagesAlbumPagination, setUserImagesAlbumPagination] = useState<Pagination | null>(null);
   const [selectedCheckDetailed, setSelectedCheckDetailed] = useState<UserCheckDetailed | null>(null);
+  const [userNextCheckDate, setUserNextCheckDate] = useState<UserNextCheckDate | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingClientNames, setLoadingClientNames] = useState(false);
   const [loadingClientAnagrafica, setLoadingClientAnagrafica] = useState(false);
@@ -361,6 +371,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingUserNotifications, setLoadingUserNotifications] = useState(false);
   const [loadingUserSubscriptions, setLoadingUserSubscriptions] = useState(false);
   const [loadingSelectedCheck, setLoadingSelectedCheck] = useState(false);
+  const [loadingUserNextCheckDate, setLoadingUserNextCheckDate] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -646,6 +657,20 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
+  const fetchUserNextCheckDate = useCallback(async (clientId: string): Promise<void> => {
+    try {
+      setLoadingUserNextCheckDate(true);
+      const response = await axiosInstance.get(`/checks/admin/user-next-check-date/${clientId}`);
+      setUserNextCheckDate(response.data || null);
+    } catch (error) {
+      console.error('Error fetching user next check date:', error);
+      setUserNextCheckDate(null);
+      // Don't throw error since we want to handle missing data gracefully
+    } finally {
+      setLoadingUserNextCheckDate(false);
+    }
+  }, []);
+
   const changeUserPassword = useCallback(async (userId: string, newPassword: string): Promise<void> => {
     try {
       await axiosInstance.put(`/users/set-password/${userId}`, {
@@ -675,6 +700,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         notificationsPagination,
         userImagesAlbumPagination,
         selectedCheckDetailed,
+        userNextCheckDate,
         loading, 
         loadingClientNames,
         loadingClientAnagrafica,
@@ -688,6 +714,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingUserNotifications,
         loadingUserSubscriptions,
         loadingSelectedCheck,
+        loadingUserNextCheckDate,
         page, 
         pageSize, 
         total, 
@@ -709,6 +736,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchUserNotifications,
         fetchUserSubscriptions,
         fetchCheckById,
+        fetchUserNextCheckDate,
         changeUserPassword
       }}
     >

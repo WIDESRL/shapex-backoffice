@@ -3,6 +3,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { useTranslation } from 'react-i18next';
 import { useClientContext } from '../../../../Context/ClientContext';
 import { useParams } from 'react-router-dom';
+import { format, parseISO, isPast } from 'date-fns';
 import FilterIcon from '../../../../icons/FilterIcon';
 import InfoIcon from '../../../../icons/InfoIcon';
 import CheckDetailsDialog from '../../../../components/CheckDetailsDialog';
@@ -293,12 +294,101 @@ const styles = {
     p: 3,
     minHeight: '200px',
   },
+  nextCheckDateContainer: {
+    mb: 2,
+    p: 2,
+    borderRadius: 2,
+    backgroundColor: '#f8f9fa',
+    border: '1px solid #e9ecef',
+  },
+  nextCheckDateTitle: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: '#495057',
+    mb: 1,
+  },
+  nextCheckDate: {
+    fontSize: 16,
+    fontWeight: 500,
+    color: '#28a745',
+  },
+  nextCheckDateOverdue: {
+    fontSize: 16,
+    fontWeight: 500,
+    color: '#dc3545',
+  },
+  nextCheckDateLoading: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+  },
+};
+
+interface NextCheckDateSectionProps {
+  userNextCheckDate: { nextCheckDate: string; subscriptionTitle: string } | null;
+  loadingUserNextCheckDate: boolean;
+  t: (key: string) => string;
+}
+
+const NextCheckDateSection: React.FC<NextCheckDateSectionProps> = ({
+  userNextCheckDate,
+  loadingUserNextCheckDate,
+  t
+}) => {
+  if (loadingUserNextCheckDate) {
+    return (
+      <Box sx={styles.nextCheckDateContainer}>
+        <Typography sx={styles.nextCheckDateTitle}>
+          {t('client.diario.misurazioni.nextCheckDate.title')}
+        </Typography>
+        <Box sx={styles.nextCheckDateLoading}>
+          <CircularProgress size={16} />
+          <Typography variant="body2">
+            {t('common.loading')}
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
+
+  if (!userNextCheckDate) {
+    return null; // Don't display anything if no next check date
+  }
+
+  const nextCheckDate = parseISO(userNextCheckDate.nextCheckDate);
+  const isOverdue = isPast(nextCheckDate);
+  const formattedDate = format(nextCheckDate, 'dd/MM/yyyy');
+
+  return (
+    <Box sx={styles.nextCheckDateContainer}>
+      <Typography sx={styles.nextCheckDateTitle}>
+        {t('client.diario.misurazioni.nextCheckDate.title')}
+      </Typography>
+      <Typography 
+        sx={isOverdue ? styles.nextCheckDateOverdue : styles.nextCheckDate}
+      >
+        {formattedDate}
+        {isOverdue && (
+          <Typography component="span" sx={{ ml: 1, fontSize: 14, fontWeight: 400 }}>
+            ({t('client.diario.misurazioni.nextCheckDate.overdue')})
+          </Typography>
+        )}
+      </Typography>
+    </Box>
+  );
 };
 
 const MisurazioniTab: React.FC = () => {
   const { t } = useTranslation();
   const { clientId } = useParams<{ clientId: string }>();
-  const { userChecks, loadingUserChecks, fetchUserChecks } = useClientContext();
+  const { 
+    userChecks, 
+    loadingUserChecks, 
+    fetchUserChecks,
+    userNextCheckDate,
+    loadingUserNextCheckDate,
+    fetchUserNextCheckDate
+  } = useClientContext();
   
   // Calculate default date range (1 year ago to today) - memoized to avoid recalculation
   const { defaultStartDate, defaultEndDate } = useMemo(() => {
@@ -342,12 +432,31 @@ const MisurazioniTab: React.FC = () => {
     [fetchUserChecks]
   );
 
+  const debouncedFetchUserNextCheckDate = useCallback(
+    (clientId: string) => {
+      const timeoutId = setTimeout(() => {
+        fetchUserNextCheckDate(clientId);
+      }, 200);
+      
+      return () => clearTimeout(timeoutId);
+    },
+    [fetchUserNextCheckDate]
+  );
+
   useEffect(() => {
     if (clientId) {
       const cleanup = debouncedFetchUserChecks(clientId, defaultStartDate, defaultEndDate);
       return cleanup;
     }
   }, [clientId, defaultStartDate, defaultEndDate, debouncedFetchUserChecks]);
+
+  // Fetch next check date
+  useEffect(() => {
+    if (clientId) {
+      const cleanup = debouncedFetchUserNextCheckDate(clientId);
+      return cleanup;
+    }
+  }, [clientId, debouncedFetchUserNextCheckDate]);
 
   const handleApplyFilter = () => {
     if (clientId) {
@@ -473,6 +582,13 @@ const MisurazioniTab: React.FC = () => {
   if (loadingUserChecks || !hasInitialFetch) {
     return (
       <Box sx={styles.container}>
+        {/* Next Check Date Section */}
+        <NextCheckDateSection 
+          userNextCheckDate={userNextCheckDate}
+          loadingUserNextCheckDate={loadingUserNextCheckDate}
+          t={t}
+        />
+
         {/* Filter Header */}
         <Box sx={styles.filterHeader}>
           <Box 
@@ -539,6 +655,13 @@ const MisurazioniTab: React.FC = () => {
   if (hasInitialFetch && (!userChecks || userChecks.length === 0 || measurementData.length === 0)) {
     return (
       <Box sx={styles.container}>
+        {/* Next Check Date Section */}
+        <NextCheckDateSection 
+          userNextCheckDate={userNextCheckDate}
+          loadingUserNextCheckDate={loadingUserNextCheckDate}
+          t={t}
+        />
+
         {/* Filter Header */}
         <Box sx={styles.filterHeader}>
           <Box 
@@ -604,6 +727,13 @@ const MisurazioniTab: React.FC = () => {
 
   return (
     <Box sx={styles.container}>
+      {/* Next Check Date Section */}
+      <NextCheckDateSection 
+        userNextCheckDate={userNextCheckDate}
+        loadingUserNextCheckDate={loadingUserNextCheckDate}
+        t={t}
+      />
+
       {/* Filter Header */}
       <Box sx={styles.filterHeader}>
         <Box 
