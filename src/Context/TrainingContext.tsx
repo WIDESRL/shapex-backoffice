@@ -66,7 +66,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
         muscleGroup: params.muscleGroups?.[0],
         limit: params.limit
       });
-      
+
       // Set pagination parameters
       urlParams.append('page', (params.page || 1).toString());
       urlParams.append('itemsPerPage', (params.limit || 20).toString());
@@ -121,7 +121,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       let url = '/trainning/exercise';
       const params = new URLSearchParams();
       
-      if (limit) params.append('limit', limit.toString());
+      if (limit) params.append('itemsPerPage', limit.toString());
       if (search) params.append('search', search);
       if (muscleGroups && muscleGroups.length > 0) {
         muscleGroups.forEach(group => params.append('muscleGroups', group));
