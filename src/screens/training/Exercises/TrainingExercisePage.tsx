@@ -196,8 +196,8 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
         title: data.title,
         muscleGroup: data.muscleGroup,
         description: data.description,
-        video: data.video || null,
-        videoThumbnail: data.videoThumbnail || null,
+        video: data.video,
+        videoThumbnail: data.videoThumbnail,
         videoDuration: data.videoDuration || undefined,
         originalVideoFileName: data.originalVideoFileName,
       };
