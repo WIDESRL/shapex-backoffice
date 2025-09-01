@@ -365,7 +365,7 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
               },
             }}
           >
-            {isLoading ? t('training.loading') : t('training.loadMore')}
+            {isLoading ? t('common.loading') : t('training.loadMore')}
           </Button>
         </Box>
       )}
