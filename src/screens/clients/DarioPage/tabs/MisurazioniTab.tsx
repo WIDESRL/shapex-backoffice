@@ -537,9 +537,9 @@ const MisurazioniTab: React.FC = () => {
         metrica: displayName,
         values
       };
-    }).filter(item => 
-      item.values.some(value => value !== '-')
-    );
+    });
+    // Remove the filter - show all measurement rows even if they're empty
+    // This ensures the table displays with headers even for checks with no measurement values
 
     return {
       measurementDates: dates,
@@ -652,7 +652,7 @@ const MisurazioniTab: React.FC = () => {
     );
   }
 
-  if (hasInitialFetch && (!userChecks || userChecks.length === 0 || measurementData.length === 0)) {
+  if (hasInitialFetch && (!userChecks || userChecks.length === 0)) {
     return (
       <Box sx={styles.container}>
         {/* Next Check Date Section */}
