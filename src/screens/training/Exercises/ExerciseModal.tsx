@@ -378,33 +378,111 @@ const ExerciseModal: React.FC<ExerciseModalProps> = ({ open, onClose, onSave, on
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const generateVideoThumbnail = (file: File) => {
-    return new Promise<string>((resolve, reject) => {
-      const video = document.createElement('video');
-      video.preload = 'metadata';
-      video.muted = true;
-      video.src = URL.createObjectURL(file);
-      video.currentTime = 1;
-      video.onloadeddata = () => {
+const generateVideoThumbnail = (file: File) => {
+  return new Promise<string>((resolve, reject) => {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.muted = true;
+    video.playsInline = true; // Important for iOS Safari
+    video.crossOrigin = 'anonymous'; // Help with CORS issues
+    
+    let hasResolved = false;
+    const timeout = setTimeout(() => {
+      if (!hasResolved) {
+        hasResolved = true;
+        cleanup();
+        reject(new Error('Video thumbnail generation timed out'));
+      }
+    }, 10000); // 10 second timeout
+
+    const cleanup = () => {
+      URL.revokeObjectURL(video.src);
+      clearTimeout(timeout);
+    };
+
+    // ✅ Use onloadedmetadata instead of onloadeddata
+    video.onloadedmetadata = () => {
+      // Ensure we have valid duration
+      if (!video.duration || isNaN(video.duration) || video.duration <= 0) {
+        hasResolved = true;
+        cleanup();
+        reject(new Error('Invalid video duration'));
+        return;
+      }
+
+      // Set thumbnail time to 1 second or 10% of duration, whichever is smaller
+      const thumbnailTime = Math.min(1, video.duration * 0.1);
+      video.currentTime = thumbnailTime;
+    };
+
+    // ✅ Use onseeked event for when seeking is complete
+    video.onseeked = () => {
+      if (hasResolved) return;
+      
+      try {
         const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
+        
         const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-          resolve(dataUrl);
-        } else {
-          reject('Canvas not supported');
+        if (!ctx) {
+          hasResolved = true;
+          cleanup();
+          reject(new Error('Canvas context not available'));
+          return;
         }
-        URL.revokeObjectURL(video.src);
-      };
-      video.onerror = () => {
-        reject('Failed to load video');
-        URL.revokeObjectURL(video.src);
-      };
-    });
-  };
+
+        // Check if video dimensions are valid
+        if (video.videoWidth === 0 || video.videoHeight === 0) {
+          hasResolved = true;
+          cleanup();
+          reject(new Error('Invalid video dimensions'));
+          return;
+        }
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        try {
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          if (dataUrl && dataUrl.length > 100) { // Basic validation
+            hasResolved = true;
+            cleanup();
+            resolve(dataUrl);
+          } else {
+            throw new Error('Invalid thumbnail data');
+          }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (canvasError) {
+          hasResolved = true;
+          cleanup();
+          reject(new Error('Canvas toDataURL failed'));
+        }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        hasResolved = true;
+        cleanup();
+        reject(new Error('Thumbnail generation failed'));
+      }
+    };
+
+    video.onerror = () => {
+      if (!hasResolved) {
+        hasResolved = true;
+        cleanup();
+        reject(new Error('Video loading failed'));
+      }
+    };
+
+    // Set source after all event listeners are attached
+    try {
+      video.src = URL.createObjectURL(file);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      hasResolved = true;
+      reject(new Error('Failed to create video URL'));
+    }
+  });
+};
 
   const dataURLtoFile = (dataurl: string, filename: string) => {
     const arr = dataurl.split(',');
