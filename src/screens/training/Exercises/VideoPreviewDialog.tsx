@@ -32,7 +32,7 @@ const styles = {
     overflow: 'hidden',
   },
   videoBox: {
-    border: '2px solid #4A90E2',
+    // border: '2px solid black',
     borderRadius: 2,
     background: '#222',
     p: 0,
@@ -85,8 +85,8 @@ const VideoPreviewDialog: React.FC<VideoPreviewDialogProps> = ({ open, onClose, 
           }}
           TransitionComponent={Fade}
       >
-      <Box sx={styles.root}>
-        <Box sx={styles.videoBox}>
+      <Box sx={styles.root}  onClick={onClose}>
+        <Box sx={styles.videoBox}  onClick={(e) => e.stopPropagation()}>
           <IconButton
             onClick={onClose}
             sx={styles.closeButton}
