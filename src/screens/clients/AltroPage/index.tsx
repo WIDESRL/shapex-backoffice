@@ -7,6 +7,7 @@ import TabButton from '../../../components/TabButton';
 import BackButton from '../../../components/BackButton';
 import AbbonamentoTab from './tabs/AbbonamentoTab';
 import NotificheTab from './tabs/NotificheTab';
+import ConsentTab from './tabs/ConsentTab';
 import ConfigurazioneTab from './tabs/ConfigurazioneTab';
 
 const styles = {
@@ -104,15 +105,21 @@ const AltroPage: React.FC = () => {
           active={tabValue === 1}
         />
         <TabButton
-          title={t('client.altro.tabs.configuration')}
+          title={t('client.altro.tabs.consents')}
           onClick={() => setTabValue(2)}
           active={tabValue === 2}
+        />
+        <TabButton
+          title={t('client.altro.tabs.configuration')}
+          onClick={() => setTabValue(3)}
+          active={tabValue === 3}
         />
       </Box>
 
       {tabValue === 0 && <AbbonamentoTab />}
       {tabValue === 1 && <NotificheTab />}
-      {tabValue === 2 && <ConfigurazioneTab />}
+      {tabValue === 2 && <ConsentTab />}
+      {tabValue === 3 && <ConfigurazioneTab />}
     </Box>
   );
 };

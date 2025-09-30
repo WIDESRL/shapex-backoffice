@@ -63,6 +63,7 @@ interface SideDrawerProps {
 export enum MainMenu {
   Dashboard = "dashboard",
   Abbonamenti = "subscriptions",
+  Products = "products",
   Clienti = "clients",
   Allenamento = "training",
   Chat = "chat",
@@ -87,10 +88,19 @@ export enum TrainingSubMenu {
   CompletedTraining = "Allenamenti Completati",
 }
 
+export enum ProductsSubMenu {
+  Products = "Products",
+  ProductTypes = "Product Types",
+  Orders = "Orders",
+}
+
 // Add enum for navigation paths
 export enum MenuPath {
   Dashboard = "/dashboard",
   Subscriptions = "/subscriptions",
+  Products = "/products",
+  ProductTypes = "/product-types",
+  Orders = "/orders",
   Clients = "/clients",
   ClientsAnagrafica = "/clients/anagrafica",
   ClientsAllenamenti = "/clients/allenamenti",
@@ -111,6 +121,7 @@ export enum MenuPath {
 export enum ActiveMenu {
   Dashboard = MainMenu.Dashboard,
   Subscriptions = MainMenu.Abbonamenti,
+  Products = MainMenu.Products,
   Clients = MainMenu.Clienti,
   Training = MainMenu.Allenamento,
   Chat = MainMenu.Chat,
@@ -166,6 +177,14 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       activeMenu = ActiveMenu.Dashboard;
     } else if (path.startsWith(MenuPath.Subscriptions)) {
       activeMenu = ActiveMenu.Subscriptions;
+    } else if (path.startsWith(MenuPath.Products) || path.startsWith(MenuPath.ProductTypes) || path.startsWith(MenuPath.Orders)) {
+      activeMenu = ActiveMenu.Products;
+      if (path === MenuPath.Products || path.startsWith(MenuPath.Products))
+        activeSubmenu = ProductsSubMenu.Products;
+      else if (path.startsWith(MenuPath.ProductTypes))
+        activeSubmenu = ProductsSubMenu.ProductTypes;
+      else if (path.startsWith(MenuPath.Orders))
+        activeSubmenu = ProductsSubMenu.Orders;
     } else if (path.startsWith("/clients")) {
       activeMenu = ActiveMenu.Clients;
       if (path.includes("/anagrafica"))
@@ -205,6 +224,8 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       setOpenSubmenu(ActiveMenu.Clients);
     } else if (activeMenu === ActiveMenu.Training) {
       setOpenSubmenu(ActiveMenu.Training);
+    } else if (activeMenu === ActiveMenu.Products) {
+      setOpenSubmenu(ActiveMenu.Products);
     } else {
       setOpenSubmenu(null);
     }
@@ -348,6 +369,105 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
             )}
           </ListItemButton>
         </ListItem>
+        <ListItem disablePadding sx={{ mb: 0 }}>
+          <ListItemButton
+            style={{
+              ...styles.listItemButton,
+              color: activeMenu === ActiveMenu.Products ? menuColor : undefined,
+            }}
+            onClick={() => {
+              handleNavigation(MenuPath.Products);
+              if (openSubmenu !== ActiveMenu.Products) {
+                setOpenSubmenu(ActiveMenu.Products);
+              } else {
+                setOpenSubmenu(null);
+              }
+            }}
+            sx={{ "&:hover": { bgcolor: hoverBg } }}
+          >
+            <SubscriptionsIcon
+              style={{
+                ...styles.icon,
+                filter:
+                  activeMenu === ActiveMenu.Products
+                    ? activeIconFilter
+                    : undefined,
+                color:
+                  activeMenu === ActiveMenu.Products ? menuColor : undefined,
+              }}
+            />
+            {!miniDrawer && (
+              <ListItemText
+                primary={t("mainMenu.products")}
+                style={{
+                  ...styles.listItemText,
+                  color:
+                    activeMenu === ActiveMenu.Products
+                      ? menuColor
+                      : styles.listItemText.color,
+                  fontWeight:
+                    activeMenu === ActiveMenu.Products ? 600 : undefined,
+                }}
+                sx={{ mr: 15 }}
+              />
+            )}
+            {openSubmenu === ActiveMenu.Products ? (
+              <ExpandLess sx={{ color: menuColor }} />
+            ) : (
+              <ExpandMore sx={{ color: "#fff" }} />
+            )}
+            {openSubmenu === ActiveMenu.Products && !miniDrawer && (
+              <ActiveMenuIndicator />
+            )}
+          </ListItemButton>
+        </ListItem>
+        {/* Products Submenu */}
+        <Collapse in={openSubmenu === ActiveMenu.Products} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            {[
+              { key: "Products", path: MenuPath.Products },
+              { key: "ProductTypes", path: MenuPath.ProductTypes },
+              { key: "Orders", path: MenuPath.Orders },
+            ].map((item) => (
+              <ListItem key={item.key} disablePadding>
+                <ListItemButton
+                  style={{
+                    ...styles.listItemButton,
+                    paddingLeft: "56px",
+                    color:
+                      activeSubmenu === ProductsSubMenu[item.key as keyof typeof ProductsSubMenu]
+                        ? menuColor
+                        : undefined,
+                  }}
+                  onClick={() => handleNavigation(item.path)}
+                  sx={{ "&:hover": { bgcolor: submenuHoverBg } }}
+                >
+                  {!miniDrawer && (
+                    <ListItemText
+                      primary={
+                        item.key === "Products" ? t("mainMenu.products") :
+                        item.key === "ProductTypes" ? t("products.types.title") :
+                        item.key === "Orders" ? t("orders.title") :
+                        item.key
+                      }
+                      style={{
+                        ...styles.listItemText,
+                        color:
+                          activeSubmenu === ProductsSubMenu[item.key as keyof typeof ProductsSubMenu]
+                            ? menuColor
+                            : styles.listItemText.color,
+                        fontWeight:
+                          activeSubmenu === ProductsSubMenu[item.key as keyof typeof ProductsSubMenu]
+                            ? 600
+                            : undefined,
+                      }}
+                    />
+                  )}
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Collapse>
         <ListItem disablePadding sx={{ mb: 0 }}>
           <ListItemButton
             style={{

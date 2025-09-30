@@ -3,6 +3,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './Context/AuthContext';
 import LoginScreen from './screens/LoginScreen';
 import SubscriptionScreen from './screens/Subscription';
+import ProductsScreen from './screens/Products';
+import ProductTypesScreen from './screens/ProductTypes';
+import OrdersScreen from './screens/Orders';
 import DashboardPage from './screens/DashboardPage';
 import ClientsPage from './screens/clients/ClientsPage';
 import TrainingPage from './screens/TrainingPage';
@@ -33,6 +36,9 @@ const AppRoutes: React.FC = () => {
         <>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/subscriptions" element={<SubscriptionScreen />} />
+          <Route path="/products" element={<ProductsScreen />} />
+          <Route path="/product-types" element={<ProductTypesScreen />} />
+          <Route path="/orders" element={<OrdersScreen />} />
           <Route path="/clients" element={<ClientsPage />} />
           <Route path="/clients/:clientId/anagrafica" element={<AnagraficaPage />} />
           <Route path="/clients/:clientId/allenamenti" element={<AllenamentiPage />} />

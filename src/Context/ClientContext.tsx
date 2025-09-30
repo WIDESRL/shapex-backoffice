@@ -251,6 +251,14 @@ export type UserNotification = {
   createdAt: string;
 };
 
+// Type for consent data
+export type UserConsent = {
+  id: number;
+  userId: number;
+  type: 'marketing' | 'dataProcessing' | 'terms' | 'photoTracking';
+  createdAt: string;
+};
+
 // Type for notification pagination
 export type NotificationPagination = {
   page: number;
@@ -295,6 +303,7 @@ export type ClientContextType = {
   userChecks: UserCheck[];
   userImagesAlbum: UserAlbumImage[];
   userNotifications: UserNotification[];
+  userConsents: UserConsent[];
   userSubscriptions: UserSubscription[];
   notificationsPagination: Pagination | null;
   userImagesAlbumPagination: Pagination | null;
@@ -311,6 +320,7 @@ export type ClientContextType = {
   loadingUserChecks: boolean;
   loadingUserImagesAlbum: boolean;
   loadingUserNotifications: boolean;
+  loadingUserConsents: boolean;
   loadingUserSubscriptions: boolean;
   loadingSelectedCheck: boolean;
   loadingUserNextCheckDate: boolean;
@@ -333,6 +343,7 @@ export type ClientContextType = {
   fetchUserChecks: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
   fetchUserImagesAlbum: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, append?: boolean) => Promise<void>;
   fetchUserNotifications: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, type?: string, append?: boolean) => Promise<void>;
+  fetchUserConsents: (userId: string) => Promise<void>;
   fetchUserSubscriptions: (userId: string) => Promise<void>;
   fetchCheckById: (checkId: number) => Promise<void>;
   fetchUserNextCheckDate: (clientId: string) => Promise<void>;
@@ -353,6 +364,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [userChecks, setUserChecks] = useState<UserCheck[]>([]);
   const [userImagesAlbum, setUserImagesAlbum] = useState<UserAlbumImage[]>([]);
   const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
+  const [userConsents, setUserConsents] = useState<UserConsent[]>([]);
   const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
   const [notificationsPagination, setNotificationsPagination] = useState<Pagination | null>(null);
   const [userImagesAlbumPagination, setUserImagesAlbumPagination] = useState<Pagination | null>(null);
@@ -369,6 +381,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingUserChecks, setLoadingUserChecks] = useState(false);
   const [loadingUserImagesAlbum, setLoadingUserImagesAlbum] = useState(false);
   const [loadingUserNotifications, setLoadingUserNotifications] = useState(false);
+  const [loadingUserConsents, setLoadingUserConsents] = useState(false);
   const [loadingUserSubscriptions, setLoadingUserSubscriptions] = useState(false);
   const [loadingSelectedCheck, setLoadingSelectedCheck] = useState(false);
   const [loadingUserNextCheckDate, setLoadingUserNextCheckDate] = useState(false);
@@ -629,6 +642,21 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
+  const fetchUserConsents = useCallback(async (userId: string): Promise<void> => {
+    try {
+      setLoadingUserConsents(true);
+      const response = await axiosInstance.get(`/consent/user/${userId}`);
+      
+      setUserConsents(response.data.data || []);
+    } catch (error) {
+      console.error('Error fetching user consents:', error);
+      setUserConsents([]);
+      throw error;
+    } finally {
+      setLoadingUserConsents(false);
+    }
+  }, []);
+
   const fetchUserSubscriptions = useCallback(async (userId: string): Promise<void> => {
     try {
       setLoadingUserSubscriptions(true);
@@ -696,6 +724,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         userChecks,
         userImagesAlbum,
         userNotifications,
+        userConsents,
         userSubscriptions,
         notificationsPagination,
         userImagesAlbumPagination,
@@ -712,6 +741,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingUserChecks,
         loadingUserImagesAlbum,
         loadingUserNotifications,
+        loadingUserConsents,
         loadingUserSubscriptions,
         loadingSelectedCheck,
         loadingUserNextCheckDate,
@@ -734,6 +764,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchUserChecks,
         fetchUserImagesAlbum,
         fetchUserNotifications,
+        fetchUserConsents,
         fetchUserSubscriptions,
         fetchCheckById,
         fetchUserNextCheckDate,

@@ -189,6 +189,8 @@
   "mainMenu": {
     "dashboard": "Dashboard",
     "subscriptions": "Subscriptions",
+    "products": "Products",
+    "productTypes": "Product Types",
     "clients": "Clients",
     "training": "Training",
     "chat": "Chat",
@@ -400,7 +402,11 @@
     "close": "Close",
     "reload": "Reload",
     "loading": "Loading...",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "edit": "Edit",
+    "showing": "Showing",
+    "of": "of",
+    "itemsPerPage": "Items per page"
   },
   "trainingPage": {
     "trainingPageTitle": "Training",
@@ -871,6 +877,7 @@
       "tabs": {
         "subscription": "Subscription",
         "notifications": "Notifications",
+        "consents": "Consents",
         "configuration": "Configuration"
       },
       "abbonamento": {
@@ -936,6 +943,21 @@
           "title": "No notifications",
           "description": "There are no notifications for this client. Notifications will appear here when they are sent or received.",
           "subtitle": "Stay updated with client communications"
+        }
+      },
+      "consents": {
+        "loading": "Loading consents...",
+        "granted": "Granted",
+        "types": {
+          "marketing": "Marketing",
+          "dataProcessing": "Data Processing",
+          "terms": "Terms & Conditions",
+          "photoTracking": "Photo Tracking"
+        },
+        "emptyState": {
+          "title": "No consents given",
+          "description": "This client has not given any consents yet. Consents will appear here when they are granted through the application.",
+          "subtitle": "Privacy and consent management"
         }
       }
     }
@@ -1215,6 +1237,92 @@
     "yesterday": "Yesterday",
     "loadingMore": "Loading more...",
     "noMoreMessages": "No more messages"
+  },
+  "products": {
+    "title": "Products",
+    "addProduct": "Add Product",
+    "editProduct": "Edit Product",
+    "productTitle": "Product Title",
+    "productDescription": "Product Description",
+    "price": "Price",
+    "type": "Type",
+    "selectProductType": "Select product type",
+    "productTypes": {
+      "call": "Call"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "add": "Add",
+    "cancel": "Cancel",
+    "confirmDeletion": "Are you sure you want to delete this product?",
+    "deletionIrreversible": "This action cannot be undone.",
+    "validation": {
+      "titleRequired": "Title is required",
+      "descriptionRequired": "Description is required",
+      "pricePositive": "Price must be greater than 0",
+      "typeRequired": "Product type is required"
+    },
+    "filterByType": "Filter by type",
+    "allTypes": "All types",
+    "searchProducts": "Search products",
+    "searchPlaceholder": "Search by title or description...",
+    "search": "Search",
+    "noProducts": "No products found. Add your first product to get started.",
+    "noProductsForType": "No products found for the selected type.",
+    "products": "products",
+    "addSuccess": "Product added successfully",
+    "updateSuccess": "Product updated successfully",
+    "deleteSuccess": "Product deleted successfully",
+    "addFailed": "Failed to add product",
+    "updateFailed": "Failed to update product",
+    "deleteFailed": "Failed to delete product",
+    "fields": {
+      "tipo": "Type:",
+      "prezzo": "Price:"
+    },
+    "types": {
+      "title": "Product Types",
+      "addType": "Add Product Type",
+      "editType": "Edit Product Type",
+      "typeName": "Type Name",
+      "typeDescription": "Type Description",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "add": "Add",
+      "cancel": "Cancel",
+      "confirmDeletion": "Confirm Deletion",
+      "deletionIrreversible": "This action cannot be undone.",
+      "noTypesTitle": "No product types yet",
+      "noTypesDescription": "Start by adding your first product type.",
+      "usedInProducts": "Used in",
+      "validation": {
+        "nameRequired": "Type name is required",
+        "descriptionRequired": "Type description is required"
+      },
+      "addSuccess": "Product type added successfully",
+      "updateSuccess": "Product type updated successfully",
+      "deleteSuccess": "Product type deleted successfully",
+      "addFailed": "Failed to add product type",
+      "updateFailed": "Failed to update product type",
+      "deleteFailed": "Failed to delete product type"
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "orderNumber": "Order",
+    "totalAmount": "Total Amount",
+    "createdAt": "Created At",
+    "paidAt": "Paid At",
+    "customer": "Customer",
+    "items": "Items",
+    "quantity": "Quantity",
+    "each": "each",
+    "noOrders": "No orders found.",
+    "filters": "Filters",
+    "searchPlaceholder": "Search orders...",
+    "dateRange": "Date Range"
   },
   "login": {
     "title": "Log in",

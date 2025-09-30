@@ -4,6 +4,7 @@ import App from './App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './Context/AuthContext';
 import { SubscriptionsProvider } from './Context/SubscriptionsContext';
+import { ProductsProvider } from './Context/ProductsContext';
 import { BannersProvider } from './Context/BannersContext';
 import { MessagesProvider } from './Context/MessagesContext';
 import { OffCanvasChatProvider } from './Context/OffCanvasChatContext';
@@ -39,23 +40,25 @@ const renderApp = () => {
             <GlobalConfigProvider>
               <PushNotificationProvider>
                 <SubscriptionsProvider>
-                <BannersProvider>
-                  <MessagesProvider>
-                    <OffCanvasChatProvider>
-                      <TrainingProvider>
-                        <StatsProvider>
-                          <ClientProvider>
-                            <SystemNotificationsProvider>
-                              <ReminderProvider>
-                                <App />
-                              </ReminderProvider>
-                            </SystemNotificationsProvider>
-                          </ClientProvider>
-                        </StatsProvider>
-                      </TrainingProvider>
-                    </OffCanvasChatProvider>
-                  </MessagesProvider>
-                </BannersProvider>
+                  <ProductsProvider>
+                    <BannersProvider>
+                      <MessagesProvider>
+                        <OffCanvasChatProvider>
+                          <TrainingProvider>
+                            <StatsProvider>
+                              <ClientProvider>
+                                <SystemNotificationsProvider>
+                                  <ReminderProvider>
+                                    <App />
+                                  </ReminderProvider>
+                                </SystemNotificationsProvider>
+                              </ClientProvider>
+                            </StatsProvider>
+                          </TrainingProvider>
+                        </OffCanvasChatProvider>
+                      </MessagesProvider>
+                    </BannersProvider>
+                  </ProductsProvider>
               </SubscriptionsProvider>
               </PushNotificationProvider>
             </GlobalConfigProvider>

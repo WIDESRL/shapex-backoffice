@@ -173,6 +173,8 @@
   "mainMenu": {
     "dashboard": "Dashboard",
     "subscriptions": "Abbonamenti",
+    "products": "Prodotti",
+    "productTypes": "Tipi di Prodotto",
     "clients": "Clienti",
     "training": "Allenamento",
     "chat": "Chat",
@@ -384,7 +386,11 @@
     "close": "Chiudi",
     "reload": "Ricaricare",
     "loading": "Caricamento...",
-    "refresh": "Aggiorna"
+    "refresh": "Aggiorna",
+    "edit": "Modifica",
+    "showing": "Mostrando",
+    "of": "di",
+    "itemsPerPage": "Elementi per pagina"
   },
   "trainingPage": {
     "trainingPageTitle": "Allenamento",
@@ -856,6 +862,7 @@
       "tabs": {
         "subscription": "Abbonamento",
         "notifications": "Notifiche",
+        "consents": "Consensi",
         "configuration": "Configurazione"
       },
       "abbonamento": {
@@ -921,6 +928,21 @@
           "title": "Nessuna notifica",
           "description": "Non ci sono notifiche per questo cliente. Le notifiche appariranno qui quando vengono inviate o ricevute.",
           "subtitle": "Rimani aggiornato con le comunicazioni del cliente"
+        }
+      },
+      "consents": {
+        "loading": "Caricamento consensi...",
+        "granted": "Concesso",
+        "types": {
+          "marketing": "Marketing",
+          "dataProcessing": "Trattamento Dati",
+          "terms": "Termini e Condizioni",
+          "photoTracking": "Tracciamento Foto"
+        },
+        "emptyState": {
+          "title": "Nessun consenso dato",
+          "description": "Questo cliente non ha ancora dato alcun consenso. I consensi appariranno qui quando verranno concessi tramite l'applicazione.",
+          "subtitle": "Gestione privacy e consensi"
         }
       }
     }
@@ -1200,6 +1222,92 @@
     "yesterday": "Ieri",
     "loadingMore": "Caricamento...",
     "noMoreMessages": "Nessun altro messaggio"
+  },
+  "products": {
+    "title": "Prodotti",
+    "addProduct": "Aggiungi Prodotto",
+    "editProduct": "Modifica Prodotto",
+    "productTitle": "Titolo Prodotto",
+    "productDescription": "Descrizione Prodotto",
+    "price": "Prezzo",
+    "type": "Tipo",
+    "selectProductType": "Seleziona il tipo di prodotto",
+    "productTypes": {
+      "call": "Call"
+    },
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "save": "Salva",
+    "add": "Aggiungi",
+    "cancel": "Annulla",
+    "confirmDeletion": "Sei sicuro di voler eliminare questo prodotto?",
+    "deletionIrreversible": "Questa azione non può essere annullata.",
+    "validation": {
+      "titleRequired": "Il titolo è obbligatorio",
+      "descriptionRequired": "La descrizione è obbligatoria",
+      "pricePositive": "Il prezzo deve essere maggiore di 0",
+      "typeRequired": "Il tipo di prodotto è obbligatorio"
+    },
+    "filterByType": "Filtra per tipo",
+    "allTypes": "Tutti i tipi",
+    "searchProducts": "Cerca prodotti",
+    "searchPlaceholder": "Cerca per titolo o descrizione...",
+    "search": "Cerca",
+    "noProducts": "Nessun prodotto trovato. Aggiungi il tuo primo prodotto per iniziare.",
+    "noProductsForType": "Nessun prodotto trovato per il tipo selezionato.",
+    "products": "prodotti",
+    "addSuccess": "Prodotto aggiunto con successo",
+    "updateSuccess": "Prodotto aggiornato con successo",
+    "deleteSuccess": "Prodotto eliminato con successo",
+    "addFailed": "Errore nell'aggiungere il prodotto",
+    "updateFailed": "Errore nell'aggiornare il prodotto",
+    "deleteFailed": "Errore nell'eliminare il prodotto",
+    "fields": {
+      "tipo": "Tipo:",
+      "prezzo": "Prezzo:"
+    },
+    "types": {
+      "title": "Tipi di Prodotto",
+      "addType": "Aggiungi Tipo di Prodotto",
+      "editType": "Modifica Tipo di Prodotto",
+      "typeName": "Nome Tipo",
+      "typeDescription": "Descrizione Tipo",
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "save": "Salva",
+      "add": "Aggiungi",
+      "cancel": "Annulla",
+      "confirmDeletion": "Conferma Eliminazione",
+      "deletionIrreversible": "Questa azione non può essere annullata.",
+      "noTypesTitle": "Nessun tipo di prodotto ancora",
+      "noTypesDescription": "Inizia aggiungendo il tuo primo tipo di prodotto.",
+      "usedInProducts": "Usato in",
+      "validation": {
+        "nameRequired": "Il nome del tipo è obbligatorio",
+        "descriptionRequired": "La descrizione del tipo è obbligatoria"
+      },
+      "addSuccess": "Tipo di prodotto aggiunto con successo",
+      "updateSuccess": "Tipo di prodotto aggiornato con successo",
+      "deleteSuccess": "Tipo di prodotto eliminato con successo",
+      "addFailed": "Errore nell'aggiungere il tipo di prodotto",
+      "updateFailed": "Errore nell'aggiornare il tipo di prodotto",
+      "deleteFailed": "Errore nell'eliminare il tipo di prodotto"
+    }
+  },
+  "orders": {
+    "title": "Ordini",
+    "orderNumber": "Ordine",
+    "totalAmount": "Totale",
+    "createdAt": "Creato il",
+    "paidAt": "Pagato il",
+    "customer": "Cliente",
+    "items": "Articoli",
+    "quantity": "Quantità",
+    "each": "cad.",
+    "noOrders": "Nessun ordine trovato.",
+    "filters": "Filtri",
+    "searchPlaceholder": "Cerca ordini...",
+    "dateRange": "Periodo"
   },
   "login": {
     "title": "Accedi",
