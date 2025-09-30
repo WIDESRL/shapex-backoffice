@@ -170,7 +170,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
       });
     }
     setErrors({ title: '', description: '', price: '', typeId: '' });
-  }, [product, productTypes]);
+  }, [product, productTypes, open]); // Added 'open' dependency
 
   // Update typeId when productTypes are loaded and no product is being edited
   useEffect(() => {
@@ -181,6 +181,25 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
       }));
     }
   }, [productTypes, product, formData.typeId]);
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      description: '',
+      price: 0,
+      typeId: productTypes.length > 0 ? productTypes[0].id : 0,
+    });
+    setErrors({ title: '', description: '', price: '', typeId: '' });
+    setLoading(false);
+  };
+
+  const handleClose = () => {
+    // Only reset form if not editing (i.e., when adding new product)
+    if (!isEdit) {
+      resetForm();
+    }
+    onClose();
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -231,6 +250,8 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         });
       } else {
         await addProduct(formData);
+        // Reset form after successful addition (but not for edit)
+        resetForm();
       }
       onClose();
     } catch (error) {
@@ -243,7 +264,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       fullWidth
       maxWidth="sm"
       PaperProps={{ sx: styles.dialog }}
@@ -254,7 +275,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
       {/* Close icon row above the title */}
       <Box sx={styles.closeButtonContainer}>
         <IconButton
-          onClick={onClose}
+          onClick={handleClose}
           sx={styles.closeButton}
           size="large"
         >
@@ -308,7 +329,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
             margin="normal"
             InputProps={{
               sx: styles.textFieldInput,
-              inputProps: { min: 0, step: 0.01 },
+              inputProps: { min: 0, step: 1 },
             }}
           />
 
