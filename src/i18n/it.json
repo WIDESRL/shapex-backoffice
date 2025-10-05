@@ -631,6 +631,10 @@
           "success": "Password cambiata con successo",
           "error": "Errore durante il cambio della password"
         }
+      },
+      "deletion": {
+        "title": "Richiesta di Cancellazione Account",
+        "description": "L'utente ha richiesto di cancellare il proprio account il {{requestedDate}}. La cancellazione avverrà il {{scheduledDate}}."
       }
     },
     "allenamenti": {

@@ -76,6 +76,26 @@ const styles = {
     borderRadius: '50%',
     mr: 1,
   },
+  deletionWarningContainer: {
+    backgroundColor: '#ffebee',
+    border: '1px solid #ef5350',
+    borderRadius: 1,
+    p: 1.5,
+    mt: 2,
+    width: 'fit-content',
+    maxWidth: '600px',
+  },
+  deletionWarningTitle: {
+    fontSize: 12,
+    color: '#d32f2f',
+    fontWeight: 600,
+    mb: 0.5,
+  },
+  deletionWarningText: {
+    fontSize: 11,
+    color: '#d32f2f',
+    lineHeight: 1.4,
+  },
   loadingContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -186,76 +206,93 @@ const AnagraficaPage: React.FC = () => {
 
       <Box sx={styles.formContainer}>
         {tabValue === 0 && (
-          <Box sx={styles.informationTabContainer}>
-            {/* Left Section - Personal Information */}
-            <Box sx={styles.informationLeftSection}>
-              <Typography sx={styles.sectionTitle}>
-                {t('client.anagraficapage.sections.personalInfo')}
-              </Typography>
-              <Box sx={styles.fieldRow}>
-                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.firstName')}</Typography>
-                <Typography sx={styles.fieldValue}>
-                  {clientAnagrafica.firstName || '---'}
+          <Box>
+            <Box sx={styles.informationTabContainer}>
+              {/* Left Section - Personal Information */}
+              <Box sx={styles.informationLeftSection}>
+                <Typography sx={styles.sectionTitle}>
+                  {t('client.anagraficapage.sections.personalInfo')}
                 </Typography>
-              </Box>
-              <Box sx={styles.fieldRow}>
-                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastName')}</Typography>
-                <Typography sx={styles.fieldValue}>
-                  {clientAnagrafica.lastName || '---'}
-                </Typography>
-              </Box>
-              <Box sx={styles.fieldRow}>
-                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.dateOfBirth')}</Typography>
-                <Typography sx={styles.fieldValue}>
-                  {formatDateOnly(clientAnagrafica.dateOfBirth)}
-                </Typography>
-              </Box>
-              <Box sx={styles.fieldRow}>
-                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.placeOfBirth')}</Typography>
-                <Typography sx={styles.fieldValue}>
-                  {clientAnagrafica.placeOfBirth || '---'}
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Right Section - Status Information */}
-            <Box sx={styles.informationRightSection}>
-              <Typography sx={styles.sectionTitle}>
-                {t('client.anagraficapage.sections.statusInfo')}
-              </Typography>
-              <Box sx={styles.fieldRow}>
-                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.online')}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Box 
-                    sx={{
-                      ...styles.onlineIndicator,
-                      backgroundColor: clientAnagrafica.online ? '#4caf50' : '#9e9e9e'
-                    }}
-                  />
+                <Box sx={styles.fieldRow}>
+                  <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.firstName')}</Typography>
                   <Typography sx={styles.fieldValue}>
-                    {clientAnagrafica.online ? t('common.yes') : t('common.no')}
+                    {clientAnagrafica.firstName || '---'}
+                  </Typography>
+                </Box>
+                <Box sx={styles.fieldRow}>
+                  <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastName')}</Typography>
+                  <Typography sx={styles.fieldValue}>
+                    {clientAnagrafica.lastName || '---'}
+                  </Typography>
+                </Box>
+                <Box sx={styles.fieldRow}>
+                  <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.dateOfBirth')}</Typography>
+                  <Typography sx={styles.fieldValue}>
+                    {formatDateOnly(clientAnagrafica.dateOfBirth)}
+                  </Typography>
+                </Box>
+                <Box sx={styles.fieldRow}>
+                  <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.placeOfBirth')}</Typography>
+                  <Typography sx={styles.fieldValue}>
+                    {clientAnagrafica.placeOfBirth || '---'}
                   </Typography>
                 </Box>
               </Box>
-              <Box sx={styles.fieldRow}>
-                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastLogin')}</Typography>
-                <Typography sx={styles.fieldValue}>
-                  {formatDate(clientAnagrafica.lastLogin)}
+
+              {/* Right Section - Status Information */}
+              <Box sx={styles.informationRightSection}>
+                <Typography sx={styles.sectionTitle}>
+                  {t('client.anagraficapage.sections.statusInfo')}
                 </Typography>
-              </Box>
-              <Box sx={styles.fieldRow}>
-                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastOnline')}</Typography>
-                <Typography sx={styles.fieldValue}>
-                  {formatDate(clientAnagrafica.lastOnline)}
-                </Typography>
-              </Box>
-              <Box sx={styles.fieldRow}>
-                <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.createdAt')}</Typography>
-                <Typography sx={styles.fieldValue}>
-                  {formatDate(clientAnagrafica.createdAt)}
-                </Typography>
+                <Box sx={styles.fieldRow}>
+                  <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.online')}</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box 
+                      sx={{
+                        ...styles.onlineIndicator,
+                        backgroundColor: clientAnagrafica.online ? '#4caf50' : '#9e9e9e'
+                      }}
+                    />
+                    <Typography sx={styles.fieldValue}>
+                      {clientAnagrafica.online ? t('common.yes') : t('common.no')}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box sx={styles.fieldRow}>
+                  <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastLogin')}</Typography>
+                  <Typography sx={styles.fieldValue}>
+                    {formatDate(clientAnagrafica.lastLogin)}
+                  </Typography>
+                </Box>
+                <Box sx={styles.fieldRow}>
+                  <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.lastOnline')}</Typography>
+                  <Typography sx={styles.fieldValue}>
+                    {formatDate(clientAnagrafica.lastOnline)}
+                  </Typography>
+                </Box>
+                <Box sx={styles.fieldRow}>
+                  <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.createdAt')}</Typography>
+                  <Typography sx={styles.fieldValue}>
+                    {formatDate(clientAnagrafica.createdAt)}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
+
+            {/* Account Deletion Warning - Within Information tab */}
+            {clientAnagrafica.deletionRequested && (
+              <Box sx={styles.deletionWarningContainer}>
+                <Typography sx={styles.deletionWarningTitle}>
+                  ⚠️ {t('client.anagraficapage.deletion.title')}
+                </Typography>
+                <Typography sx={styles.deletionWarningText}>
+                  {t('client.anagraficapage.deletion.description', {
+                    requestedDate: formatDate(clientAnagrafica.deletionRequestedAt),
+                    scheduledDate: formatDate(clientAnagrafica.scheduledDeletionDate)
+                  })}
+                </Typography>
+              </Box>
+            )}
           </Box>
         )}
 

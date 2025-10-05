@@ -647,6 +647,10 @@
           "success": "Password changed successfully",
           "error": "Error changing password"
         }
+      },
+      "deletion": {
+        "title": "Account Deletion Requested",
+        "description": "User has requested to delete their account on {{requestedDate}}. The deletion will occur on {{scheduledDate}}."
       }
     },
     "allenamenti": {

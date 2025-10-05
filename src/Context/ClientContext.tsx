@@ -207,6 +207,9 @@ export type ClientAnagrafica = {
   lastOnline: string,
   online: boolean,
   createdAt: string,
+  deletionRequested: boolean,
+  deletionRequestedAt: string | null,
+  scheduledDeletionDate: string | null,
   activeSubscription: {
     id: number,
     title: string,
@@ -305,6 +308,7 @@ export type Pagination = {
   total: number;
   totalPages: number;
   hasNext: boolean;
+  hasNextPage?: boolean;
   hasPrev: boolean;
 };
 
