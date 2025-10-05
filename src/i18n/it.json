@@ -220,6 +220,8 @@
       "programAssigned": "Programma Assegnato",
       "userCompletedProfile": "Utente Ha Completato Profilo",
       "userPurchasedSubscription": "Utente Ha Acquistato Abbonamento",
+      "userBookedExtraCall": "Utente Ha Prenotato Chiamata Extra",
+      "userBookedSupplementaryCall": "Utente Ha Prenotato Chiamata Supplementare",
       "all": "Tutti",
       "unread": "Non Letti",
       "read": "Letti",
@@ -236,7 +238,9 @@
       "exerciseCompleted": "Esercizio Completato",
       "programAssigned": "Nuovo Programma Assegnato",
       "userCompletedProfile": "Utente Ha Completato Profilo",
-      "userPurchasedSubscription": "Utente Ha Acquistato Abbonamento"
+      "userPurchasedSubscription": "Utente Ha Acquistato Abbonamento",
+      "userBookedExtraCall": "Utente Ha Prenotato Chiamata Extra",
+      "userBookedSupplementaryCall": "Utente Ha Prenotato Chiamata Supplementare"
     },
     "descriptions": {
       "trainingCompletedWithTitle": "Completato il programma di allenamento \"{{title}}\"",
@@ -250,6 +254,10 @@
       "userCompletedProfile": "L'utente ha completato le informazioni del profilo",
       "userPurchasedSubscriptionWithTitle": "L'utente ha acquistato l'abbonamento: \"{{title}}\"",
       "userPurchasedSubscriptionGeneric": "L'utente ha acquistato un abbonamento",
+      "userBookedExtraCall": "L'utente ha prenotato una sessione di chiamata extra",
+      "userBookedExtraCallWithName": "L'utente ha prenotato la sessione \"{{name}}\" di chiamata extra",
+      "userBookedSupplementaryCall": "L'utente ha prenotato una sessione di chiamata supplementare",
+      "userBookedSupplementaryCallWithName": "L'utente ha prenotato la sessione \"{{name}}\" di chiamata supplementare",
       "systemNotificationGeneric": "Notifica di sistema"
     },
     "timeLabels": {
@@ -554,6 +562,7 @@
           "items": {
             "subscription": "Abbonamento",
             "notifications": "Notifiche",
+            "calls": "Chiamate",
             "configuration": "Configurazione"
           }
         }
@@ -863,7 +872,8 @@
         "subscription": "Abbonamento",
         "notifications": "Notifiche",
         "consents": "Consensi",
-        "configuration": "Configurazione"
+        "configuration": "Configurazione",
+        "calls": "Chiamate"
       },
       "abbonamento": {
         "fields": {
@@ -935,14 +945,65 @@
         "granted": "Concesso",
         "types": {
           "marketing": "Marketing",
-          "dataProcessing": "Trattamento Dati",
+          "privacy_policy": "Informativa Privacy",
           "terms": "Termini e Condizioni",
           "photoTracking": "Tracciamento Foto"
+        },
+        "badges": {
+          "legal": "Avviso Legale",
+          "preference": "Preferenza",
+          "general": "Generale"
         },
         "emptyState": {
           "title": "Nessun consenso dato",
           "description": "Questo cliente non ha ancora dato alcun consenso. I consensi appariranno qui quando verranno concessi tramite l'applicazione.",
           "subtitle": "Gestione privacy e consensi"
+        }
+      },
+      "calls": {
+        "loading": "Caricamento chiamate...",
+        "loadMore": "Carica più chiamate",
+        "loadingMore": "Caricamento...",
+        "filters": {
+          "status": "Stato",
+          "type": "Tipo",
+          "allStatuses": "Tutti gli Stati",
+          "allTypes": "Tutti i Tipi",
+          "used": "Utilizzata",
+          "available": "Disponibile",
+          "extra": "Extra",
+          "supplementary": "Supplementare"
+        },
+        "types": {
+          "extra": "Chiamata Extra",
+          "supplementary": "Chiamata Supplementare"
+        },
+        "status": {
+          "used": "Utilizzata",
+          "available": "Disponibile"
+        },
+        "purchasedCall": "Chiamata acquistata",
+        "subscriptionCall": "Chiamata da abbonamento",
+        "fromSubscription": "Da abbonamento: {{subscription}}",
+        "pagination": {
+          "showing": "Mostrando {{current}} di {{total}} chiamate",
+          "page": "Pagina {{current}} di {{total}}"
+        },
+        "card": {
+          "createdOn": "Creata il:",
+          "usedOn": "Utilizzata il:",
+          "subscription": "Abbonamento:",
+          "payment": "Pagamento:",
+          "orderId": "ID Ordine:",
+          "amount": "Importo:",
+          "status": "Stato:",
+          "currency": "Valuta:",
+          "paymentId": "ID Pagamento:"
+        },
+        "emptyState": {
+          "title": "Nessuna chiamata disponibile",
+          "description": "Questo cliente non ha chiamate disponibili o utilizzate. Le chiamate appariranno qui quando vengono acquistate o concesse tramite abbonamenti.",
+          "subtitle": "Gestione e tracciamento chiamate"
         }
       }
     }
@@ -1113,6 +1174,14 @@
       "userPurchasedSubscription": {
         "title": "Utente ha Acquistato un Abbonamento",
         "description": "Ricevi avvisi quando gli utenti acquistano o rinnovano i loro piani di abbonamento"
+      },
+      "userBookedExtraCall": {
+        "title": "Utente ha Prenotato Chiamata Extra",
+        "description": "Ricevi notifiche quando gli utenti prenotano sessioni di chiamata aggiuntive al di fuori del loro piano regolare"
+      },
+      "userBookedSupplementaryCall": {
+        "title": "Utente ha Prenotato Chiamata Supplementare",
+        "description": "Ricevi avvisi quando gli utenti programmano chiamate di consulenza supplementari"
       }
     },
     "globalConfig": {
@@ -1307,7 +1376,12 @@
     "noOrders": "Nessun ordine trovato.",
     "filters": "Filtri",
     "searchPlaceholder": "Cerca ordini...",
-    "dateRange": "Periodo"
+    "dateRange": "Periodo",
+    "stripePayment": "Dettagli Pagamento Stripe",
+    "paymentId": "ID Pagamento",
+    "paymentAmount": "Importo Pagamento",
+    "paymentStatus": "Stato Pagamento",
+    "currency": "Valuta"
   },
   "login": {
     "title": "Accedi",

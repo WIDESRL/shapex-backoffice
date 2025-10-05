@@ -236,6 +236,8 @@
       "programAssigned": "Program Assigned",
       "userCompletedProfile": "User Complete Profile",
       "userPurchasedSubscription": "User Purchased Subscription",
+      "userBookedExtraCall": "User Booked Extra Call",
+      "userBookedSupplementaryCall": "User Booked Supplementary Call",
       "all": "All",
       "unread": "Unread",
       "read": "Read",
@@ -252,7 +254,9 @@
       "exerciseCompleted": "Exercise Completed",
       "programAssigned": "New Program Assignment",
       "userCompletedProfile": "User Complete Profile",
-      "userPurchasedSubscription": "User Purchased Subscription"
+      "userPurchasedSubscription": "User Purchased Subscription",
+      "userBookedExtraCall": "User Booked Extra Call",
+      "userBookedSupplementaryCall": "User Booked Supplementary Call"
     },
     "descriptions": {
       "trainingCompletedWithTitle": "Completed \"{{title}}\" training program",
@@ -266,6 +270,10 @@
       "userCompletedProfile": "User has completed their profile information",
       "userPurchasedSubscriptionWithTitle": "User has purchased subscription: \"{{title}}\"",
       "userPurchasedSubscriptionGeneric": "User has purchased a subscription",
+      "userBookedExtraCall": "User has booked an extra call session",
+      "userBookedExtraCallWithName": "User has booked \"{{name}}\" extra call session",
+      "userBookedSupplementaryCall": "User has booked a supplementary call session",
+      "userBookedSupplementaryCallWithName": "User has booked \"{{name}}\" supplementary call session",
       "systemNotificationGeneric": "System notification"
     },
     "timeLabels": {
@@ -570,6 +578,7 @@
           "items": {
             "subscription": "Subscription",
             "notifications": "Notifications",
+            "calls": "Calls",
             "configuration": "Configuration"
           }
         }
@@ -878,7 +887,8 @@
         "subscription": "Subscription",
         "notifications": "Notifications",
         "consents": "Consents",
-        "configuration": "Configuration"
+        "configuration": "Configuration",
+        "calls": "Calls"
       },
       "abbonamento": {
         "fields": {
@@ -950,14 +960,65 @@
         "granted": "Granted",
         "types": {
           "marketing": "Marketing",
-          "dataProcessing": "Data Processing",
+          "privacy_policy": "Privacy Policy",
           "terms": "Terms & Conditions",
           "photoTracking": "Photo Tracking"
+        },
+        "badges": {
+          "legal": "Legal Notice",
+          "preference": "Preference",
+          "general": "General"
         },
         "emptyState": {
           "title": "No consents given",
           "description": "This client has not given any consents yet. Consents will appear here when they are granted through the application.",
           "subtitle": "Privacy and consent management"
+        }
+      },
+      "calls": {
+        "loading": "Loading calls...",
+        "loadMore": "Load more calls",
+        "loadingMore": "Loading...",
+        "filters": {
+          "status": "Status",
+          "type": "Type",
+          "allStatuses": "All Statuses",
+          "allTypes": "All Types",
+          "used": "Used",
+          "available": "Available",
+          "extra": "Extra",
+          "supplementary": "Supplementary"
+        },
+        "types": {
+          "extra": "Extra Call",
+          "supplementary": "Supplementary Call"
+        },
+        "status": {
+          "used": "Used",
+          "available": "Available"
+        },
+        "purchasedCall": "Purchased call",
+        "subscriptionCall": "Subscription call",
+        "fromSubscription": "From subscription: {{subscription}}",
+        "pagination": {
+          "showing": "Showing {{current}} of {{total}} calls",
+          "page": "Page {{current}} of {{total}}"
+        },
+        "card": {
+          "createdOn": "Created on:",
+          "usedOn": "Used on:",
+          "subscription": "Subscription:",
+          "payment": "Payment:",
+          "orderId": "Order ID:",
+          "amount": "Amount:",
+          "status": "Status:",
+          "currency": "Currency:",
+          "paymentId": "Payment ID:"
+        },
+        "emptyState": {
+          "title": "No calls available",
+          "description": "This client has no calls available or used. Calls will appear here when they are purchased or granted through subscriptions.",
+          "subtitle": "Call management and tracking"
         }
       }
     }
@@ -1128,6 +1189,14 @@
       "userPurchasedSubscription": {
         "title": "User Purchased Subscription",
         "description": "Receive alerts when users purchase or renew their subscription plans"
+      },
+      "userBookedExtraCall": {
+        "title": "User Booked Extra Call",
+        "description": "Get notified when users book additional call sessions outside their regular plan"
+      },
+      "userBookedSupplementaryCall": {
+        "title": "User Booked Supplementary Call", 
+        "description": "Receive alerts when users schedule supplementary consultation calls"
       }
     },
     "globalConfig": {
@@ -1322,7 +1391,12 @@
     "noOrders": "No orders found.",
     "filters": "Filters",
     "searchPlaceholder": "Search orders...",
-    "dateRange": "Date Range"
+    "dateRange": "Date Range",
+    "stripePayment": "Stripe Payment Details",
+    "paymentId": "Payment ID",
+    "paymentAmount": "Payment Amount",
+    "paymentStatus": "Payment Status",
+    "currency": "Currency"
   },
   "login": {
     "title": "Log in",

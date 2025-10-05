@@ -58,13 +58,14 @@ export type NotificationMetadata = {
   workoutExerciseId?: number;
   checkId?: number;
   subscriptionId?: number;
+  name?: string;
 };
 
 // Type for system notification
 export type SystemNotification = {
   id: number;
   userId: number;
-  type: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription';
+  type: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call';
   seen: boolean;
   metadata: NotificationMetadata;
   createdAt: string;
@@ -90,7 +91,7 @@ export type UnreadCountResponse = {
 // Type for filters
 export type SystemNotificationFilters = {
   seen?: boolean;
-  type?: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription';
+  type?: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call';
   userId?: number;
   page?: number;
   limit?: number;

@@ -64,6 +64,12 @@ export interface Order {
     firstName: string;
     lastName: string;
   };
+  stripePaymentData?: {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+  };
 }
 
 // Pagination interface

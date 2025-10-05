@@ -47,6 +47,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/clients/:clientId/diario/:tabName" element={<DiarioPage />} />
           <Route path="/clients/:clientId/alimentazione" element={<AlimentazionePage />} />
           <Route path="/clients/:clientId/altro" element={<AltroPage />} />
+          <Route path="/clients/:clientId/altro/:tabName" element={<AltroPage />} />
           <Route path="/training" element={<TrainingPage />} />
           <Route path="/training/exercise" element={<TrainingExercisePage />} />
           <Route path="/training/training-program" element={<TrainingProgramPage />} />

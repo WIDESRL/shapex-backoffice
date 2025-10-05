@@ -5,9 +5,9 @@ import { UserConsent } from '../Context/ClientContext';
 interface ConsentCardProps {
   consent: UserConsent;
   typeLabel: string;
-  typeColor: string;
   dateLabel: string;
   grantedLabel: string;
+  badges?: React.ReactNode[];
 }
 
 const styles = {
@@ -53,14 +53,20 @@ const styles = {
   consentIcon: {
     fontSize: 20,
   },
+  badgeContainer: {
+    display: 'flex',
+    gap: 0.5,
+    mt: 1,
+    flexWrap: 'wrap',
+  },
 };
 
 const ConsentCard: React.FC<ConsentCardProps> = ({ 
   consent, 
   typeLabel, 
-  typeColor, 
   dateLabel, 
-  grantedLabel 
+  grantedLabel,
+  badges
 }) => {
   // Get icon based on consent type
   const getConsentIcon = (type: UserConsent['type']) => {
@@ -93,12 +99,17 @@ const ConsentCard: React.FC<ConsentCardProps> = ({
           <Typography sx={styles.consentDate}>
             {dateLabel}
           </Typography>
+          {badges && badges.length > 0 && (
+            <Box sx={styles.badgeContainer}>
+              {badges}
+            </Box>
+          )}
         </Box>
         <Chip
           label={grantedLabel}
           sx={{
             ...styles.consentChip,
-            backgroundColor: typeColor,
+            backgroundColor: '#4caf50',
             color: '#fff',
           }}
         />

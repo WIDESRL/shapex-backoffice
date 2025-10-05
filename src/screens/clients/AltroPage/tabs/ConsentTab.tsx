@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress, Chip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useClientContext } from '../../../../Context/ClientContext';
@@ -96,7 +96,26 @@ const styles = {
     color: '#9e9e9e',
     fontStyle: 'italic',
   },
-
+  badgeContainer: {
+    display: 'flex',
+    gap: 0.5,
+    mt: 1,
+    flexWrap: 'wrap',
+  },
+  legalBadge: {
+    backgroundColor: '#e3f2fd',
+    color: '#1976d2',
+    fontSize: 10,
+    height: 20,
+    fontWeight: 600,
+  },
+  preferenceBadge: {
+    backgroundColor: '#f3e5f5',
+    color: '#7b1fa2',
+    fontSize: 10,
+    height: 20,
+    fontWeight: 600,
+  },
 };
 
 const ConsentTab: React.FC = () => {
@@ -116,7 +135,7 @@ const ConsentTab: React.FC = () => {
       setHasInitialFetch(true);
       fetchUserConsents(clientId);
     }
-  }, [clientId]);
+  }, [clientId, fetchUserConsents]);
 
   // Format date helper
   const formatDate = (dateString: string) => {
@@ -136,7 +155,7 @@ const ConsentTab: React.FC = () => {
       case 'marketing':
         return t('client.altro.consents.types.marketing');
       case 'dataProcessing':
-        return t('client.altro.consents.types.dataProcessing');
+        return t('client.altro.consents.types.privacy_policy');
       case 'terms':
         return t('client.altro.consents.types.terms');
       case 'photoTracking':
@@ -146,20 +165,50 @@ const ConsentTab: React.FC = () => {
     }
   };
 
-  // Get consent type color
-  const getConsentTypeColor = (type: UserConsent['type']) => {
-    switch (type) {
-      case 'marketing':
-        return '#4caf50'; // Green
-      case 'dataProcessing':
-        return '#2196f3'; // Blue
-      case 'terms':
-        return '#ff9800'; // Orange
-      case 'photoTracking':
-        return '#9c27b0'; // Purple
-      default:
-        return '#757575'; // Grey
+  // Generate consent badges
+  const getConsentBadges = (consent: UserConsent) => {
+    const badges: React.ReactNode[] = [];
+    
+    if (consent.legalNotice) {
+      badges.push(
+        <Chip
+          key="legal"
+          label={t('client.altro.consents.badges.legal')}
+          size="small"
+          sx={styles.legalBadge}
+        />
+      );
     }
+    
+    if (consent.preference) {
+      badges.push(
+        <Chip
+          key="preference"
+          label={t('client.altro.consents.badges.preference')}
+          size="small"
+          sx={styles.preferenceBadge}
+        />
+      );
+    }
+    
+    if (!consent.legalNotice && !consent.preference) {
+      badges.push(
+        <Chip
+          key="general"
+          label={t('client.altro.consents.badges.general')}
+          size="small"
+          sx={{
+            backgroundColor: '#f5f5f5',
+            color: '#666',
+            fontSize: 10,
+            height: 20,
+            fontWeight: 600,
+          }}
+        />
+      );
+    }
+    
+    return badges;
   };
 
   // Loading component
@@ -208,9 +257,9 @@ const ConsentTab: React.FC = () => {
                 key={consent.id} 
                 consent={consent}
                 typeLabel={getConsentTypeLabel(consent.type)}
-                typeColor={getConsentTypeColor(consent.type)}
                 dateLabel={formatDate(consent.createdAt)}
                 grantedLabel={t('client.altro.consents.granted')}
+                badges={getConsentBadges(consent)}
               />
             ))}
           </Box>

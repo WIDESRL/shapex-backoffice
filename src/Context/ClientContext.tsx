@@ -256,27 +256,56 @@ export type UserConsent = {
   id: number;
   userId: number;
   type: 'marketing' | 'dataProcessing' | 'terms' | 'photoTracking';
+  legalNotice: boolean;
+  preference: boolean;
   createdAt: string;
 };
 
-// Type for notification pagination
-export type NotificationPagination = {
-  page: number;
-  pageLimit: number;
-  total: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
+// Type for user call data
+export type UserCall = {
+  id: number;
+  userId: number;
+  type: 'Extra' | 'Supplementary';
+  usedAt: string | null;
+  createdAt: string;
+  product?: {
+    id: number;
+    name: string;
+  };
+  subscription?: {
+    id: number;
+    subscription: {
+      title: string;
+    };
+  };
+  order?: {
+    id: number;
+    totalAmount: number;
+    stripePaymentIntentId: string;
+    stripePaymentData: {
+      id: string;
+      amount: number;
+      currency: string;
+      status: string;
+    };
+  };
+};
+
+export type UserCallsResponse = {
+  data: {
+    calls: UserCall[];
+    pagination: Pagination;
+  }
 };
 
 // Type for pagination
 export type Pagination = {
   page: number;
-  pageLimit: number;
+  limit: number;
   total: number;
   totalPages: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
+  hasNext: boolean;
+  hasPrev: boolean;
 };
 
 // Type for notifications response
@@ -304,9 +333,11 @@ export type ClientContextType = {
   userImagesAlbum: UserAlbumImage[];
   userNotifications: UserNotification[];
   userConsents: UserConsent[];
+  userCalls: UserCall[];
   userSubscriptions: UserSubscription[];
   notificationsPagination: Pagination | null;
   userImagesAlbumPagination: Pagination | null;
+  userCallsPagination: Pagination | null;
   selectedCheckDetailed: UserCheckDetailed | null;
   userNextCheckDate: UserNextCheckDate | null;
   loading: boolean;
@@ -321,6 +352,7 @@ export type ClientContextType = {
   loadingUserImagesAlbum: boolean;
   loadingUserNotifications: boolean;
   loadingUserConsents: boolean;
+  loadingUserCalls: boolean;
   loadingUserSubscriptions: boolean;
   loadingSelectedCheck: boolean;
   loadingUserNextCheckDate: boolean;
@@ -344,6 +376,7 @@ export type ClientContextType = {
   fetchUserImagesAlbum: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, append?: boolean) => Promise<void>;
   fetchUserNotifications: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, type?: string, append?: boolean) => Promise<void>;
   fetchUserConsents: (userId: string) => Promise<void>;
+  fetchUserCalls: (userId: string, page?: number, pageLimit?: number, append?: boolean, used?: boolean, type?: 'Extra' | 'Supplementary') => Promise<void>;
   fetchUserSubscriptions: (userId: string) => Promise<void>;
   fetchCheckById: (checkId: number) => Promise<void>;
   fetchUserNextCheckDate: (clientId: string) => Promise<void>;
@@ -365,9 +398,11 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [userImagesAlbum, setUserImagesAlbum] = useState<UserAlbumImage[]>([]);
   const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
   const [userConsents, setUserConsents] = useState<UserConsent[]>([]);
+  const [userCalls, setUserCalls] = useState<UserCall[]>([]);
   const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
   const [notificationsPagination, setNotificationsPagination] = useState<Pagination | null>(null);
   const [userImagesAlbumPagination, setUserImagesAlbumPagination] = useState<Pagination | null>(null);
+  const [userCallsPagination, setUserCallsPagination] = useState<Pagination | null>(null);
   const [selectedCheckDetailed, setSelectedCheckDetailed] = useState<UserCheckDetailed | null>(null);
   const [userNextCheckDate, setUserNextCheckDate] = useState<UserNextCheckDate | null>(null);
   const [loading, setLoading] = useState(false);
@@ -382,6 +417,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingUserImagesAlbum, setLoadingUserImagesAlbum] = useState(false);
   const [loadingUserNotifications, setLoadingUserNotifications] = useState(false);
   const [loadingUserConsents, setLoadingUserConsents] = useState(false);
+  const [loadingUserCalls, setLoadingUserCalls] = useState(false);
   const [loadingUserSubscriptions, setLoadingUserSubscriptions] = useState(false);
   const [loadingSelectedCheck, setLoadingSelectedCheck] = useState(false);
   const [loadingUserNextCheckDate, setLoadingUserNextCheckDate] = useState(false);
@@ -657,6 +693,54 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
+  const fetchUserCalls = useCallback(async (
+    userId: string, 
+    page: number = 1, 
+    pageLimit: number = 3, 
+    append: boolean = false, 
+    used?: boolean, 
+    type?: 'Extra' | 'Supplementary'
+  ): Promise<void> => {
+    try {
+      setLoadingUserCalls(true);
+      
+      // Build query parameters
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit:  pageLimit.toString()
+      });
+      
+      if (used !== undefined) {
+        params.append('used', used.toString());
+      }
+      
+      if (type) {
+        params.append('type', type);
+      }
+      
+      const response = await axiosInstance.get(`/calls/admin/user/${userId}?${params.toString()}`);
+      
+      const callsData: UserCallsResponse = response.data;
+      console.log('Fetched user calls data:', callsData);
+      if (append && page > 1) {
+        setUserCalls(prev => [...prev, ...callsData.data.calls]);
+      } else {
+        setUserCalls(callsData.data.calls || []);
+      }
+      
+      setUserCallsPagination(callsData.data.pagination);
+    } catch (error) {
+      console.error('Error fetching user calls:', error);
+      if (!append) {
+        setUserCalls([]);
+        setUserCallsPagination(null);
+      }
+      throw error;
+    } finally {
+      setLoadingUserCalls(false);
+    }
+  }, []);
+
   const fetchUserSubscriptions = useCallback(async (userId: string): Promise<void> => {
     try {
       setLoadingUserSubscriptions(true);
@@ -725,9 +809,11 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         userImagesAlbum,
         userNotifications,
         userConsents,
+        userCalls,
         userSubscriptions,
         notificationsPagination,
         userImagesAlbumPagination,
+        userCallsPagination,
         selectedCheckDetailed,
         userNextCheckDate,
         loading, 
@@ -742,6 +828,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingUserImagesAlbum,
         loadingUserNotifications,
         loadingUserConsents,
+        loadingUserCalls,
         loadingUserSubscriptions,
         loadingSelectedCheck,
         loadingUserNextCheckDate,
@@ -765,6 +852,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchUserImagesAlbum,
         fetchUserNotifications,
         fetchUserConsents,
+        fetchUserCalls,
         fetchUserSubscriptions,
         fetchCheckById,
         fetchUserNextCheckDate,

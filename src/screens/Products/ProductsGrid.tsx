@@ -36,7 +36,7 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, onEdit, loading =
 
   const handleDeleteConfirm = async () => {
     if (productToDelete) {
-      await removeProduct(String(productToDelete.id));
+      await removeProduct(productToDelete.id);
       setDeleteDialogOpen(false);
       setProductToDelete(null);
     }

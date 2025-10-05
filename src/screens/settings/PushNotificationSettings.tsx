@@ -83,6 +83,16 @@ const PushNotificationSettings: React.FC<PushNotificationSettingsProps> = ({ sty
       titleKey: 'settings.pushNotifications.userPurchasedSubscription.title',
       descriptionKey: 'settings.pushNotifications.userPurchasedSubscription.description',
     },
+    {
+      key: 'USER_BOOKED_EXTRA_CALL' as const,
+      titleKey: 'settings.pushNotifications.userBookedExtraCall.title',
+      descriptionKey: 'settings.pushNotifications.userBookedExtraCall.description',
+    },
+    {
+      key: 'USER_BOOKED_SUPPLEMENTARY_CALL' as const,
+      titleKey: 'settings.pushNotifications.userBookedSupplementaryCall.title',
+      descriptionKey: 'settings.pushNotifications.userBookedSupplementaryCall.description',
+    },
   ];
 
   return (

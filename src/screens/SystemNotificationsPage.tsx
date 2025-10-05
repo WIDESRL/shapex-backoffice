@@ -30,6 +30,7 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import DateRangePicker from '../components/DateRangePicker';
 import DeleteConfirmationDialog from './Subscription/DeleteConfirmationDialog';
 import CheckDetailsDialog from '../components/CheckDetailsDialog';
@@ -343,7 +344,7 @@ const SystemNotificationsPage: React.FC = () => {
     const filters: SystemNotificationFilters = {};
     
     if (filterType !== 'all') {
-      filters.type = filterType as 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription';
+      filters.type = filterType as 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call';
     }
     
     if (filterStatus !== 'all') {
@@ -433,6 +434,10 @@ const SystemNotificationsPage: React.FC = () => {
         return t('systemNotifications.types.userCompletedProfile');
       case 'user_purchased_subscription':
         return t('systemNotifications.types.userPurchasedSubscription');
+      case 'user_booked_extra_call':
+        return t('systemNotifications.types.userBookedExtraCall');
+      case 'user_booked_supplementary_call':
+        return t('systemNotifications.types.userBookedSupplementaryCall');
       default:
         return 'System Notification';
     }
@@ -463,6 +468,14 @@ const SystemNotificationsPage: React.FC = () => {
         return notification.relatedData?.subscription?.title 
           ? t('systemNotifications.descriptions.userPurchasedSubscriptionWithTitle', { title: notification.relatedData.subscription.title })
           : t('systemNotifications.descriptions.userPurchasedSubscriptionGeneric');
+      case 'user_booked_extra_call':
+        return notification.metadata.name 
+          ? t('systemNotifications.descriptions.userBookedExtraCallWithName', { name: notification.metadata.name })
+          : t('systemNotifications.descriptions.userBookedExtraCall');
+      case 'user_booked_supplementary_call':
+        return notification.metadata.name 
+          ? t('systemNotifications.descriptions.userBookedSupplementaryCallWithName', { name: notification.metadata.name })
+          : t('systemNotifications.descriptions.userBookedSupplementaryCall');
       default:
         return t('systemNotifications.descriptions.systemNotificationGeneric');
     }
@@ -480,6 +493,10 @@ const SystemNotificationsPage: React.FC = () => {
       notification.type === 'user_completed_profile'
     ) || (
       notification.type === 'user_purchased_subscription'
+    ) || (
+      notification.type === 'user_booked_extra_call'
+    ) || (
+      notification.type === 'user_booked_supplementary_call'
     );
   };
 
@@ -529,6 +546,9 @@ const SystemNotificationsPage: React.FC = () => {
         return <PersonIcon sx={styles.typeIcon} />;
       case 'user_purchased_subscription':
         return <ShoppingCartIcon sx={styles.typeIcon} />;
+      case 'user_booked_extra_call':
+      case 'user_booked_supplementary_call':
+        return <CameraAltIcon sx={styles.typeIcon} />;
       default:
         return <InfoIcon style={styles.typeIcon} />;
     }
@@ -672,7 +692,12 @@ const SystemNotificationsPage: React.FC = () => {
         break;
       }
       case 'user_purchased_subscription': {
-        navigate(`/clients/${notification.user.id}/altro`);
+        navigate(`/clients/${notification.user.id}/altro/subscription`);
+        break;
+      }
+      case 'user_booked_extra_call':
+      case 'user_booked_supplementary_call': {
+        navigate(`/clients/${notification.user.id}/altro/calls`);
         break;
       }
       default:
@@ -766,6 +791,8 @@ const SystemNotificationsPage: React.FC = () => {
                   <MenuItem value="exercise_completed">{t('systemNotifications.filters.exerciseCompleted')}</MenuItem>
                   <MenuItem value="user_completed_profile">{t('systemNotifications.filters.userCompletedProfile')}</MenuItem>
                   <MenuItem value="user_purchased_subscription">{t('systemNotifications.filters.userPurchasedSubscription')}</MenuItem>
+                  <MenuItem value="user_booked_extra_call">{t('systemNotifications.filters.userBookedExtraCall')}</MenuItem>
+                  <MenuItem value="user_booked_supplementary_call">{t('systemNotifications.filters.userBookedSupplementaryCall')}</MenuItem>
                 </Select>
               </FormControl>
               
