@@ -69,7 +69,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       // Set pagination parameters
       urlParams.append('page', (params.page || 1).toString());
-      urlParams.append('itemsPerPage', (params.limit || 20).toString());
+      urlParams.append('itemsPerPage', (params.limit || 10).toString());
       
       // Add filter parameters
       if (params.search) urlParams.append('search', params.search);

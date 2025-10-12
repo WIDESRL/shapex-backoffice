@@ -484,7 +484,7 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
                 }}
                 onClick={() => setSelectedExercises([ex.id])}
               >
-                {ex?.videoThumbnailFile?.signedUrl && (
+                {ex?.videoThumbnailFile?.signedUrl ? (
                   <Box sx={styles.videoThumbBox}>
                     <img
                       src={ex.videoThumbnailFile.signedUrl}
@@ -495,6 +495,9 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
                     <Box sx={styles.videoIconBox}>
                       <VideoIcon style={{ width: 16, height: 16 }} />
                     </Box>
+                  </Box>
+                ) : (
+                  <Box sx={{ ...styles.videoThumbBox, border: '1px dashed #ccc' }}>
                   </Box>
                 )}
                 <span 

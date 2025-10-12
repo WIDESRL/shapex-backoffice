@@ -342,13 +342,36 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
           </Table>
         </TableContainer>
         
-        {/* Load More Button - Only show when showHeader is true */}
-        {canLoadMore && !rowLimit && showHeader && (
-          <Box sx={styles.loadMoreContainer}>
+        {!rowLimit && showHeader && trainingProgramsResponse && (
+          <Box 
+            display="flex" 
+            justifyContent="space-between" 
+            alignItems="center" 
+            mt={2}
+            px={2}
+            py={1}
+            sx={{
+              flexShrink: 0,
+              borderTop: '1px solid #e0e0e0',
+              backgroundColor: '#fafafa',
+              borderRadius: 1,
+            }}
+          >
+            <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'Montserrat, sans-serif' }}>
+              {t('training.showingResults', 'Mostrando {{count}} di {{total}} risultati', {
+                count: trainingPrograms.length,
+                total: trainingProgramsResponse.totalCount
+              })}
+            </Typography>
             <Button
               variant="outlined"
               onClick={handleLoadMore}
-              sx={styles.loadMoreButton}
+              disabled={!canLoadMore}
+              sx={{
+                ...styles.loadMoreButton,
+                opacity: canLoadMore ? 1 : 0.5,
+                cursor: canLoadMore ? 'pointer' : 'not-allowed'
+              }}
             >
               {t('training.loadMore', 'Carica altri')}
             </Button>

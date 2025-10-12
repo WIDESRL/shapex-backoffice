@@ -14,27 +14,35 @@ const SubscriptionsScreen: React.FC = () => {
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState<Omit<Subscription, 'id'>>({
     title: '',
+    titleApp: '',
     description: '',
     color: '#FF0000',
     duration: 1,
     monthlyChecks: 0,
     order: 1,
+    price: 0,
+    discountPrice: 0,
+    recurringMonthlyPayment: false,
+    visibleInFrontend: false,
     chat: false,
     freeIntroductoryCall: false,
     mealPlan: false,
     integrationPlan: true,
     trainingCard: true,
     vip: false,
-    price: 0,
+    supplementaryCalls: false,
+    numberOfSupplementaryCalls: 0,
   });
   const [editMode, setEditMode] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [errors, setErrors] = useState({
     title: '',
+    titleApp: '',
     description: '',
     duration: '',
     order: '',
     price: '',
+    discountPrice: '',
   });
 
   useEffect(() => {
@@ -50,18 +58,24 @@ const SubscriptionsScreen: React.FC = () => {
     } else {
       setFormData({
         title: '',
+        titleApp: '',
         description: '',
         color: '#FF0000',
         duration: 1,
         monthlyChecks: 0,
         order: 1,
+        price: 0,
+        discountPrice: 0,
+        recurringMonthlyPayment: false,
+        visibleInFrontend: false,
         chat: false,
         freeIntroductoryCall: false,
         mealPlan: false,
         integrationPlan: true,
         trainingCard: true,
         vip: false,
-        price: 0,
+        supplementaryCalls: false,
+        numberOfSupplementaryCalls: 0,
       });
       setEditMode(false);
       setSelectedId(null);
@@ -71,16 +85,29 @@ const SubscriptionsScreen: React.FC = () => {
 
   const handleCloseForm = () => {
     setOpenForm(false);
-    setErrors({ title: '', description: '', duration: '', order: '', price: '' });
+    setErrors({ title: '', titleApp: '', description: '', duration: '', order: '', price: '', discountPrice: '' });
   };
 
-  const handleFormSubmit = async () => {
+  const handleFormSubmit = async () => {    const titleAppValid = formData.titleApp && formData.titleApp.trim().length > 0;
+    
+    let discountPriceError = '';
+    
+    if (formData.discountPrice === 0) {
+      discountPriceError = t('subscriptions.validation.discountPriceNoZero');
+    } else if (formData.discountPrice && formData.discountPrice > 0) {
+      if (formData.discountPrice >= formData.price) {
+        discountPriceError = t('subscriptions.validation.discountPriceLessThanPrice');
+      }
+    }
+
     const newErrors = {
       title: formData.title.trim() ? '' : t('subscriptions.validation.titleRequired'),
+      titleApp: titleAppValid ? '' : t('subscriptions.validation.titleAppRequired'),
       description: formData.description.trim() ? '' : t('subscriptions.validation.descriptionRequired'),
       duration: formData.duration > 0 ? '' : t('subscriptions.validation.durationPositive'),
       order: formData.order > 0 ? '' : t('subscriptions.validation.orderPositive'),
-      price: formData.price > 0 ? '' : t('subscriptions.validation.pricePositive'), 
+      price: formData.price > 0 ? '' : t('subscriptions.validation.pricePositive'),
+      discountPrice: discountPriceError,
     };
 
     setErrors(newErrors);

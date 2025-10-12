@@ -152,11 +152,22 @@ const styles = {
           backgroundColor: '#00C853',
           opacity: 1,
         },
+        '&.Mui-disabled': {
+          color: '#fff',
+          '& + .MuiSwitch-track': {
+            backgroundColor: '#00C853',
+            opacity: 1,
+          },
+        },
       },
       '&.Mui-disabled': {
         '& + .MuiSwitch-track': {
           backgroundColor: '#ccc',
-          opacity: 0.5,
+          opacity: 1,
+        },
+        '&.Mui-checked + .MuiSwitch-track': {
+          backgroundColor: '#00C853',
+          opacity: 1,
         },
       },
     },
@@ -286,6 +297,11 @@ const SubscriptionDetailDialog: React.FC<SubscriptionDetailDialogProps> = ({
               </Box>
 
               <Box sx={styles.infoRow}>
+                <Typography sx={styles.infoLabel}>{t('subscriptions.titleApp')}:</Typography>
+                <Typography sx={styles.infoValue}>{subscription.titleApp || '-'}</Typography>
+              </Box>
+
+              <Box sx={styles.infoRow}>
                 <Typography sx={styles.infoLabel}>{t('subscriptions.description')}:</Typography>
                 <Typography sx={styles.infoValue} style={{ maxWidth: '60%', textAlign: 'right' }}>
                   {subscription.description}
@@ -293,17 +309,15 @@ const SubscriptionDetailDialog: React.FC<SubscriptionDetailDialogProps> = ({
               </Box>
 
               <Box sx={styles.infoRow}>
+                <Typography sx={styles.infoLabel}>{t('subscriptions.order')}:</Typography>
+                <Typography sx={styles.infoValue}>{subscription.order}</Typography>
+              </Box>
+
+              <Box sx={styles.infoRow}>
                 <Typography sx={styles.infoLabel}>{t('subscriptions.color')}:</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ ...styles.colorIndicator, backgroundColor: subscription.color }} />
                 </Box>
-              </Box>
-
-              <Box sx={styles.infoRow}>
-                <Typography sx={styles.infoLabel}>{t('subscriptions.price')}:</Typography>
-                <Typography sx={styles.infoValue}>
-                  {formatCurrency(subscription.price, subscription.currency)}
-                </Typography>
               </Box>
 
               <Box sx={styles.infoRow}>
@@ -319,8 +333,31 @@ const SubscriptionDetailDialog: React.FC<SubscriptionDetailDialogProps> = ({
               </Box>
 
               <Box sx={styles.infoRow}>
-                <Typography sx={styles.infoLabel}>{t('subscriptions.order')}:</Typography>
-                <Typography sx={styles.infoValue}>{subscription.order}</Typography>
+                <Typography sx={styles.infoLabel}>{t('subscriptions.price')}:</Typography>
+                <Typography sx={styles.infoValue}>
+                  {formatCurrency(subscription.price, subscription.currency)}
+                </Typography>
+              </Box>
+
+              {subscription.discountPrice && subscription.discountPrice > 0 && (
+                <Box sx={styles.infoRow}>
+                  <Typography sx={styles.infoLabel}>{t('subscriptions.discountPrice')}:</Typography>
+                  <Typography sx={styles.infoValue}>
+                    {formatCurrency(subscription.discountPrice, subscription.currency)}
+                  </Typography>
+                </Box>
+              )}
+
+              <Box sx={styles.infoRow}>
+                <Typography sx={styles.infoLabel}>{t('subscriptions.currency')}:</Typography>
+                <Typography sx={styles.infoValue}>
+                  {subscription.currency?.toUpperCase() || 'EUR'}
+                </Typography>
+              </Box>
+
+              <Box sx={styles.infoRow}>
+                <Typography sx={styles.infoLabel}>{t('subscriptions.numberOfSupplementaryCalls')}:</Typography>
+                <Typography sx={styles.infoValue}>{subscription.numberOfSupplementaryCalls || 0}</Typography>
               </Box>
             </Box>
 
@@ -334,12 +371,15 @@ const SubscriptionDetailDialog: React.FC<SubscriptionDetailDialogProps> = ({
               
               <Box sx={styles.toggleContainer}>
                 {[
-                  { label: t('subscriptions.vip'), checked: subscription.vip },
+                  { label: t('subscriptions.visibleInFrontend'), checked: subscription.visibleInFrontend },
+                  { label: t('subscriptions.monthlyRecurring'), checked: subscription.recurringMonthlyPayment },
                   { label: t('subscriptions.chat'), checked: subscription.chat },
+                  { label: t('subscriptions.vip'), checked: subscription.vip },
                   { label: t('subscriptions.trainingCard'), checked: subscription.trainingCard },
                   { label: t('subscriptions.integrationPlan'), checked: subscription.integrationPlan },
                   { label: t('subscriptions.mealPlan'), checked: subscription.mealPlan },
                   { label: t('subscriptions.freeIntroCall'), checked: subscription.freeIntroductoryCall },
+                  { label: t('subscriptions.supplementaryCalls'), checked: subscription.supplementaryCalls },
                 ].map((feature, index) => (
                   <Box key={index} sx={styles.toggleRow}>
                     <Typography sx={styles.toggleLabel}>{feature.label}</Typography>

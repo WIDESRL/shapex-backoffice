@@ -185,6 +185,7 @@ export type Client = {
   phoneNumber: string | null;
   dateOfBirth: string | null;
   placeOfBirth: string | null;
+  fiscalCode: string | null;
   activeSubscription: {
     id: number;
     name: string;
@@ -192,6 +193,8 @@ export type Client = {
     expireDate: string;
     startDate: string;
     status: 'active' | 'expired' | 'pending';
+    integrationPlan: boolean;
+    mealPlan: boolean;
   } | null;
   totalMessages: number;
 };
@@ -203,6 +206,7 @@ export type ClientAnagrafica = {
   email: string;
   dateOfBirth: string | null;
   placeOfBirth: string | null;
+  fiscalCode: string | null;
   lastLogin: string,
   lastOnline: string,
   online: boolean,
@@ -327,6 +331,7 @@ export type ClientName = {
 export type ClientContextType = {
   clients: Client[];
   clientNames: ClientName[];
+  clientsPagination: Pagination | null;
   clientAnagrafica: ClientAnagrafica | null;
   trainingProgramOfUser: TrainingProgramOfUser[];
   historicalExercises: HistoricalExercise[];
@@ -392,6 +397,7 @@ const ClientContext = createContext<ClientContextType | undefined>(undefined);
 export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [clients, setClients] = useState<Client[]>([]);
   const [clientNames, setClientNames] = useState<ClientName[]>([]);
+  const [clientsPagination, setClientsPagination] = useState<Pagination | null>(null);
   const [clientAnagrafica, setClientAnagrafica] = useState<ClientAnagrafica | null>(null);
   const [trainingProgramOfUser, setTrainingProgramOfUser] = useState<TrainingProgramOfUser[]>([]);
   const [historicalExercises, setHistoricalExercises] = useState<HistoricalExercise[]>([]);
@@ -426,7 +432,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingSelectedCheck, setLoadingSelectedCheck] = useState(false);
   const [loadingUserNextCheckDate, setLoadingUserNextCheckDate] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(20);
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
 
@@ -437,19 +443,31 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const currentPageSize = params?.pageSize ?? pageSize;
       const currentSearch = params?.search ?? search;
       const append = params?.append ?? false;
-        const response = await axiosInstance.get(
-      `/client/all`,
-      {
-        params: {
-          page: currentPage,
-          pageSize: currentPageSize,
-          search: currentSearch,
-          ...(params?.subscriptionId && { subscriptionId: params.subscriptionId }),
-        },
+      const response = await axiosInstance.get(
+        `/client/all`,
+        {
+          params: {
+            page: currentPage,
+            pageSize: currentPageSize,
+            search: currentSearch,
+            ...(params?.subscriptionId && { subscriptionId: params.subscriptionId }),
+          },
+        }
+      );
+      
+      // Handle new API response structure
+      const responseData = response.data;
+      if (responseData.data && responseData.pagination) {
+        // New structure: { data: [...], pagination: {...} }
+        setClients((prev) => append ? [...prev, ...responseData.data] : responseData.data);
+        setClientsPagination(responseData.pagination);
+        setTotal(responseData.pagination.total);
+      } else {
+        // Fallback for old structure (direct array)
+        setClients((prev) => append ? [...prev, ...responseData] : responseData);
+        setClientsPagination(null);
+        setTotal(responseData.length || 0);
       }
-    );
-      setClients((prev) => append ? [...prev, ...response.data] : response.data);
-      setTotal(response.data.total);
       setLoading(false);
     },
     [page, pageSize, search]
@@ -803,6 +821,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       value={{ 
         clients, 
         clientNames,
+        clientsPagination,
         clientAnagrafica, 
         trainingProgramOfUser,
         historicalExercises,

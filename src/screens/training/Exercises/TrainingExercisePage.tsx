@@ -12,8 +12,8 @@ import {
   IconButton,
   TextField,
   InputAdornment,
-  Button,
   Autocomplete,
+  Pagination,
 } from '@mui/material';
 import EditIcon from '../../../icons/EditIcon';
 import DeleteIcon from '../../../icons/DeleteIcon';
@@ -83,7 +83,6 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
   const { t } = useTranslation();
   const {
     fetchExercises,
-    loadMoreExercises,
     updateExercise,
     deleteExercise,
     exercises,
@@ -92,6 +91,7 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [editData, setEditData] = useState<Exercise | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -104,7 +104,7 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const debouncedFetchExercises = useCallback(
-    (params: { limit?: number; search?: string; muscleGroups?: string[]; resetPagination?: boolean }) => {
+    (params: { limit?: number; search?: string; muscleGroups?: string[]; page?: number; resetPagination?: boolean }) => {
       // Clear existing timeout
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
@@ -117,7 +117,7 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
           limit: params.limit,
           search: params.search,
           muscleGroups: params.muscleGroups,
-          page: params.resetPagination ? 1 : undefined,
+          page: params.page || 1,
           resetPagination: params.resetPagination
         }).finally(() => setIsLoading(false));
       }, 500);
@@ -125,15 +125,28 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
     [fetchExercises]
   );
 
-  // Initial load
   useEffect(() => {
+    setCurrentPage(1);
     debouncedFetchExercises({ 
       limit: rowLimit, 
       search: searchTerm, 
       muscleGroups: selectedMuscleGroup ? [selectedMuscleGroup] : undefined,
+      page: 1,
       resetPagination: true 
     });
   }, [searchTerm, selectedMuscleGroup, debouncedFetchExercises, rowLimit]);
+
+  useEffect(() => {
+    if (currentPage !== 1) {
+      debouncedFetchExercises({ 
+        limit: rowLimit, 
+        search: searchTerm, 
+        muscleGroups: selectedMuscleGroup ? [selectedMuscleGroup] : undefined,
+        page: currentPage,
+        resetPagination: false 
+      });
+    }
+  }, [currentPage, debouncedFetchExercises, rowLimit, searchTerm, selectedMuscleGroup]);
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -145,14 +158,11 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
   }, []);
 
   const currentExercises = exercises?.exercises || [];
-  const hasMore = exercises ? exercises.page < exercises.totalPages : false;
 
-  const handleLoadMore = useCallback(() => {
-    if (exercises && exercises.page < exercises.totalPages) {
-      setIsLoading(true);
-      loadMoreExercises().finally(() => setIsLoading(false));
-    }
-  }, [exercises, loadMoreExercises]);
+  // Pagination handler
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   const handleAdd = () => {
     setEditData(null);
@@ -349,24 +359,40 @@ const TrainingExercisePage = ({ rowLimit, showHeader = true }: TrainingExerciseP
         </TableContainer>
       </Paper>
       
-      {/* Load More Button */}
-      {!rowLimit && hasMore && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-          <Button
-            variant="outlined"
-            onClick={handleLoadMore}
-            disabled={isLoading}
+      {/* Pagination */}
+      {!rowLimit && exercises && (
+        <Box 
+          display="flex" 
+          justifyContent="space-between" 
+          alignItems="center" 
+          mt={2}
+          px={2}
+          py={1}
+          sx={{
+            flexShrink: 0,
+            borderTop: '1px solid #e0e0e0',
+            backgroundColor: '#fafafa',
+            borderRadius: 1,
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            {t('training.totalResults', { total: exercises.totalCount || 0 })}
+          </Typography>
+          <Pagination
+            count={exercises.totalPages || 1}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            size="small"
             sx={{
-              borderColor: '#E6BB4A',
-              color: '#E6BB4A',
-              '&:hover': {
-                borderColor: '#d4a737',
-                backgroundColor: '#f9f2e4',
+              '& .Mui-selected': {
+                backgroundColor: '#E6BB4A !important',
+                color: '#fff',
               },
             }}
-          >
-            {isLoading ? t('common.loading') : t('training.loadMore')}
-          </Button>
+            showFirstButton
+            showLastButton
+          />
         </Box>
       )}
       

@@ -24,10 +24,12 @@ interface SubscriptionFormDialogProps {
   formData: Omit<Subscription, 'id'>;
   errors: {
     title: string;
+    titleApp: string;
     description: string;
     duration: string;
     order: string;
     price: string;
+    discountPrice: string;
   };
   onClose: () => void;
   onSubmit: () => void;
@@ -355,6 +357,53 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
           helperText={errors.title}
           InputProps={{ sx: styles.textFieldInput }}
         />
+        {/* Title App */}
+        <TextField
+          label={t('subscriptions.titleApp')}
+          name="titleApp"
+          select
+          value={['Silver', 'Bronze', 'Gold'].includes(formData.titleApp || '') ? formData.titleApp : 'Other'}
+          onChange={(e) => {
+            if (e.target.value === 'Other') {
+              onInputChange({
+                target: { name: 'titleApp', value: '', type: 'text' }
+              } as React.ChangeEvent<HTMLInputElement>);
+            } else {
+              onInputChange({
+                target: { name: 'titleApp', value: e.target.value, type: 'text' }
+              } as React.ChangeEvent<HTMLInputElement>);
+            }
+          }}
+          fullWidth
+          margin="normal"
+          error={!!errors.titleApp}
+          helperText={errors.titleApp}
+          SelectProps={{
+            native: true,
+          }}
+          InputProps={{ sx: styles.textFieldInput }}
+        >
+          <option value="Silver">Silver</option>
+          <option value="Bronze">Bronze</option>
+          <option value="Gold">Gold</option>
+          <option value="Other">{t('common.other') || 'Other'}</option>
+        </TextField>
+        
+        {/* Custom Title App input - shown when "Other" is selected */}
+        {!['Silver', 'Bronze', 'Gold'].includes(formData.titleApp || '') && (
+          <TextField
+            label={t('subscriptions.customTitleApp') || 'Custom Title App'}
+            name="titleApp"
+            value={formData.titleApp || ''}
+            onChange={onInputChange}
+            fullWidth
+            margin="normal"
+            error={!!errors.titleApp}
+            helperText={errors.titleApp}
+            placeholder={t('subscriptions.enterCustomTitle') || 'Enter custom title...'}
+            InputProps={{ sx: styles.textFieldInput }}
+          />
+        )}
         {/* Description */}
         <TextField
           label={t('subscriptions.description')}
@@ -369,70 +418,9 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
           helperText={errors.description}
           InputProps={{ sx: styles.textFieldInputSmall }}
         />
-        {/* Color */}
-        <Box sx={styles.colorContainer}>
-          <Typography sx={styles.colorLabel}>{t('subscriptions.color')}:</Typography>
-          <Box sx={{ ...styles.colorPicker, background: formData.color }}>
-            <input
-              type="color"
-              value={formData.color}
-              onChange={e => handleColorSelect(e.target.value)}
-              style={styles.colorInput}
-              tabIndex={-1}
-            />
-          </Box>
-          <ArrowDropDown
-            sx={styles.colorArrow}
-            onClick={handleArrowClick}
-          />
-          {/* Color dropdown */}
-          {Boolean(colorMenuAnchor) && (
-            <Box ref={colorDropdownRef} sx={styles.colorDropdown}>
-              {colorOptions.map((opt) => (
-                <Box
-                  key={opt.value}
-                  sx={styles.colorOption}
-                  onClick={() => handleColorSelect(opt.value)}
-                >
-                  <Box sx={{ ...styles.colorCircle, background: opt.value }} />
-                  <Typography variant="body2">{opt.label}</Typography>
-                </Box>
-              ))}
-            </Box>
-          )}
-        </Box>
+        
+        {/* Row with Order and Color */}
         <Box sx={styles.fieldsContainer}>
-          <Box sx={styles.fieldBox}>
-            <TextField
-              label={t('subscriptions.duration')}
-              name="duration"
-              type="number"
-              value={formData.duration}
-              onChange={onInputChange}
-              fullWidth
-              margin="normal"
-              InputProps={{
-                sx: styles.textFieldInputNumber,
-                endAdornment: <InputAdornment position="end">{t('subscriptions.days')}</InputAdornment>,
-                inputProps: { min: 0, style: { textAlign: 'left' } },
-              }}
-            />
-          </Box>
-          <Box sx={styles.fieldBox}>
-            <TextField
-              label={t('subscriptions.monthlyChecks')}
-              name="monthlyChecks"
-              type="number"
-              value={formData.monthlyChecks}
-              onChange={onInputChange}
-              fullWidth
-              margin="normal"
-              InputProps={{
-                sx: styles.textFieldInputNumber,
-                inputProps: { min: 0, style: { textAlign: 'left' } },
-              }}
-            />
-          </Box>
           <Box sx={styles.fieldBox}>
             <TextField
               label={t('subscriptions.order')}
@@ -451,6 +439,90 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
             />
           </Box>
           <Box sx={styles.fieldBox}>
+            {/* Color */}
+            <Box sx={{ mt: 2 }}>
+              <Typography sx={{ mb: 1, fontSize: 16, color: '#666' }}>
+                {t('subscriptions.color')}
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ ...styles.colorPicker, background: formData.color }}>
+                  <input
+                    type="color"
+                    value={formData.color}
+                    onChange={e => handleColorSelect(e.target.value)}
+                    style={styles.colorInput}
+                    tabIndex={-1}
+                  />
+                </Box>
+                <ArrowDropDown
+                  sx={styles.colorArrow}
+                  onClick={handleArrowClick}
+                />
+                {/* Color dropdown */}
+                {Boolean(colorMenuAnchor) && (
+                  <Box ref={colorDropdownRef} sx={styles.colorDropdown}>
+                    {colorOptions.map((opt) => (
+                      <Box
+                        key={opt.value}
+                        sx={styles.colorOption}
+                        onClick={() => handleColorSelect(opt.value)}
+                      >
+                        <Box sx={{ ...styles.colorCircle, background: opt.value }} />
+                        <Typography variant="body2">{opt.label}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+        
+        {/* Duration and Monthly Checks row */}
+        <Box sx={styles.fieldsContainer}>
+          <Box sx={styles.fieldBox}>
+            <TextField
+              label={t('subscriptions.duration')}
+              name="duration"
+              select
+              value={formData.duration}
+              onChange={onInputChange}
+              fullWidth
+              margin="normal"
+              SelectProps={{
+                native: true,
+              }}
+              InputProps={{
+                sx: styles.textFieldInputNumber,
+              }}
+            >
+              <option value={30}>30 {t('subscriptions.days')}</option>
+              <option value={60}>60 {t('subscriptions.days')}</option>
+              <option value={90}>90 {t('subscriptions.days')}</option>
+              <option value={180}>180 {t('subscriptions.days')}</option>
+              <option value={365}>365 {t('subscriptions.days')}</option>
+            </TextField>
+          </Box>
+          <Box sx={styles.fieldBox}>
+            <TextField
+              label={t('subscriptions.monthlyChecks')}
+              name="monthlyChecks"
+              type="number"
+              value={formData.monthlyChecks}
+              onChange={onInputChange}
+              fullWidth
+              margin="normal"
+              InputProps={{
+                sx: styles.textFieldInputNumber,
+                inputProps: { min: 0, style: { textAlign: 'left' } },
+              }}
+            />
+          </Box>
+        </Box>
+        
+        {/* Price and Discount Price row */}
+        <Box sx={styles.fieldsContainer}>
+          <Box sx={styles.fieldBox}>
             <TextField
               label={t('subscriptions.price')}
               name="price"
@@ -468,7 +540,26 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
               }}
             />
           </Box>
+          <Box sx={styles.fieldBox}>
+            <TextField
+              label={t('subscriptions.discountPrice')}
+              name="discountPrice"
+              type="number"
+              value={formData.discountPrice || ''}
+              onChange={onInputChange}
+              fullWidth
+              margin="normal"
+              error={!!errors.discountPrice}
+              helperText={errors.discountPrice}
+              InputProps={{
+                sx: styles.textFieldInputNumber,
+                startAdornment: <InputAdornment position="start">€</InputAdornment>,
+                inputProps: { min: 0, step: 1, style: { textAlign: 'left' } },
+              }}
+            />
+          </Box>
         </Box>
+        
         {/* Toggle fields: 2 per row, custom style */}
         <Box sx={styles.toggleContainer}>
           {[
@@ -492,6 +583,74 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
               </Box>
             </Box>
           ))}
+        </Box>
+
+        {/* Row 1: Visible in Frontend + Monthly Recurring */}
+        <Box sx={{ display: 'flex', gap: 4, mt: 3 }}>
+          <Box sx={{ ...styles.toggleBox, flex: 1 }}>
+            <Box sx={styles.toggleInner}>
+              <Typography sx={styles.toggleLabel}>
+                {t('subscriptions.visibleInFrontend')}
+              </Typography>
+              <Switch
+                checked={formData.visibleInFrontend}
+                onChange={onInputChange}
+                name="visibleInFrontend"
+                color="primary"
+                sx={styles.switch}
+              />
+            </Box>
+          </Box>
+          <Box sx={{ ...styles.toggleBox, flex: 1 }}>
+            <Box sx={styles.toggleInner}>
+              <Box sx={{ flex: 1 }}>
+                <Typography sx={styles.toggleLabel}>
+                  {t('subscriptions.monthlyRecurring')}
+                </Typography>
+              </Box>
+              <Switch
+                checked={formData.recurringMonthlyPayment}
+                onChange={onInputChange}
+                name="recurringMonthlyPayment"
+                color="primary"
+                sx={styles.switch}
+              />
+            </Box>
+          </Box>
+        </Box>
+
+        {/* Row 2: Supplementary Calls + Number of Supplementary Calls */}
+        <Box sx={{ display: 'flex', gap: 4, mt: 2 }}>
+          <Box sx={{ ...styles.toggleBox, flex: 1 }}>
+            <Box sx={styles.toggleInner}>
+              <Typography sx={styles.toggleLabel}>
+                {t('subscriptions.supplementaryCalls')}
+              </Typography>
+              <Switch
+                checked={formData.supplementaryCalls}
+                onChange={onInputChange}
+                name="supplementaryCalls"
+                color="primary"
+                sx={styles.switch}
+              />
+            </Box>
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            <TextField
+              label={t('subscriptions.numberOfSupplementaryCalls')}
+              name="numberOfSupplementaryCalls"
+              type="number"
+              value={formData.numberOfSupplementaryCalls || 0}
+              onChange={onInputChange}
+              fullWidth
+              margin="normal"
+              disabled={!formData.supplementaryCalls}
+              InputProps={{
+                sx: styles.textFieldInputNumber,
+                inputProps: { min: 0, style: { textAlign: 'left' } },
+              }}
+            />
+          </Box>
         </Box>
       </DialogContent>
       <DialogActions sx={styles.dialogActions}>

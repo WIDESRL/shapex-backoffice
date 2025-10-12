@@ -340,6 +340,12 @@ const OrdersScreen: React.FC = () => {
                 page={ordersFilters.page}
                 onChange={handlePageChange}
                 color="primary"
+                sx={{
+                  '& .Mui-selected': {
+                    backgroundColor: '#E6BB4A !important',
+                    color: '#fff',
+                  },
+                }}
                 showFirstButton
                 showLastButton
               />

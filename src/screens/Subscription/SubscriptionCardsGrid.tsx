@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography, IconButton, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import { Subscription } from '../../Context/SubscriptionsContext';
 import TrashIcon from '../../icons/TrashIcon';
 import PencilIcon from '../../icons/PencilIcon';
@@ -20,138 +19,163 @@ const styles = {
     mt: 1,
   },
   card: {
-    flex: '1 1 calc(33.333% - 32px)',
-    minWidth: 280,
-    maxWidth: 400,
-    background: '#f6f6f6',
+    flex: '1 1 calc(50% - 12px)',
+    minWidth: 400,
+    maxWidth: 'calc(50% - 12px)',
+    background: '#EDEDED',
     borderRadius: 3,
     p: 2.5,
     boxShadow: 0,
-    minHeight: 210,
-    // height: '100%',
     position: 'relative',
     fontFamily: 'Montserrat, sans-serif',
     mb: 1,
   },
-  vipIcon: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    color: '#EAB225',
-    fontSize: 24,
-    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 400,
-    color: '#616160',
-    mb: 1,
-    width: '90%',
-    fontFamily: 'Montserrat, sans-serif',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    display: '-webkit-box',
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: 'vertical',
-    lineHeight: 1.2,
-    height: '2.4em', 
-    minHeight: '2.4em',
-  },
   deleteButton: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: 8,
+    right: 8,
     color: '#616160',
     background: 'transparent',
-    '&:hover': { background: '#ececec' },
+  },
+  header: {
+    mb: 2,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 600,
+    color: '#333',
+    mb: 0.5,
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  titleApp: {
+    fontSize: 14,
+    fontWeight: 400,
+    color: '#666',
+    fontFamily: 'Montserrat, sans-serif',
   },
   description: {
-    fontSize: 13,
-    color: '#888',
-    mb: 1.5,
+    fontSize: 12,
+    color: '#666',
+    mb: 2,
+    lineHeight: 1.3,
     fontFamily: 'Montserrat, sans-serif',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    display: '-webkit-box',
-    WebkitLineClamp: 3,
-    WebkitBoxOrient: 'vertical',
-    lineHeight: 1.4,
-    height: '4.2em',
-    minHeight: '2.8em',
   },
-  fieldContainer: {
-    display: 'flex',
+  infoRow: {
+    display: 'grid',
+    gridTemplateColumns: '1fr auto 1fr auto',
+    gap: 1,
+    mb: 0.8,
+    fontSize: 12,
+    fontFamily: 'Montserrat, sans-serif',
     alignItems: 'center',
-    mb: 0.5,
   },
-  fieldLabel: {
-    fontSize: 15,
-    color: '#616160',
+  infoLabel: {
+    color: '#666',
     fontWeight: 500,
-    mr: 1,
-    fontFamily: 'Montserrat, sans-serif',
   },
-  colorCircle: {
-    width: 16,
-    height: 16,
-    borderRadius: '50%',
-    border: '1px solid #ccc',
-    ml: 0.5,
-  },
-  fieldValue: {
-    fontSize: 15,
-    color: '#616160',
-    fontWeight: 500,
-    mt: 0.5,
-    fontFamily: 'Montserrat, sans-serif',
-  },
-  boldValue: {
-    fontWeight: 700,
-  },
-  bottomContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    mt: 1.5,
-    justifyContent: 'space-between',
-  },
-  statusText: {
-    fontSize: 15,
-    color: '#888',
-    fontWeight: 500,
-    fontFamily: 'Montserrat, sans-serif',
-  },
-  statusValue: {
-    color: '#616160',
+  infoValue: {
+    color: '#333',
     fontWeight: 600,
+  },
+  priceRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    mb: 1.5,
+    gap: 1,
+  },
+  priceContainer: {
+    flex: 1,
+    textAlign: 'center',
+    p: 1,
+    borderRadius: 2,
+    border: '2px solid',
+  },
+  regularPrice: {
+    borderColor: '#2196f3',
+  },
+  discountPrice: {
+    borderColor: '#9c27b0',
+  },
+  priceLabel: {
+    fontSize: 10,
+    color: '#666',
+    mb: 0.2,
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  priceValue: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: '#333',
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  paymentTypeRow: {
+    mb: 1.5,
+    fontSize: 12,
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  featuresSection: {
+    mb: 1.5,
+  },
+  featureBar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#E2E2E2',
+    borderRadius: 2,
+    p: 1.5,
+    mb: 1,
+    border: 'none',
+  },
+  featureBarActive: {
+    backgroundColor: '#E2E2E2',
+    borderColor: 'transparent',
+  },
+  fieldRow: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: 1,
+    mb: 1,
+  },
+  featureLabel: {
+    color: '#333',
+    fontWeight: 500,
+    fontSize: 13,
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  featureValue: {
+    color: '#333',
+    fontWeight: 600,
+    fontSize: 13,
+    fontFamily: 'Montserrat, sans-serif',
+  },
+  supplementarySection: {
+    mb: 1.5,
+  },
+  bottomRow: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  visibilityInfo: {
+    fontSize: 11,
+    color: '#666',
+    fontFamily: 'Montserrat, sans-serif',
   },
   editButton: {
     background: '#E6BB4A',
     color: '#fff',
     borderRadius: 2,
-    fontWeight: 400,
-    fontSize: 18,
-    px: 2.5,
-    py: 0.2,
-    minWidth: 120,
-    minHeight: 40,
+    fontWeight: 500,
+    fontSize: 14,
+    px: 2,
+    py: 0.8,
+    minWidth: 80,
     boxShadow: 0,
     textTransform: 'none',
     fontFamily: 'Montserrat, sans-serif',
     '&:hover': { background: '#d1a53d' },
-    display: 'flex',
-    alignItems: 'center',
-    gap: 1.2,
-    justifyContent: 'center',
-  },
-  editButtonText: {
-    fontFamily: 'Montserrat, sans-serif',
-    fontWeight: 400,
-    fontSize: 18,
-    marginRight: 8,
   },
 };
-
-const getStatusLabel = (vip: boolean, t: ReturnType<typeof useTranslation>['t']) => (vip ? 'VIP' : t('subscriptions.normalStatus'));
 
 const SubscriptionCardsGrid: React.FC<SubscriptionCardsGridProps> = ({ subscriptions, onEdit, onDelete }) => {
   const { t } = useTranslation();
@@ -159,63 +183,167 @@ const SubscriptionCardsGrid: React.FC<SubscriptionCardsGridProps> = ({ subscript
   return (
     <Box sx={styles.container}>
       {subscriptions.map((sub) => (
-        <Box key={sub.id} sx={styles.card}>
-          {/* VIP Crown Icon */}
-          {sub.vip && (
-            <WorkspacePremiumIcon sx={styles.vipIcon} />
-          )}
-          
-          <Typography sx={styles.title}>
-            {sub.title}
-          </Typography>
-          
+        <Box 
+          key={sub.id} 
+          sx={{
+            ...styles.card,
+            transition: 'opacity 0.2s ease-in-out'
+          }}
+        >
           <IconButton
             onClick={() => onDelete(sub.id)}
-            sx={styles.deleteButton}
+            sx={{
+              ...styles.deleteButton,
+              opacity: 1,
+              zIndex: 2,
+            }}
             size="small"
             aria-label={t('subscriptions.delete')}
           >
-            <TrashIcon style={{ width: 35, height: 35}} />
+            <TrashIcon  />
           </IconButton>
           
+          <Box sx={{ opacity: sub.visibleInFrontend ? 1 : 0.5 }}>
+            {/* Header */}
+            <Box sx={styles.header}>
+            <Typography sx={styles.title}>
+              {sub.title}
+            </Typography>
+            {sub.titleApp && (
+              <Typography sx={styles.titleApp}>
+                {sub.titleApp}
+              </Typography>
+            )}
+          </Box>
+          
+          {/* Description */}
           <Typography sx={styles.description}>
             {sub.description}
           </Typography>
           
-          <Box sx={styles.fieldContainer}>
-            <Typography sx={styles.fieldLabel}>
-              {t('subscriptions.color')}:
-            </Typography>
-            <Box
-              sx={{
-                ...styles.colorCircle,
-                background: sub.color,
-              }}
-            />
+          {/* All Fields as Bars in 2-column layout */}
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.ordine')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.order}</Typography>
+            </Box>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.durata')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.duration} gg</Typography>
+            </Box>
           </Box>
           
-          <Typography sx={styles.fieldValue}>
-            {t('subscriptions.duration')}: <span style={styles.boldValue}>{sub.duration}</span> {t('subscriptions.days')}
-          </Typography>
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.colore')}</Typography>
+              <Typography sx={styles.featureValue}>
+                <Box
+                  component="span"
+                  sx={{
+                    display: 'inline-block',
+                    width: 20,
+                    height: 20,
+                    backgroundColor: sub.color,
+                    borderRadius: '50%',
+                    border: '1px solid #ccc',
+                    verticalAlign: 'middle'
+                  }}
+                />
+              </Typography>
+            </Box>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.controlliMensili')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.monthlyChecks}</Typography>
+            </Box>
+          </Box>
           
-          <Typography sx={styles.fieldValue}>
-            {t('subscriptions.order')}: <span style={styles.boldValue}>{sub.order}</span>
-          </Typography>
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.prezzo')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.price.toFixed(2)}€</Typography>
+            </Box>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.prezzoScontato')}</Typography>
+              <Typography sx={styles.featureValue}>
+                {sub.discountPrice && sub.discountPrice > 0 ? `${sub.discountPrice.toFixed(2)}€` : ''}
+              </Typography>
+            </Box>
+          </Box>
           
-          <Box sx={styles.bottomContainer}>
-            <Typography sx={styles.statusText}>
-              {t('subscriptions.status')}: <span style={styles.statusValue}>{getStatusLabel(sub.vip, t)}</span>
-            </Typography>
-            
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.featureBar} style={{ gridColumn: '1 / -1' }}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.pagamentoMensileRicorrente')}</Typography>
+              <Typography sx={styles.featureValue}>
+                {sub.recurringMonthlyPayment ? t('subscriptions.yes') : t('subscriptions.no')}
+              </Typography>
+            </Box>
+          </Box>
+          
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.chatAssistenza')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.chat ? t('subscriptions.yes') : t('subscriptions.no')}</Typography>
+            </Box>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.pianoVIP')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.vip ? t('subscriptions.yes') : t('subscriptions.no')}</Typography>
+            </Box>
+          </Box>
+          
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.pianoAllenamento')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.trainingCard ? t('subscriptions.yes') : t('subscriptions.no')}</Typography>
+            </Box>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.pianoIntegrazione')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.integrationPlan ? t('subscriptions.yes') : t('subscriptions.no')}</Typography>
+            </Box>
+          </Box>
+          
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.pianoNutrizionale')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.mealPlan ? t('subscriptions.yes') : t('subscriptions.no')}</Typography>
+            </Box>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.callIntroduttivaGratuita')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.freeIntroductoryCall ? t('subscriptions.yes') : t('subscriptions.no')}</Typography>
+            </Box>
+          </Box>
+          
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.callSupplementari')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.supplementaryCalls ? t('subscriptions.yes') : t('subscriptions.no')}</Typography>
+            </Box>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.numeroCallSupplementari')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.numberOfSupplementaryCalls || 0}</Typography>
+            </Box>
+          </Box>
+          
+          <Box sx={styles.fieldRow}>
+            <Box sx={styles.featureBar}>
+              <Typography sx={styles.featureLabel}>{t('subscriptions.fields.visibilitaFrontend')}</Typography>
+              <Typography sx={styles.featureValue}>{sub.visibleInFrontend ? t('subscriptions.yes') : t('subscriptions.no')}</Typography>
+            </Box>
+          </Box>
+          
+          </Box>
+          
+          <Box sx={styles.bottomRow}>
             <Button
               variant="contained"
               onClick={() => onEdit(sub)}
-              sx={styles.editButton}
+              sx={{
+                ...styles.editButton,
+                opacity: 1,
+                zIndex: 2,
+              }}
+              endIcon={<PencilIcon />}
             >
-              <span style={styles.editButtonText}>
-                {t('subscriptions.edit')}
-              </span>
-              <PencilIcon style={{ width: 22, height: 22 }} />
+              {t('subscriptions.modify')}
             </Button>
           </Box>
         </Box>

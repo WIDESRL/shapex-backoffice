@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useCallback, useState, useMemo } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip, Autocomplete } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip, Autocomplete, Pagination } from '@mui/material';
 import MagnifierIcon from '../../icons/MagnifierIcon';
 import UserIcon from '../../icons/UserIcon';
 import { Client, useClientContext } from '../../Context/ClientContext';
@@ -11,7 +11,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DiaryIcon from '../../icons/DiarioIcon';
 import MoreIcon from '../../icons/MoreIcon';
-import AlimentazioneIcon from '../../icons/AlimentazioneIcon';
+import AlimentazioneIcon from '../../icons/AlimentazioneIcon2';
+import IntegrazioneIcon from '../../icons/IntegrazioneIcon';
 import DialogCloseIcon from '../../icons/DialogCloseIcon2';
 import AnagraficaIcon from '../../icons/AnagraficaIcon';
 import AllenamentiIcon from '../../icons/AllenamentiIcon';
@@ -144,6 +145,7 @@ const styles = {
   pageContainer: {
     p: 2,
     height: '100%',
+    width: '78vw',
     display: 'flex',
     flexDirection: 'column',
   },
@@ -270,11 +272,10 @@ const getExpirationTooltip = (dateString: string, t: (key: string) => string): s
 const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { clients, loading, page, pageSize, total, search, fetchClients, setSearch, setPage } = useClientContext();
+  const { clients, clientsPagination, loading, page, pageSize, search, fetchClients, setSearch, setPage } = useClientContext();
   const { subscriptions, fetchSubscriptions } = useSubscriptions();
   const containerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const loadMoreDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const subscriptionsDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const [localSearch, setLocalSearch] = useState(search);
   const [subscriptionFilter, setSubscriptionFilter] = useState<Subscription | null>(null);
@@ -288,7 +289,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
     debounceRef.current = setTimeout(() => {
       setHasInitialFetch(true);
       const subscriptionId = subscriptionFilter?.id?.toString() || undefined;
-      fetchClients({ page, pageSize, search, subscriptionId, append: page > 1 });
+      fetchClients({ page, pageSize, search, subscriptionId, append: false });
     }, 500);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -308,26 +309,6 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
     };
   }, [fetchSubscriptions]);
 
-  // Infinite scroll (debounced load more)
-  const handleScroll = useCallback(() => {
-    const el = containerRef.current;
-    if (!el || loading) return;
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10 && clients.length < total) {
-      if (loadMoreDebounceRef.current) clearTimeout(loadMoreDebounceRef.current);
-      loadMoreDebounceRef.current = setTimeout(() => {
-        setPage(page + 1);
-      }, 500);
-    }
-  }, [clients?.length, total, setPage, loading, page]);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (el) el.addEventListener('scroll', handleScroll);
-    return () => {
-      if (el) el.removeEventListener('scroll', handleScroll);
-    };
-  }, [handleScroll]);
-
   // Search input handler (update local state only)
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -342,19 +323,10 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
     setPage(1);
   };
 
-  // Auto-load more if no scrollbar after data loads (debounced)
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!loading && el && clients?.length < total) {
-      if (el.scrollHeight <= el.clientHeight) {
-        if (loadMoreDebounceRef.current) clearTimeout(loadMoreDebounceRef.current);
-        loadMoreDebounceRef.current = setTimeout(() => {
-          setPage(page + 1);
-        }, 300);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clients, loading, total]);
+  // Pagination handler
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, newPage: number) => {
+    setPage(newPage);
+  };
 
   const handleRowClick = (client: Client) => {
     setSelectedClient(client);
@@ -389,7 +361,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   };
 
   // Calculate number of columns for colspan
-  const totalColumns = useMemo(() => dashboard ? 4 : 8, [dashboard]);
+  const totalColumns = useMemo(() => dashboard ? 5 : 9, [dashboard]);
 
   // Memoize client display name
   const clientDisplayName = useMemo(() => {
@@ -492,6 +464,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
               <TableCell sx={styles.tableCellHeader}>{t('client.main.clientName')}</TableCell>
               <TableCell sx={styles.tableCellHeader}>{t('client.main.subscription')}</TableCell>
               <TableCell sx={styles.tableCellHeader}>{t('client.main.expiration')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.main.planAlimInteg')}</TableCell>
               {!dashboard && <TableCell sx={styles.tableCellHeader}>{t('client.anagrafica.email')}</TableCell>}
               {!dashboard && <TableCell sx={styles.tableCellHeader}>{t('client.anagrafica.phone')}</TableCell>}
               {!dashboard && <TableCell sx={styles.tableCellHeader}>{t('client.anagrafica.dateOfBirth')}</TableCell>}
@@ -549,6 +522,17 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                       '--'
                     )}
                   </TableCell>
+                  <TableCell sx={styles.tableCell}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {client.activeSubscription?.mealPlan && (
+                        <AlimentazioneIcon style={{ width: 20, height: 20, color: '#616160' }} />
+                      )}
+                      {client.activeSubscription?.integrationPlan && (
+                        <IntegrazioneIcon style={{ width: 20, height: 20, color: '#616160' }} />
+                      )}
+                      {!client.activeSubscription?.mealPlan && !client.activeSubscription?.integrationPlan && '--'}
+                    </Box>
+                  </TableCell>
                   {!dashboard && <TableCell sx={styles.tableCell}>{client.email || '--'}</TableCell>}
                   {!dashboard && <TableCell sx={styles.tableCell}>{client.phoneNumber || '--'}</TableCell>}
                   {!dashboard && (
@@ -577,13 +561,41 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
             {(loading || !hasInitialFetch) && (
               <TableRow>
                 <TableCell colSpan={totalColumns} align="center" sx={styles.loadingTableCell}>
-                  <CircularProgress size={24} />
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, py: 4 }}>
+                    <CircularProgress size={24} />
+                    <Typography variant="body2" color="text.secondary">
+                      {hasInitialFetch ? t('common.loading') : t('common.loading')}...
+                    </Typography>
+                  </Box>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Pagination */}
+      {!dashboard && clientsPagination && (
+        <Box display="flex" justifyContent="space-between" alignItems="center" mt={3}>
+          <Typography variant="body2" color="text.secondary">
+            {t('client.main.totalResults', { total: clientsPagination.total || 0 })}
+          </Typography>
+          <Pagination
+            count={clientsPagination.totalPages}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            sx={{
+              '& .Mui-selected': {
+                backgroundColor: '#E6BB4A !important',
+                color: '#fff',
+              },
+            }}
+            showFirstButton
+            showLastButton
+          />
+        </Box>
+      )}
 
       {/* Client Modal */}
       <Dialog open={modalOpen} onClose={handleModalClose} maxWidth="md" PaperProps={{ sx: styles.dialogPaper }}

@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '../utils/axiosInstance'; // Reuse the axios instance
-import { omit } from 'lodash';
 import { useSnackbar } from './SnackbarContext';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
@@ -10,18 +9,24 @@ import { useAuth } from './AuthContext';
 export interface Subscription {
     id: number;
     title: string;
+    titleApp?: string;
     description: string;
     color: string;
     duration: number;
     monthlyChecks: number;
     order: number;
+    price: number;
+    discountPrice?: number;
+    recurringMonthlyPayment: boolean;
+    visibleInFrontend: boolean;
     chat: boolean;
     freeIntroductoryCall: boolean;
     mealPlan: boolean;
     integrationPlan: boolean;
     trainingCard: boolean;
     vip: boolean;
-    price: number;
+    supplementaryCalls: boolean;
+    numberOfSupplementaryCalls?: number;
     currency?: string;
     createdAt?: string;
     updatedAt?: string;
@@ -52,7 +57,7 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
   const {data, isLoading, refetch } = useQuery<Subscription[], Error>({
     queryKey: ['subscriptions'],
     queryFn: async () => {
-      return api.get('/subscriptions');
+      return api.get('/subscriptions/admin');
     },
     enabled: isAuth, // Only fetch subscriptions if user is authenticated
   });
@@ -64,7 +69,29 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
   // Mutation to add a subscription
   const addSubscriptionMutation = useMutation<Subscription, Error, Omit<Subscription, 'id'>>({
     mutationFn: async (newSubscription: Omit<Subscription, 'id'>) => {
-      return api.post('/subscriptions', newSubscription); 
+      const payload = {
+        title: newSubscription.title || '',
+        titleApp: newSubscription.titleApp || null,
+        description: newSubscription.description || '',
+        color: newSubscription.color || '#FF0000',
+        duration: newSubscription.duration || 1,
+        monthlyChecks: newSubscription.monthlyChecks || 0,
+        order: newSubscription.order || 1,
+        price: newSubscription.price || 0,
+        discountPrice: newSubscription.discountPrice || null,
+        recurringMonthlyPayment: newSubscription.recurringMonthlyPayment || false,
+        visibleInFrontend: newSubscription.visibleInFrontend || false,
+        chat: newSubscription.chat || false,
+        freeIntroductoryCall: newSubscription.freeIntroductoryCall || false,
+        mealPlan: newSubscription.mealPlan || false,
+        integrationPlan: newSubscription.integrationPlan || false,
+        trainingCard: newSubscription.trainingCard || false,
+        vip: newSubscription.vip || false,
+        supplementaryCalls: newSubscription.supplementaryCalls || false,
+        numberOfSupplementaryCalls: newSubscription.numberOfSupplementaryCalls || 0,
+        currency: newSubscription.currency || 'eur',
+      };
+      return api.post('/subscriptions', payload); 
     },
     onSuccess: (data) => {
       setSubscriptions((prev) => [...prev, data]);
@@ -78,7 +105,28 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
   // Mutation to update a subscription
   const updateSubscriptionMutation = useMutation<Subscription, Error, Subscription>({
     mutationFn: async (updatedSubscription: Subscription) => {
-      const payload = omit(updatedSubscription, ['id', 'createdAt', 'updatedAt']);
+      const payload = {
+        title: updatedSubscription.title || '',
+        titleApp: updatedSubscription.titleApp || null,
+        description: updatedSubscription.description || '',
+        color: updatedSubscription.color || '#FF0000',
+        duration: updatedSubscription.duration || 1,
+        monthlyChecks: updatedSubscription.monthlyChecks || 0,
+        order: updatedSubscription.order || 1,
+        price: updatedSubscription.price || 0,
+        discountPrice: updatedSubscription.discountPrice || null,
+        recurringMonthlyPayment: updatedSubscription.recurringMonthlyPayment || false,
+        visibleInFrontend: updatedSubscription.visibleInFrontend || false,
+        chat: updatedSubscription.chat || false,
+        freeIntroductoryCall: updatedSubscription.freeIntroductoryCall || false,
+        mealPlan: updatedSubscription.mealPlan || false,
+        integrationPlan: updatedSubscription.integrationPlan || false,
+        trainingCard: updatedSubscription.trainingCard || false,
+        vip: updatedSubscription.vip || false,
+        supplementaryCalls: updatedSubscription.supplementaryCalls || false,
+        numberOfSupplementaryCalls: updatedSubscription.numberOfSupplementaryCalls || 0,
+        currency: updatedSubscription.currency || 'eur',
+      };
       return api.put(`/subscriptions/${updatedSubscription.id}`, payload); 
     },
     onSuccess: (data) => {

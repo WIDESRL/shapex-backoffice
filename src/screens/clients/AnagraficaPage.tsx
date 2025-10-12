@@ -232,6 +232,12 @@ const AnagraficaPage: React.FC = () => {
                   </Typography>
                 </Box>
                 <Box sx={styles.fieldRow}>
+                  <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.fiscalCode')}</Typography>
+                  <Typography sx={styles.fieldValue}>
+                    {clientAnagrafica.fiscalCode || '---'}
+                  </Typography>
+                </Box>
+                <Box sx={styles.fieldRow}>
                   <Typography sx={styles.fieldLabel}>{t('client.anagraficapage.fields.placeOfBirth')}</Typography>
                   <Typography sx={styles.fieldValue}>
                     {clientAnagrafica.placeOfBirth || '---'}
