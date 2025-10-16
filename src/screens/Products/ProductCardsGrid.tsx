@@ -5,9 +5,14 @@ import { Product } from '../../Context/ProductsContext';
 import TrashIcon from '../../icons/TrashIcon';
 import PencilIcon from '../../icons/PencilIcon';
 
+// Extended Product interface to include message field
+interface ProductWithMessage extends Product {
+  message?: string;
+}
+
 interface ProductCardsGridProps {
-  products: Product[];
-  onEdit: (product: Product) => void;
+  products: ProductWithMessage[];
+  onEdit: (product: ProductWithMessage) => void;
   onDelete: (id: number) => void;
 }
 
@@ -94,6 +99,31 @@ const ProductCardsGrid: React.FC<ProductCardsGridProps> = ({ products, onEdit, o
           >
             {product.description}
           </Typography>
+
+          {/* Message field */}
+          {product.message && (
+            <Typography
+              sx={{
+                fontSize: 12,
+                color: '#666',
+                mb: 1.5,
+                fontFamily: 'Montserrat, sans-serif',
+                fontStyle: 'italic',
+                backgroundColor: '#f0f0f0',
+                p: 1,
+                borderRadius: 1,
+                border: '1px solid #e0e0e0',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                lineHeight: 1.3,
+              }}
+            >
+              <strong>{t('products.pushMessage')}:</strong> {product.message}
+            </Typography>
+          )}
 
           <Box
             sx={{

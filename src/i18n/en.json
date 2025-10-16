@@ -1385,8 +1385,12 @@
       "titleRequired": "Title is required",
       "descriptionRequired": "Description is required",
       "pricePositive": "Price must be greater than 0",
-      "typeRequired": "Product type is required"
+      "typeRequired": "Product type is required",
+      "messageRequired": "Push notification message is required"
     },
+    "pushNotificationMessage": "Push Notification Message",
+    "pushNotificationPlaceholder": "Enter message to be sent when product is purchased",
+    "pushMessage": "Push Message",
     "filterByType": "Filter by type",
     "allTypes": "All types",
     "searchProducts": "Search products",

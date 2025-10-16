@@ -22,10 +22,15 @@ import { useTranslation } from 'react-i18next';
 import { Product, useProducts } from '../../Context/ProductsContext';
 import DialogCloseIcon from '../../icons/DialogCloseIcon2';
 
+// Extended Product interface to include message field
+interface ProductWithMessage extends Product {
+  message?: string;
+}
+
 interface ProductFormDialogProps {
   open: boolean;
   onClose: () => void;
-  product?: Product | null;
+  product?: ProductWithMessage | null;
 }
 
 const styles = {
@@ -141,6 +146,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     description: '',
     price: 0,
     typeId: 0,
+    message: '',
   });
   
   const [errors, setErrors] = useState({
@@ -148,6 +154,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     description: '',
     price: '',
     typeId: '',
+    message: '',
   });
   
   const [loading, setLoading] = useState(false);
@@ -160,6 +167,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         description: product.description,
         price: product.price,
         typeId: product.typeId,
+        message: product.message || '',
       });
     } else {
       setFormData({
@@ -167,9 +175,10 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         description: '',
         price: 0,
         typeId: productTypes.length > 0 ? productTypes[0].id : 0,
+        message: '',
       });
     }
-    setErrors({ title: '', description: '', price: '', typeId: '' });
+    setErrors({ title: '', description: '', price: '', typeId: '', message: '' });
   }, [product, productTypes, open]); // Added 'open' dependency
 
   // Update typeId when productTypes are loaded and no product is being edited
@@ -188,8 +197,9 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
       description: '',
       price: 0,
       typeId: productTypes.length > 0 ? productTypes[0].id : 0,
+      message: '',
     });
-    setErrors({ title: '', description: '', price: '', typeId: '' });
+    setErrors({ title: '', description: '', price: '', typeId: '', message: '' });
     setLoading(false);
   };
 
@@ -230,6 +240,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
       description: formData.description.trim() ? '' : t('products.validation.descriptionRequired'),
       price: formData.price > 0 ? '' : t('products.validation.pricePositive'),
       typeId: formData.typeId > 0 ? '' : t('products.validation.typeRequired'),
+      message: '', // Message field is optional
     };
     
     setErrors(newErrors);
@@ -313,6 +324,22 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
             margin="normal"
             multiline
             minRows={3}
+            InputProps={{ sx: styles.textFieldInput }}
+          />
+
+          {/* Message */}
+          <TextField
+            label={t('products.pushNotificationMessage')}
+            name="message"
+            value={formData.message}
+            onChange={handleInputChange}
+            error={!!errors.message}
+            helperText={errors.message}
+            placeholder={t('products.pushNotificationPlaceholder')}
+            fullWidth
+            margin="normal"
+            multiline
+            minRows={2}
             InputProps={{ sx: styles.textFieldInput }}
           />
 

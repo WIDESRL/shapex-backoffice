@@ -1369,8 +1369,12 @@
       "titleRequired": "Il titolo è obbligatorio",
       "descriptionRequired": "La descrizione è obbligatoria",
       "pricePositive": "Il prezzo deve essere maggiore di 0",
-      "typeRequired": "Il tipo di prodotto è obbligatorio"
+      "typeRequired": "Il tipo di prodotto è obbligatorio",
+      "messageRequired": "Il messaggio di notifica push è obbligatorio"
     },
+    "pushNotificationMessage": "Messaggio di Notifica Push",
+    "pushNotificationPlaceholder": "Inserisci il messaggio da inviare quando il prodotto viene acquistato",
+    "pushMessage": "Messaggio Push",
     "filterByType": "Filtra per tipo",
     "allTypes": "Tutti i tipi",
     "searchProducts": "Cerca prodotti",
