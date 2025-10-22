@@ -194,6 +194,48 @@ const styles = {
   dialogCloseIcon: {
     fontSize: 32,
   },
+  feedbackCard: {
+    p: 3,
+    mb: 4,
+    borderRadius: 3,
+    backgroundColor: '#fff',
+    boxShadow: '0 4px 12px rgba(230, 187, 74, 0.15)',
+    border: '1px solid rgba(230, 187, 74, 0.3)',
+    background: 'linear-gradient(135deg, #fefefe 0%, #f9f9f9 100%)',
+  },
+  feedbackContent: {
+    p: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(230, 187, 74, 0.05)',
+    border: '1px solid rgba(230, 187, 74, 0.2)',
+    minHeight: '80px',
+    position: 'relative',
+    '&::before': {
+      content: '""',
+      position: 'absolute',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      width: '4px',
+      backgroundColor: '#E6BB4A',
+      borderRadius: '2px 0 0 2px',
+    },
+  },
+  feedbackText: {
+    fontSize: 16,
+    lineHeight: 1.7,
+    color: '#2c3e50',
+    fontWeight: 400,
+    wordBreak: 'break-word',
+    whiteSpace: 'pre-wrap',
+  },
+  feedbackEmpty: {
+    fontSize: 14,
+    color: '#6c757d',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    py: 2,
+  }
 };
 
 const CheckDetailsDialog: React.FC<CheckDetailsDialogProps> = ({ 
@@ -251,7 +293,7 @@ const CheckDetailsDialog: React.FC<CheckDetailsDialogProps> = ({
     return `${value} cm`;
   };
 
-  // Get measurements data
+  // Get measurements data (only non-empty ones for main section)
   const getMeasurements = () => {
     if (!selectedCheckDetailed) return [];
     
@@ -360,7 +402,7 @@ const CheckDetailsDialog: React.FC<CheckDetailsDialogProps> = ({
             {getMeasurements().length > 0 && (
               <>
                 <Typography sx={styles.sectionTitle}>
-                  📏 {t('checkImages.measurementsTitle')}
+                  {t('checkImages.measurementsTitle')}
                 </Typography>
                 <Card sx={styles.measurementCard}>
                   <Box sx={styles.measurementGrid}>
@@ -379,9 +421,25 @@ const CheckDetailsDialog: React.FC<CheckDetailsDialogProps> = ({
               </>
             )}
             
+            {/* Feedback Section */}
+            {selectedCheckDetailed?.feedback && (
+              <>
+                <Typography sx={styles.sectionTitle}>
+                  {t('checkImages.feedbackTitle', 'User Feedback')}
+                </Typography>
+                <Card sx={styles.feedbackCard}>
+                  <Box sx={styles.feedbackContent}>
+                    <Typography sx={styles.feedbackText}>
+                      {selectedCheckDetailed.feedback}
+                    </Typography>
+                  </Box>
+                </Card>
+              </>
+            )}
+
             {/* Images Section */}
             <Typography sx={styles.sectionTitle}>
-              📸 {t('checkImages.imagesTitle')}
+              {t('checkImages.imagesTitle')}
             </Typography>
             <Box sx={styles.imagesGrid}>
               {imageFields.map(({ field, label }) => 

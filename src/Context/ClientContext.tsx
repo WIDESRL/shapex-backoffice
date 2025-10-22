@@ -157,6 +157,7 @@ export type UserCheckDetailed = UserCheck & {
   optionalImage3?: FileData | null;
   optionalImage4?: FileData | null;
   optionalImage5?: FileData | null;
+  feedback?: string;
 };
 
 export type UserNextCheckDate = {
