@@ -296,6 +296,11 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
   const editMode = React.useMemo(() => !!editExerciseId, [editExerciseId]);
   const superSetNode =  React.useMemo(() => !!supersetWorkoutExerciseId, [supersetWorkoutExerciseId]);
 
+  const sortedExercises = React.useMemo(() => {
+    if (!exercises?.exercises) return [];
+    return [...exercises.exercises].sort((a, b) => a.title.localeCompare(b.title));
+  }, [exercises?.exercises]);
+
   // Validation logic for required fields
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
@@ -386,7 +391,7 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
           <TextField
             size='small'
             type="number"
-            label={t('training.repOrTime', 'Ripetizioni/Tempo')}
+            label={t('training.repOrTime', 'Ripetizioni/Tempo  (minuti)')}
             value={repOrTime}
             onChange={e => setRepOrTime(e.target.value)}
             error={!!errors.repOrTime}
@@ -398,7 +403,7 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
           <TextField
             size='small'
             type="number"
-            label={t('training.rest', 'Recupero')}
+            label={t('training.rest', 'Recupero  (minuti)')}
             value={rest}
             onChange={e => setRest(e.target.value)}
             error={!!errors.rest}
@@ -441,7 +446,7 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
           {showFilters && (
             <Box>
               <Typography variant="subtitle1" sx={styles.filterGroupTitle}>
-                Gruppi muscolari
+                {t('training.muscleGroups', 'Gruppi muscolari')}
               </Typography>
               <Box sx={styles.filterGroupBox}>
                 {muscleGroups.map((group) => (
@@ -474,7 +479,7 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
               </Typography>
             </Box>
           ) : (
-            exercises.exercises.map((ex: Exercise) => (
+            sortedExercises.map((ex: Exercise) => (
               <Box
                 key={ex.id}
                 sx={{
