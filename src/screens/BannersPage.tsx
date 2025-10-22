@@ -116,6 +116,37 @@ const styles = {
 		fontFamily: 'Montserrat, sans-serif',
 		border: 0,
 	},
+	tableCellUrl: {
+		fontSize: 18,
+		color: '#616160',
+		fontFamily: 'Montserrat, sans-serif',
+		border: 0,
+		maxWidth: '300px',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		whiteSpace: 'nowrap',
+	},
+	clickableUrl: {
+		color: '#1976d2',
+		textDecoration: 'underline',
+		cursor: 'pointer',
+		'&:hover': {
+			color: '#115293',
+			textDecoration: 'underline',
+		},
+	},
+	tableCellTitle: {
+		fontSize: 18,
+		color: '#616160',
+		fontFamily: 'Montserrat, sans-serif',
+		border: 0,
+		maxWidth: '300px',
+		overflow: 'hidden',
+		display: '-webkit-box',
+		WebkitLineClamp: 3,
+		WebkitBoxOrient: 'vertical',
+		// lineHeight: 1.5,
+	},
 	tableCellBorderOnly: {
 		border: 0,
 	},
@@ -262,6 +293,39 @@ const BannersPage: React.FC = () => {
 		setSizeFilter(event.target.value);
 	};
 
+	// Helper function to validate and open URL
+	const isValidUrl = (url: string): boolean => {
+		if (!url || url.trim() === '') return false;
+		try {
+			new URL(url);
+			return true;
+		} catch {
+			// If URL constructor fails, try with https:// prefix
+			try {
+				new URL(`https://${url}`);
+				return true;
+			} catch {
+				return false;
+			}
+		}
+	};
+
+	const handleUrlClick = (url: string) => {
+		if (!url || url.trim() === '') return;
+		
+		let finalUrl = url;
+		try {
+			new URL(url);
+		} catch {
+			// If URL is invalid, try adding https://
+			finalUrl = `https://${url}`;
+		}
+		
+		if (isValidUrl(finalUrl)) {
+			window.open(finalUrl, '_blank', 'noopener,noreferrer');
+		}
+	};
+
     useEffect(() => {
             fetchBanners();
         }
@@ -352,9 +416,24 @@ const BannersPage: React.FC = () => {
 						) : (
 							filteredBanners.map(banner => (
 								<TableRow key={banner.id} sx={styles.tableRow}>
-									<TableCell sx={styles.tableCell}>{banner.title}</TableCell>
+									<TableCell sx={styles.tableCellTitle} title={banner.title}>{banner.title}</TableCell>
 									<TableCell sx={styles.tableCell}>{t(`banners.size${banner.size}`)}</TableCell>
-									<TableCell sx={styles.tableCell}>{banner.link}</TableCell>
+									<TableCell sx={styles.tableCellUrl} title={banner.link}>
+										{banner.link && banner.link.trim() !== '' && isValidUrl(banner.link) ? (
+											<Typography
+												component="span"
+												sx={{...styles.clickableUrl, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}
+												onClick={() => handleUrlClick(banner.link)}
+												title={banner.link}
+											>
+												{banner.link}
+											</Typography>
+										) : (
+											<Typography component="span" sx={{color: '#999', fontStyle: 'italic'}}>
+												{banner.link || t('banners.noLink', 'No link')}
+											</Typography>
+										)}
+									</TableCell>
 									<TableCell sx={styles.tableCell}>{banner.couponCode}</TableCell>
 									<TableCell sx={styles.tableCellBorderOnly}>
 										<Box sx={{ ...styles.colorBox, background: banner.color }} />
