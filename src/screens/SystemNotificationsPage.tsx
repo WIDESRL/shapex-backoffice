@@ -484,7 +484,7 @@ const SystemNotificationsPage: React.FC = () => {
   // Helper function to check if notification description is clickable
   const isDescriptionClickable = (notification: SystemNotificationType) => {
     return (
-      (notification.type === 'check_created' || notification.type === 'check_updated') && notification.relatedData.check?.id
+      (notification.type === 'check_created' || notification.type === 'check_updated') && notification.relatedData?.check?.id
     ) || (
       notification.type === 'training_completed'
     ) || (
