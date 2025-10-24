@@ -411,7 +411,23 @@ const ProgrammiAllenamentoTab: React.FC = () => {
             ) : (
               filteredPrograms.map((program) => (
                 <TableRow key={program.id} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                  <TableCell sx={styles.tableCell}>{program.title}</TableCell>
+                  <TableCell sx={styles.tableCell}>
+                    <Box
+                      component="span"
+                      onClick={() => navigate(`/training/training-program/${program.id}`)}
+                      sx={{
+                        color: '#1976d2',
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                          color: '#1565c0',
+                        },
+                      }}
+                    >
+                      {program.title}
+                    </Box>
+                  </TableCell>
                   <TableCell sx={styles.tableCell}>Programma</TableCell>
                   <TableCell sx={styles.tableCell}>{program.type}</TableCell>
                   <TableCell sx={styles.tableCell}>
