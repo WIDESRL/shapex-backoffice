@@ -10,6 +10,7 @@ import DialogCloseIcon from '../../../../../icons/DialogCloseIcon2';
 import { useTraining } from '../../../../../Context/TrainingContext';
 import { WorkoutExercisePayload, Exercise } from '../../../../../types/trainingProgram.types';
 import { useSnackbar } from '../../../../../Context/SnackbarContext';
+import VideoPreviewDialog from '../../../Exercises/VideoPreviewDialog';
 
 const styles = {
   dialog: {
@@ -215,6 +216,8 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
   const [tut, setTut] = useState('');
   const [note, setNote] = useState(initialData?.note || '');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [videoPreviewOpen, setVideoPreviewOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
 
   // Debounced fetch function for search and muscle group filtering
   const debouncedFetchExercises = useCallback(() => {
@@ -247,6 +250,14 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
       
       return newSelection;
     });
+  };
+
+  // Handler for video preview
+  const handleVideoPreview = (exercise: Exercise, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent exercise selection
+    const url = exercise.videoFile?.signedUrl || '';
+    setVideoUrl(url);
+    setVideoPreviewOpen(true);
   };
 
   // Reset all form values when modal is closed
@@ -490,10 +501,17 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
                 onClick={() => setSelectedExercises([ex.id])}
               >
                 {ex?.videoThumbnailFile?.signedUrl ? (
-                  <Box sx={styles.videoThumbBox}>
+                  <Box 
+                    sx={{ 
+                      ...styles.videoThumbBox, 
+                      cursor: ex.videoFile?.signedUrl ? 'pointer' : 'default',
+                      '&:hover': ex.videoFile?.signedUrl ? { opacity: 0.8 } : {}
+                    }}
+                    onClick={ex.videoFile?.signedUrl ? (e) => handleVideoPreview(ex, e) : undefined}
+                  >
                     <img
                       src={ex.videoThumbnailFile.signedUrl}
-                      alt={ex.title}
+                      alt={" "}
                       style={styles.videoThumbImg as React.CSSProperties}
                     />
                     <Box sx={styles.videoOverlay} />
@@ -535,6 +553,12 @@ const AddEditExerciseModal: React.FC<EditExerciseModalProps> = ({ open, onClose,
           {t('training.save', 'Salva')}
         </Button>
       </DialogActions>
+
+      <VideoPreviewDialog
+        open={videoPreviewOpen}
+        onClose={() => setVideoPreviewOpen(false)}
+        videoUrl={videoUrl}
+      />
     </Dialog>
   );
 };

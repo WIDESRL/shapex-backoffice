@@ -61,6 +61,8 @@ import { useTranslation } from 'react-i18next';
 import DeleteExerciseModal from "./Modals/DeleteExerciseModal";
 import CopyExerciseModal from "./Modals/CopyExerciseModal";
 import SuperSetGroupLine from '../../../../components/SuperSetGroupLine';
+import VideoIcon from '../../../../icons/VideoIcon';
+import VideoPreviewDialog from '../../Exercises/VideoPreviewDialog';
 
 // Custom arrow tooltip styled for left placement
 import type { TooltipProps } from "@mui/material/Tooltip";
@@ -266,6 +268,8 @@ const TrainingProgramCompositionPage = () => {
   const [supersetWorkoutExerciseId, setSupersetWorkoutExerciseId] = useState<number | null>(null);
   const [draggedGroup, setDraggedGroup] = useState<number | null>(null);
   const [draggedId, setDraggedId] = useState<number | null>(null);
+  const [videoPreviewOpen, setVideoPreviewOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
   const { selectedTrainingProgram: trainingProgram, updateExercisesOrder } = useTraining();
   const debouncedUpdateExercisesOrder = React.useRef(
     debounce((changedExercises) => {
@@ -334,6 +338,13 @@ useEffect(() => {
   // Prepare initial data for the modal from the selected training program
   const handleOpenModify = () => {
     setModifyModalOpen(true);
+  };
+
+  // Handler for video preview
+  const handleVideoPreview = (exercise: TrainingProgramExercise) => {
+    const url = exercise.exercise?.videoFile?.signedUrl || '';
+    setVideoUrl(url);
+    setVideoPreviewOpen(true);
   };
 
   // Add this helper component for sortable rows
@@ -484,6 +495,22 @@ useEffect(() => {
   return (
     <Box sx={styles.root}>
       <Typography sx={styles.title}>{t('trainingProgramComposition.title')}</Typography>
+      {trainingProgram?.title && (
+        <Typography sx={{ 
+          fontSize: 24, 
+          fontWeight: 600, 
+          color: '#EDB528', 
+          mb: 3,
+          fontFamily: 'Montserrat, sans-serif'
+        }}>
+          {trainingProgram.title}
+          {trainingProgram.type && (
+            <span style={{ color: '#616160', fontWeight: 400 }}>
+              {' '}({trainingProgram.type})
+            </span>
+          )}
+        </Typography>
+      )}
       <Box sx={styles.topActions}>
         <OutlinedTextIconButton
           text={t('trainingProgramComposition.modifyProgram')}
@@ -746,15 +773,32 @@ useEffect(() => {
                                 rows.push(
                                   <SortableExerciseRow key={ex.id} exercise={ex} bracketCell={bracketCell} isGroupDragging={highlightGroup}>
                                     <TableCell sx={styles.exerciseTitleCell}>
-                                      <Tooltip 
-                                        title={(ex.exercise?.title || "").length > 20 ? ex.exercise?.title || "" : ""} 
-                                        placement="top" 
-                                        arrow
-                                      >
-                                        <Box sx={styles.exerciseTitleSpan}>
-                                          {ex.exercise?.title}
-                                        </Box>
-                                      </Tooltip>
+                                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Tooltip 
+                                          title={(ex.exercise?.title || "").length > 20 ? ex.exercise?.title || "" : ""} 
+                                          placement="top" 
+                                          arrow
+                                        >
+                                          <Box sx={styles.exerciseTitleSpan}>
+                                            {ex.exercise?.title}
+                                          </Box>
+                                        </Tooltip>
+                                        {ex.exercise?.videoFile?.signedUrl && (
+                                          <IconButton
+                                            size="small"
+                                            onClick={() => handleVideoPreview(ex)}
+                                            sx={{ 
+                                              color: '#f39c12', 
+                                              padding: '2px',
+                                              '&:hover': { 
+                                                backgroundColor: 'rgba(243, 156, 18, 0.1)' 
+                                              }
+                                            }}
+                                          >
+                                            <VideoIcon fontSize="small" />
+                                          </IconButton>
+                                        )}
+                                      </Box>
                                     </TableCell>
                                     <TableCell sx={styles.tableCell}>
                                       {ex.type}
@@ -990,6 +1034,12 @@ useEffect(() => {
           setCopyExerciseId(null);
         }}
         exerciseId={copyExerciseId}
+      />
+
+      <VideoPreviewDialog
+        open={videoPreviewOpen}
+        onClose={() => setVideoPreviewOpen(false)}
+        videoUrl={videoUrl}
       />
     </Box>
   );
