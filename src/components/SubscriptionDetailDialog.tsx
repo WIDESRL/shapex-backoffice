@@ -359,6 +359,24 @@ const SubscriptionDetailDialog: React.FC<SubscriptionDetailDialogProps> = ({
                 <Typography sx={styles.infoLabel}>{t('subscriptions.numberOfSupplementaryCalls')}:</Typography>
                 <Typography sx={styles.infoValue}>{subscription.numberOfSupplementaryCalls || 0}</Typography>
               </Box>
+
+              {subscription.appleSubscriptionIdentifier && (
+                <Box sx={styles.infoRow}>
+                  <Typography sx={styles.infoLabel}>{t('subscriptions.appleSubscriptionIdentifier') || 'Apple Subscription ID'}:</Typography>
+                  <Typography sx={styles.infoValue} style={{ maxWidth: '60%', textAlign: 'right', wordBreak: 'break-all' }}>
+                    {subscription.appleSubscriptionIdentifier}
+                  </Typography>
+                </Box>
+              )}
+
+              {subscription.androidSubscriptionIdentifier && (
+                <Box sx={styles.infoRow}>
+                  <Typography sx={styles.infoLabel}>{t('subscriptions.androidSubscriptionIdentifier') || 'Android Subscription ID'}:</Typography>
+                  <Typography sx={styles.infoValue} style={{ maxWidth: '60%', textAlign: 'right', wordBreak: 'break-all' }}>
+                    {subscription.androidSubscriptionIdentifier}
+                  </Typography>
+                </Box>
+              )}
             </Box>
 
             <Divider sx={{ my: 3 }} />

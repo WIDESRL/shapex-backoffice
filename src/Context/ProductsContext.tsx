@@ -26,6 +26,8 @@ export interface Product {
   price: number;
   typeId: number;
   type?: ProductType;
+  appleProductIdentifier?: string;
+  androidProductIdentifier?: string;
   createdAt?: string;
   updatedAt?: string;
 }

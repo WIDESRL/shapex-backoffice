@@ -344,6 +344,32 @@ const SubscriptionCardsGrid: React.FC<SubscriptionCardsGridProps> = ({ subscript
             </Box>
           </Box>
           
+          {/* Apple and Android Subscription Identifiers */}
+          {(sub.appleSubscriptionIdentifier || sub.androidSubscriptionIdentifier) && (
+            <>
+              {sub.appleSubscriptionIdentifier && (
+                <Box sx={styles.fieldRow}>
+                  <Box sx={styles.featureBar} style={{ gridColumn: '1 / -1' }}>
+                    <Typography sx={styles.featureLabel}>{t('subscriptions.fields.appleSubscriptionId') || 'Apple ID'}</Typography>
+                    <Typography sx={{ ...styles.featureValue, fontSize: 10, maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {sub.appleSubscriptionIdentifier}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+              {sub.androidSubscriptionIdentifier && (
+                <Box sx={styles.fieldRow}>
+                  <Box sx={styles.featureBar} style={{ gridColumn: '1 / -1' }}>
+                    <Typography sx={styles.featureLabel}>{t('subscriptions.fields.androidSubscriptionId') || 'Android ID'}</Typography>
+                    <Typography sx={{ ...styles.featureValue, fontSize: 10, maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {sub.androidSubscriptionIdentifier}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+            </>
+          )}
+          
           </Box>
           
           <Box sx={styles.bottomRow}>

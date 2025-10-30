@@ -147,6 +147,8 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     price: 0,
     typeId: 0,
     message: '',
+    appleProductIdentifier: '',
+    androidProductIdentifier: '',
   });
   
   const [errors, setErrors] = useState({
@@ -155,6 +157,8 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     price: '',
     typeId: '',
     message: '',
+    appleProductIdentifier: '',
+    androidProductIdentifier: '',
   });
   
   const [loading, setLoading] = useState(false);
@@ -168,6 +172,8 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         price: product.price,
         typeId: product.typeId,
         message: product.message || '',
+        appleProductIdentifier: product.appleProductIdentifier || '',
+        androidProductIdentifier: product.androidProductIdentifier || '',
       });
     } else {
       setFormData({
@@ -176,9 +182,11 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         price: 0,
         typeId: productTypes.length > 0 ? productTypes[0].id : 0,
         message: '',
+        appleProductIdentifier: '',
+        androidProductIdentifier: '',
       });
     }
-    setErrors({ title: '', description: '', price: '', typeId: '', message: '' });
+    setErrors({ title: '', description: '', price: '', typeId: '', message: '', appleProductIdentifier: '', androidProductIdentifier: '' });
   }, [product, productTypes, open]); // Added 'open' dependency
 
   // Update typeId when productTypes are loaded and no product is being edited
@@ -198,8 +206,10 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
       price: 0,
       typeId: productTypes.length > 0 ? productTypes[0].id : 0,
       message: '',
+      appleProductIdentifier: '',
+      androidProductIdentifier: '',
     });
-    setErrors({ title: '', description: '', price: '', typeId: '', message: '' });
+    setErrors({ title: '', description: '', price: '', typeId: '', message: '', appleProductIdentifier: '', androidProductIdentifier: '' });
     setLoading(false);
   };
 
@@ -241,6 +251,8 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
       price: formData.price > 0 ? '' : t('products.validation.pricePositive'),
       typeId: formData.typeId > 0 ? '' : t('products.validation.typeRequired'),
       message: '', // Message field is optional
+      appleProductIdentifier: '', // Optional field
+      androidProductIdentifier: '', // Optional field
     };
     
     setErrors(newErrors);
@@ -358,6 +370,34 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
               sx: styles.textFieldInput,
               inputProps: { min: 0, step: 1 },
             }}
+          />
+
+          {/* Apple Product Identifier */}
+          <TextField
+            label={t('products.appleProductIdentifier')}
+            name="appleProductIdentifier"
+            value={formData.appleProductIdentifier}
+            onChange={handleInputChange}
+            error={!!errors.appleProductIdentifier}
+            helperText={errors.appleProductIdentifier}
+            placeholder="com.example.product.item"
+            fullWidth
+            margin="normal"
+            InputProps={{ sx: styles.textFieldInput }}
+          />
+
+          {/* Android Product Identifier */}
+          <TextField
+            label={t('products.androidProductIdentifier')}
+            name="androidProductIdentifier"
+            value={formData.androidProductIdentifier}
+            onChange={handleInputChange}
+            error={!!errors.androidProductIdentifier}
+            helperText={errors.androidProductIdentifier}
+            placeholder="com.example.product.item"
+            fullWidth
+            margin="normal"
+            InputProps={{ sx: styles.textFieldInput }}
           />
 
           {/* Product Type */}

@@ -40,6 +40,8 @@
     "gratuita": "Free",
     "supplementari": "Supplementary",
     "visibilityFrontend": "Frontend Visibility",
+    "appleSubscriptionIdentifier": "Apple Subscription Identifier",
+    "androidSubscriptionIdentifier": "Android Subscription Identifier",
     "fields": {
       "ordine": "Order:",
       "durata": "Duration (days):",
@@ -57,7 +59,9 @@
       "visibilitaFrontend": "Frontend Visibility:",
       "colore": "Color:",
       "controlliMensili": "Monthly Checks:",
-      "rinnovoAutomatico": "Auto Renewal:"
+      "rinnovoAutomatico": "Auto Renewal:",
+      "appleSubscriptionId": "Apple Subscription ID:",
+      "androidSubscriptionId": "Android Subscription ID:"
     },
     "modify": "Modify",
     "free": "Free",
@@ -1391,6 +1395,8 @@
     "pushNotificationMessage": "Push Notification Message",
     "pushNotificationPlaceholder": "Enter message to be sent when product is purchased",
     "pushMessage": "Push Message",
+    "appleProductIdentifier": "Apple Product Identifier",
+    "androidProductIdentifier": "Android Product Identifier",
     "filterByType": "Filter by type",
     "allTypes": "All types",
     "searchProducts": "Search products",
@@ -1407,7 +1413,9 @@
     "deleteFailed": "Failed to delete product",
     "fields": {
       "tipo": "Type:",
-      "prezzo": "Price:"
+      "prezzo": "Price:",
+      "appleProductId": "Apple Product ID:",
+      "androidProductId": "Android Product ID:"
     },
     "types": {
       "title": "Product Types",

@@ -111,6 +111,42 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({ products, onEdit, loading =
               <Typography variant="h6" color="primary" fontWeight="bold">
                 €{product.price.toFixed(2)}
               </Typography>
+
+              {/* Product Identifiers */}
+              {(product.appleProductIdentifier || product.androidProductIdentifier) && (
+                <Box sx={{ mt: 2, pt: 1.5, borderTop: '1px solid #e0e0e0' }}>
+                  {product.appleProductIdentifier && (
+                    <Typography 
+                      variant="caption" 
+                      color="text.secondary" 
+                      sx={{ 
+                        display: 'block',
+                        fontSize: '0.7rem',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <strong>{t('products.fields.appleProductId')}</strong> {product.appleProductIdentifier}
+                    </Typography>
+                  )}
+                  {product.androidProductIdentifier && (
+                    <Typography 
+                      variant="caption" 
+                      color="text.secondary"
+                      sx={{ 
+                        display: 'block',
+                        fontSize: '0.7rem',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <strong>{t('products.fields.androidProductId')}</strong> {product.androidProductIdentifier}
+                    </Typography>
+                  )}
+                </Box>
+              )}
             </CardContent>
             <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
               <Button

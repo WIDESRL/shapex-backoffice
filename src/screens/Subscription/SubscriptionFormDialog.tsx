@@ -30,6 +30,8 @@ interface SubscriptionFormDialogProps {
     order: string;
     price: string;
     discountPrice: string;
+    appleSubscriptionIdentifier: string;
+    androidSubscriptionIdentifier: string;
   };
   onClose: () => void;
   onSubmit: () => void;
@@ -649,6 +651,38 @@ const SubscriptionFormDialog: React.FC<SubscriptionFormDialogProps> = ({
                 sx: styles.textFieldInputNumber,
                 inputProps: { min: 0, style: { textAlign: 'left' } },
               }}
+            />
+          </Box>
+        </Box>
+
+        {/* Apple and Android Subscription Identifiers */}
+        <Box sx={styles.fieldsContainer}>
+          <Box sx={styles.fieldBox}>
+            <TextField
+              label={t('subscriptions.appleSubscriptionIdentifier') || 'Apple Subscription ID'}
+              name="appleSubscriptionIdentifier"
+              value={formData.appleSubscriptionIdentifier || ''}
+              onChange={onInputChange}
+              fullWidth
+              margin="normal"
+              error={!!errors.appleSubscriptionIdentifier}
+              helperText={errors.appleSubscriptionIdentifier}
+              placeholder="com.example.subscription.monthly"
+              InputProps={{ sx: styles.textFieldInput }}
+            />
+          </Box>
+          <Box sx={styles.fieldBox}>
+            <TextField
+              label={t('subscriptions.androidSubscriptionIdentifier') || 'Android Subscription ID'}
+              name="androidSubscriptionIdentifier"
+              value={formData.androidSubscriptionIdentifier || ''}
+              onChange={onInputChange}
+              fullWidth
+              margin="normal"
+              error={!!errors.androidSubscriptionIdentifier}
+              helperText={errors.androidSubscriptionIdentifier}
+              placeholder="com.example.subscription.monthly"
+              InputProps={{ sx: styles.textFieldInput }}
             />
           </Box>
         </Box>

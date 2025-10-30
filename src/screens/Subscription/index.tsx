@@ -32,6 +32,8 @@ const SubscriptionsScreen: React.FC = () => {
     vip: false,
     supplementaryCalls: false,
     numberOfSupplementaryCalls: 0,
+    appleSubscriptionIdentifier: '',
+    androidSubscriptionIdentifier: '',
   });
   const [editMode, setEditMode] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -43,6 +45,8 @@ const SubscriptionsScreen: React.FC = () => {
     order: '',
     price: '',
     discountPrice: '',
+    appleSubscriptionIdentifier: '',
+    androidSubscriptionIdentifier: '',
   });
 
   useEffect(() => {
@@ -76,6 +80,8 @@ const SubscriptionsScreen: React.FC = () => {
         vip: false,
         supplementaryCalls: false,
         numberOfSupplementaryCalls: 0,
+        appleSubscriptionIdentifier: '',
+        androidSubscriptionIdentifier: '',
       });
       setEditMode(false);
       setSelectedId(null);
@@ -85,17 +91,29 @@ const SubscriptionsScreen: React.FC = () => {
 
   const handleCloseForm = () => {
     setOpenForm(false);
-    setErrors({ title: '', titleApp: '', description: '', duration: '', order: '', price: '', discountPrice: '' });
+    setErrors({ 
+      title: '', 
+      titleApp: '', 
+      description: '', 
+      duration: '', 
+      order: '', 
+      price: '', 
+      discountPrice: '',
+      appleSubscriptionIdentifier: '',
+      androidSubscriptionIdentifier: '',
+    });
   };
 
   const handleFormSubmit = async () => {    const titleAppValid = formData.titleApp && formData.titleApp.trim().length > 0;
     
     let discountPriceError = '';
     
-    if (formData.discountPrice === 0) {
-      discountPriceError = t('subscriptions.validation.discountPriceNoZero');
-    } else if (formData.discountPrice && formData.discountPrice > 0) {
-      if (formData.discountPrice >= formData.price) {
+    // Only validate discountPrice if it has a value greater than 0
+    if (formData.discountPrice && formData.discountPrice > 0) {
+      const discountPriceNum = Number(formData.discountPrice);
+      const priceNum = Number(formData.price);
+      
+      if (discountPriceNum >= priceNum) {
         discountPriceError = t('subscriptions.validation.discountPriceLessThanPrice');
       }
     }
@@ -108,6 +126,8 @@ const SubscriptionsScreen: React.FC = () => {
       order: formData.order > 0 ? '' : t('subscriptions.validation.orderPositive'),
       price: formData.price > 0 ? '' : t('subscriptions.validation.pricePositive'),
       discountPrice: discountPriceError,
+      appleSubscriptionIdentifier: '',
+      androidSubscriptionIdentifier: '',
     };
 
     setErrors(newErrors);

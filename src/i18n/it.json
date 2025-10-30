@@ -40,6 +40,8 @@
     "gratuita": "Gratuita",
     "supplementari": "Supplementari",
     "visibilityFrontend": "Visibilità Frontend",
+    "appleSubscriptionIdentifier": "Identificatore Abbonamento Apple",
+    "androidSubscriptionIdentifier": "Identificatore Abbonamento Android",
     "fields": {
       "ordine": "Ordine:",
       "durata": "Durata (giorni):",
@@ -57,7 +59,9 @@
       "visibilitaFrontend": "Visibilità frontend:",
       "colore": "Colore:",
       "controlliMensili": "Controlli Mensili:",
-      "rinnovoAutomatico": "Rinnovo Automatico:"
+      "rinnovoAutomatico": "Rinnovo Automatico:",
+      "appleSubscriptionId": "ID Abbonamento Apple:",
+      "androidSubscriptionId": "ID Abbonamento Android:"
     },
     "modify": "Modifica",
     "free": "Gratuito",
@@ -1375,6 +1379,8 @@
     "pushNotificationMessage": "Messaggio di Notifica Push",
     "pushNotificationPlaceholder": "Inserisci il messaggio da inviare quando il prodotto viene acquistato",
     "pushMessage": "Messaggio Push",
+    "appleProductIdentifier": "Identificatore Prodotto Apple",
+    "androidProductIdentifier": "Identificatore Prodotto Android",
     "filterByType": "Filtra per tipo",
     "allTypes": "Tutti i tipi",
     "searchProducts": "Cerca prodotti",
@@ -1391,7 +1397,9 @@
     "deleteFailed": "Errore nell'eliminare il prodotto",
     "fields": {
       "tipo": "Tipo:",
-      "prezzo": "Prezzo:"
+      "prezzo": "Prezzo:",
+      "appleProductId": "ID Prodotto Apple:",
+      "androidProductId": "ID Prodotto Android:"
     },
     "types": {
       "title": "Tipi di Prodotto",

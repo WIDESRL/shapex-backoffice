@@ -194,6 +194,22 @@ const ProductCardsGrid: React.FC<ProductCardsGridProps> = ({ products, onEdit, o
               <PencilIcon style={{ width: 22, height: 22 }} />
             </Button>
           </Box>
+
+          {/* Product Identifiers */}
+          {(product.appleProductIdentifier || product.androidProductIdentifier) && (
+            <Box sx={{ mt: 1, pt: 1, borderTop: '1px solid #e0e0e0' }}>
+              {product.appleProductIdentifier && (
+                <Typography sx={{ fontSize: 10, color: '#888', fontFamily: 'Montserrat, sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>
+                  <strong>{t('products.fields.appleProductId')}</strong> {product.appleProductIdentifier}
+                </Typography>
+              )}
+              {product.androidProductIdentifier && (
+                <Typography sx={{ fontSize: 10, color: '#888', fontFamily: 'Montserrat, sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>
+                  <strong>{t('products.fields.androidProductId')}</strong> {product.androidProductIdentifier}
+                </Typography>
+              )}
+            </Box>
+          )}
         </Box>
       ))}
     </Box>

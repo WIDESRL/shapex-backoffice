@@ -28,6 +28,8 @@ export interface Subscription {
     supplementaryCalls: boolean;
     numberOfSupplementaryCalls?: number;
     currency?: string;
+    appleSubscriptionIdentifier?: string;
+    androidSubscriptionIdentifier?: string;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -90,6 +92,8 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
         supplementaryCalls: newSubscription.supplementaryCalls || false,
         numberOfSupplementaryCalls: newSubscription.numberOfSupplementaryCalls || 0,
         currency: newSubscription.currency || 'eur',
+        appleSubscriptionIdentifier: newSubscription.appleSubscriptionIdentifier || '',
+        androidSubscriptionIdentifier: newSubscription.androidSubscriptionIdentifier || '',
       };
       return api.post('/subscriptions', payload); 
     },
@@ -126,6 +130,8 @@ export const SubscriptionsProvider: React.FC<{ children: ReactNode }> = ({ child
         supplementaryCalls: updatedSubscription.supplementaryCalls || false,
         numberOfSupplementaryCalls: updatedSubscription.numberOfSupplementaryCalls || 0,
         currency: updatedSubscription.currency || 'eur',
+        appleSubscriptionIdentifier: updatedSubscription.appleSubscriptionIdentifier || '',
+        androidSubscriptionIdentifier: updatedSubscription.androidSubscriptionIdentifier || '',
       };
       return api.put(`/subscriptions/${updatedSubscription.id}`, payload); 
     },
