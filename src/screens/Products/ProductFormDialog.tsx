@@ -144,7 +144,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    price: 0,
+    price: 0 as number | string,
     typeId: 0,
     message: '',
     appleProductIdentifier: '',
@@ -223,10 +223,24 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'price' ? parseFloat(value) || 0 : value,
-    }));
+    
+    if (name === 'price') {
+      // Replace comma with dot for decimal separator
+      const normalizedValue = value.replace(',', '.');
+      // Allow empty, numbers, and one decimal point
+      if (normalizedValue === '' || /^\d*\.?\d*$/.test(normalizedValue)) {
+        setFormData(prev => ({
+          ...prev,
+          price: normalizedValue === '' ? 0 : normalizedValue,
+        }));
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+    
     // Clear error when user starts typing
     if (errors[name as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -245,10 +259,11 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
   };
 
   const validateForm = () => {
+    const priceNum = typeof formData.price === 'string' ? parseFloat(formData.price) : formData.price;
     const newErrors = {
       title: formData.title.trim() ? '' : t('products.validation.titleRequired'),
       description: formData.description.trim() ? '' : t('products.validation.descriptionRequired'),
-      price: formData.price > 0 ? '' : t('products.validation.pricePositive'),
+      price: priceNum > 0 ? '' : t('products.validation.pricePositive'),
       typeId: formData.typeId > 0 ? '' : t('products.validation.typeRequired'),
       message: '', // Message field is optional
       appleProductIdentifier: '', // Optional field
@@ -266,13 +281,19 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
 
     setLoading(true);
     try {
+      const priceValue = typeof formData.price === 'string' ? parseFloat(formData.price) : formData.price;
+      const productData = {
+        ...formData,
+        price: priceValue,
+      };
+      
       if (isEdit && product) {
         await updateProduct({
           ...product,
-          ...formData,
+          ...productData,
         });
       } else {
-        await addProduct(formData);
+        await addProduct(productData);
         // Reset form after successful addition (but not for edit)
         resetForm();
       }
@@ -359,7 +380,7 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
           <TextField
             label={t('products.price')}
             name="price"
-            type="number"
+            type="text"
             value={formData.price}
             onChange={handleInputChange}
             error={!!errors.price}
@@ -368,7 +389,6 @@ const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
             margin="normal"
             InputProps={{
               sx: styles.textFieldInput,
-              inputProps: { min: 0, step: 1 },
             }}
           />
 
