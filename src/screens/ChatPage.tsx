@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, List, ListItem, ListItemAvatar, ListItemText, IconButton, InputBase, Paper, CircularProgress, Button, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import FullscreenImageDialog from '../components/FullscreenImageDialog';
@@ -12,6 +13,7 @@ import { ApiConversation, Message, useMessages } from '../Context/MessagesContex
 import { useOffCanvasChat } from '../Context/OffCanvasChatContext';
 import ImagePreviewIcon from '../icons/ImagePreviewIcon';
 import StartConversationDialog from '../components/StartConversationDialog';
+import StartNewConversationDialogs from '../components/StartNewConversationDialogs';
 import AddIcon from '@mui/icons-material/Add';
 import ImageCustom from '../components/ImageCustom';
 import AvatarCustom from '../components/AvatarCustom';
@@ -455,6 +457,8 @@ function debounce<T extends (...args: unknown[]) => void>(fn: T, delay: number) 
 // --- Chat Page ---
 const ChatPageContent: React.FC = () => {
 	const { t } = useTranslation();
+	const { userId } = useParams<{ userId: string }>();
+	const navigate = useNavigate();
 	const {
 		conversations,
 		selectedConversationId,
@@ -480,12 +484,14 @@ const ChatPageContent: React.FC = () => {
 	const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 	const [searchInput, setSearchInput] = useState(conversationSearch);
 	const [startDialogOpen, setStartDialogOpen] = useState(false);
+	const [userIdToMessage, setUserIdToMessage] = useState<number | null>(null);
 	const messagesEndRef = useRef<HTMLDivElement | null>(null);
 	const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 	const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 	const justSentMessageRef = useRef(false);
 	const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
 	const firstVisibleMsgRef = useRef<{ id: number; offset: number } | null>(null);
+	const checkedUserIdRef = useRef<number | null>(null);
   const { showSnackbar } = useSnackbar();
 
     // Debounce search input for conversations
@@ -501,6 +507,25 @@ const ChatPageContent: React.FC = () => {
     useEffect(() => {
         fetchConversations({ append: conversationPage > 1 });
     }, [conversationSearch, conversationPage, fetchConversations]);
+
+    // Preselect conversation based on userId from URL
+    useEffect(() => {
+        if (userId && conversations.length > 0) {
+            const userIdNum = parseInt(userId, 10);
+            const conversation = conversations.find(conv => conv.userId === userIdNum);
+            if (conversation && selectedConversationId !== conversation.id) {
+                setSelectedConversationId(conversation.id);
+                setConversationSeen(conversation.id);
+                justSentMessageRef.current = true;
+                checkedUserIdRef.current = userIdNum;
+            } else if (!conversation && checkedUserIdRef.current !== userIdNum) {
+                // Conversation not found for this userId
+                setSelectedConversationId(null);
+                setUserIdToMessage(userIdNum);
+                checkedUserIdRef.current = userIdNum;
+            }
+        }
+    }, [userId, conversations, selectedConversationId, setSelectedConversationId, setConversationSeen, showSnackbar, t]);
 
     // Reset conversation search state on sidebar close (unmount)
     // useEffect(() => {
@@ -632,9 +657,8 @@ const ChatPageContent: React.FC = () => {
 
 	const handleSelectConversation = (conv: ApiConversation) => {
 		if (selectedConversationId === conv.id) return;
-		setSelectedConversationId(conv.id);
-		setConversationSeen(conv.id);
-		justSentMessageRef.current = true;
+		// Just update the URL - the effect will handle selecting the conversation
+		navigate(`/chat/${conv.userId}`, { replace: true });
 	};
 
 	// Group messages by date
@@ -916,6 +940,15 @@ const ChatPageContent: React.FC = () => {
 							handleApiError(error, showSnackbar, t);
 						}	
 						
+					}}
+				/>
+				{/* Start new conversation dialogs */}
+				<StartNewConversationDialogs
+					userId={userIdToMessage}
+					onClose={() => setUserIdToMessage(null)}
+					onSuccess={() => {
+						// Conversation was created, navigate to it if possible
+						setUserIdToMessage(null);
 					}}
 				/>
 			</MainSection>

@@ -635,6 +635,13 @@
             "calls": "Calls",
             "configuration": "Configuration"
           }
+        },
+        "chat": {
+          "title": "Chat",
+          "items": {
+            "messages": "Messages",
+            "conversation": "Conversation history"
+          }
         }
       }
     },
@@ -1363,6 +1370,11 @@
     "user": "User"
   },
   "chat": {
+    "conversationNotFound": "Cannot find any conversation with this user",
+    "noConversationFound": "No conversation found",
+    "startNewConversationPrompt": "Cannot find a conversation with this user. Do you want to start a new conversation?",
+    "sendNewMessage": "Send New Message",
+    "messageSent": "Message sent successfully",
     "pleaseSelectConversation": "Please select a conversation",
     "user": "User",
     "file": "File",

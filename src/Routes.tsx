@@ -56,6 +56,7 @@ const AppRoutes: React.FC = () => {
           <Route path="/notifications" element={<SystemNotificationsPage />} />
           <Route path="/reminders" element={<RemindersPage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/chat/:userId" element={<ChatPage />} />
           <Route path="/banners" element={<BannersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/" element={<DashboardPage />} />

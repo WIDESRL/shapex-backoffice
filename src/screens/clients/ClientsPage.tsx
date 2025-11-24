@@ -14,6 +14,7 @@ import MoreIcon from '../../icons/MoreIcon';
 import AlimentazioneIcon from '../../icons/AlimentazioneIcon2';
 import IntegrazioneIcon from '../../icons/IntegrazioneIcon';
 import DialogCloseIcon from '../../icons/DialogCloseIcon2';
+import Chat from '../../icons/Chat';
 import AnagraficaIcon from '../../icons/AnagraficaIcon';
 import AllenamentiIcon from '../../icons/AllenamentiIcon';
 import { getContrastColor } from '../../utils/colorUtils';
@@ -355,6 +356,9 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
       case 'altro':
         navigate(`/clients/${clientId}/altro`);
         break;
+      case 'chat':
+        navigate(`/chat/${clientId}`);
+        break;
       default:
         break;
     }
@@ -672,6 +676,17 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.notifications')}</li>
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.calls')}</li>
                 <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.configuration')}</li>
+              </ul>
+            </Box>
+            <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('chat', selectedClient?.id || '')}>
+              <Box sx={styles.modalSectionTitle}>
+                <Chat style={{ color: 'grey' }} />
+                <Typography sx={styles.modalSectionText}>{t('client.main.modalSections.chat.title')}</Typography>
+              </Box>
+              <hr style={styles.modalSectionDivider} />
+              <ul style={styles.modalSectionList}>
+                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.chat.items.messages')}</li>
+                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.chat.items.conversation')}</li>
               </ul>
             </Box>
           </Box>

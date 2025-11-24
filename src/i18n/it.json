@@ -618,6 +618,13 @@
             "calls": "Chiamate",
             "configuration": "Configurazione"
           }
+        },
+        "chat": {
+          "title": "Chat",
+          "items": {
+            "messages": "Messaggi",
+            "conversation": "Cronologia conversazione"
+          }
         }
       }
     },
@@ -1347,6 +1354,11 @@
     "user": "Utente"
   },
   "chat": {
+    "conversationNotFound": "Impossibile trovare una conversazione con questo utente",
+    "noConversationFound": "Nessuna conversazione trovata",
+    "startNewConversationPrompt": "Impossibile trovare una conversazione con questo utente. Vuoi iniziare una nuova conversazione?",
+    "sendNewMessage": "Invia Nuovo Messaggio",
+    "messageSent": "Messaggio inviato con successo",
     "pleaseSelectConversation": "Per favore seleziona una conversazione",
     "user": "Utente",
     "file": "File",
