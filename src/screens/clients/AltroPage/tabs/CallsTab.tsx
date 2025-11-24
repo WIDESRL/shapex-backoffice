@@ -258,8 +258,8 @@ const CallsTab: React.FC = () => {
 
   // Get call title
   const getCallTitle = (call: UserCall) => {
-    if (call.type === 'Extra' && call.product?.name) {
-      return call.product.name;
+    if (call.type === 'Extra' && call.product?.title) {
+      return call.product.title;
     }
     return getCallTypeLabel(call.type);
   };

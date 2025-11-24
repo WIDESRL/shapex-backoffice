@@ -38,7 +38,7 @@ export interface Call {
   createdAt: string;
   product?: {
     id: number;
-    name: string;
+    title: string;
     price: number;
   };
   subscription?: {

@@ -278,7 +278,7 @@ export type UserCall = {
   createdAt: string;
   product?: {
     id: number;
-    name: string;
+    title: string;
     price: number;
   };
   subscription?: {

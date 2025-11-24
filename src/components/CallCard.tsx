@@ -284,7 +284,7 @@ const CallCard: React.FC<CallCardProps> = ({
               {t('client.altro.calls.card.productName')}
             </Typography>
             <Typography sx={styles.paymentValue}>
-              {call.product?.name}
+              {call.product?.title}
             </Typography>
           </Box>
           
