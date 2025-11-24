@@ -1062,7 +1062,10 @@
           "environment": "Ambiente:",
           "storefront": "Negozio:",
           "applePay": " Apple",
-          "stripe": "Stripe"
+          "stripe": "Stripe",
+          "product": "Prodotto",
+          "productName": "Nome",
+          "productPrice": "Prezzo"
         },
         "emptyState": {
           "title": "Nessuna chiamata disponibile",

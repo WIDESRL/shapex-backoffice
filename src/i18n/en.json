@@ -1078,7 +1078,10 @@
           "environment": "Environment:",
           "storefront": "Storefront:",
           "applePay": " Apple",
-          "stripe": "Stripe"
+          "stripe": "Stripe",
+          "product": "Product",
+          "productName": "Name",
+          "productPrice": "Price"
         },
         "emptyState": {
           "title": "No calls available",

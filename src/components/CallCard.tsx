@@ -184,7 +184,7 @@ const CallCard: React.FC<CallCardProps> = ({
 
   // Helper function to format Apple payment amount (amount is in smallest currency unit like cents)
   const formatAppleAmount = (amount: number, currency: string) => {
-    const actualAmount = amount / 100; // Convert from cents to actual amount
+    const actualAmount = amount / 1000; // Convert from microcurrency to actual amount
     return new Intl.NumberFormat('it-IT', {
       style: 'currency',
       currency: currency.toUpperCase(),
@@ -271,6 +271,33 @@ const CallCard: React.FC<CallCardProps> = ({
           <Typography sx={styles.detailValue}>#{call.id}</Typography>
         </Box>
       </Box>
+
+      {/* Product Information Section */}
+      {call.type === 'Extra' && call.product && (
+        <Box sx={styles.paymentSection}>
+          <Typography sx={styles.paymentTitle}>
+            {t('client.altro.calls.card.product')}
+          </Typography>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.productName')}
+            </Typography>
+            <Typography sx={styles.paymentValue}>
+              {call.product?.name}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.productPrice')}
+            </Typography>
+            <Typography sx={styles.paymentValue}>
+              {formatCurrency(call.product?.price, 'EUR')}
+            </Typography>
+          </Box>
+        </Box>
+      )}
 
       {/* Payment Information Section for Extra calls */}
       {call.type === 'Extra' && call.order && call.order.stripePaymentData && (

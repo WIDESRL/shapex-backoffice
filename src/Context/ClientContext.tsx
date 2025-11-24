@@ -279,6 +279,7 @@ export type UserCall = {
   product?: {
     id: number;
     name: string;
+    price: number;
   };
   subscription?: {
     id: number;

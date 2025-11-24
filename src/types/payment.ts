@@ -39,6 +39,7 @@ export interface Call {
   product?: {
     id: number;
     name: string;
+    price: number;
   };
   subscription?: {
     id: number;
