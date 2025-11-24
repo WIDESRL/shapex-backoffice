@@ -197,6 +197,12 @@ export type Client = {
     integrationPlan: boolean;
     mealPlan: boolean;
   } | null;
+  assignedProgram: {
+    id: number;
+    title: string;
+    assignedAt: string;
+    completed: boolean;
+  } | null;
   totalMessages: number;
 };
 

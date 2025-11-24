@@ -564,6 +564,7 @@
       "searchPlaceholder": "Cerca qui...",
       "clientName": "Nome Cliente",
       "subscription": "Abbonamento",
+      "trainingProgram": "Programma di Allenamento",
       "expiration": "Scadenza",
       "planAlimInteg": "Piano Alim./Integ.",
       "expirationTooltips": {
@@ -572,6 +573,8 @@
       },
       "messages": "Messaggi",
       "actions": "Azioni",
+      "viewTrainingProgram": "Visualizza Programma di Allenamento",
+      "confirmViewProgram": "Vuoi visualizzare il programma di allenamento",
       "allSubscriptions": "Tutti gli abbonamenti",
       "showingResults": "Mostrando {{from}}-{{to}} di {{total}} risultati",
       "totalResults": "Totale: {{total}} risultati",

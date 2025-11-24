@@ -17,6 +17,7 @@ import DialogCloseIcon from '../../icons/DialogCloseIcon2';
 import Chat from '../../icons/Chat';
 import AnagraficaIcon from '../../icons/AnagraficaIcon';
 import AllenamentiIcon from '../../icons/AllenamentiIcon';
+import TrainingProgramConfirmDialog from '../../components/TrainingProgramConfirmDialog';
 import { getContrastColor } from '../../utils/colorUtils';
 
 const styles = {
@@ -283,6 +284,8 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [hasInitialFetch, setHasInitialFetch] = useState(false);
+  const [confirmProgramOpen, setConfirmProgramOpen] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState<{ id: number; title: string } | null>(null);
 
   // Debounced fetch on page/search change (debounce only the fetch, not the state update)
   useEffect(() => {
@@ -336,6 +339,25 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   const handleModalClose = () => {
     setModalOpen(false);
     setSelectedClient(null);
+  };
+
+  const handleProgramClick = (e: React.MouseEvent, program: { id: number; title: string }) => {
+    e.stopPropagation();
+    setSelectedProgram(program);
+    setConfirmProgramOpen(true);
+  };
+
+  const handleConfirmProgramNavigation = () => {
+    if (selectedProgram) {
+      navigate(`/training/training-program/${selectedProgram.id}`);
+      setConfirmProgramOpen(false);
+      setSelectedProgram(null);
+    }
+  };
+
+  const handleCancelProgramNavigation = () => {
+    setConfirmProgramOpen(false);
+    setSelectedProgram(null);
   };
 
   const handleSectionClick = (section: string, clientId: number | string) => {
@@ -468,6 +490,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
               <TableCell sx={styles.tableCellHeader}>{t('client.main.clientName')}</TableCell>
               <TableCell sx={styles.tableCellHeader}>{t('client.main.subscription')}</TableCell>
               <TableCell sx={styles.tableCellHeader}>{t('client.main.expiration')}</TableCell>
+              <TableCell sx={styles.tableCellHeader}>{t('client.main.trainingProgram')}</TableCell>
               <TableCell sx={styles.tableCellHeader}>{t('client.main.planAlimInteg')}</TableCell>
               {!dashboard && <TableCell sx={styles.tableCellHeader}>{t('client.anagrafica.email')}</TableCell>}
               {!dashboard && <TableCell sx={styles.tableCellHeader}>{t('client.anagrafica.phone')}</TableCell>}
@@ -525,6 +548,21 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                     ) : (
                       '--'
                     )}
+                  </TableCell>
+                  <TableCell sx={styles.tableCell}>
+                    {client.assignedProgram ? (
+                      <Typography
+                        onClick={(e) => handleProgramClick(e, client.assignedProgram!)}
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        }}
+                      >
+                        {client.assignedProgram.title}
+                      </Typography>
+                    ) : '--'}
                   </TableCell>
                   <TableCell sx={styles.tableCell}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -692,6 +730,14 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
           </Box>
         </DialogContent>
       </Dialog>
+
+      {/* Training Program Confirmation Dialog */}
+      <TrainingProgramConfirmDialog
+        open={confirmProgramOpen}
+        programTitle={selectedProgram?.title || null}
+        onConfirm={handleConfirmProgramNavigation}
+        onCancel={handleCancelProgramNavigation}
+      />
     </Box>
   );
 };

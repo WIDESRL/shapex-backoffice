@@ -581,6 +581,7 @@
       "searchPlaceholder": "Search here...",
       "clientName": "Client Name",
       "subscription": "Subscription",
+      "trainingProgram": "Training Program",
       "expiration": "Expiration",
       "planAlimInteg": "Meal/Integ. Plan",
       "expirationTooltips": {
@@ -589,6 +590,8 @@
       },
       "messages": "Messages",
       "actions": "Actions",
+      "viewTrainingProgram": "View Training Program",
+      "confirmViewProgram": "Do you want to view training program",
       "allSubscriptions": "All subscriptions",
       "showingResults": "Showing {{from}}-{{to}} of {{total}} results",
       "totalResults": "Total: {{total}} results",
