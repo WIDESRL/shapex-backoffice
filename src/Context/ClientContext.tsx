@@ -296,6 +296,31 @@ export type UserCall = {
       currency: string;
       status: string;
     };
+    applePaymentData?: {
+      applePaymentId: string;
+      decodedTransaction: {
+        type: string;
+        price: number;
+        bundleId: string;
+        currency: string;
+        quantity: number;
+        productId: string;
+        signedDate: number;
+        storefront: string;
+        environment: string;
+        purchaseDate: number;
+        storefrontId: string;
+        transactionId: string;
+        transactionReason: string;
+        inAppOwnershipType: string;
+        originalPurchaseDate: number;
+        originalTransactionId: string;
+      };
+      latestReceiptInfo: null | Record<string, unknown>;
+      pendingRenewalInfo: null | Record<string, unknown>;
+      createdAt: string;
+      updatedAt: string;
+    };
   };
 };
 

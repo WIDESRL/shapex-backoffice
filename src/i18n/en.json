@@ -1072,7 +1072,13 @@
           "amount": "Amount:",
           "status": "Status:",
           "currency": "Currency:",
-          "paymentId": "Payment ID:"
+          "paymentId": "Payment ID:",
+          "transactionId": "Transaction ID:",
+          "purchaseDate": "Purchase Date:",
+          "environment": "Environment:",
+          "storefront": "Storefront:",
+          "applePay": " Apple",
+          "stripe": "Stripe"
         },
         "emptyState": {
           "title": "No calls available",

@@ -1,35 +1,10 @@
 import React from 'react';
 import { Box, Typography, Paper, Chip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { Call } from '../types/payment';
 
 interface CallCardProps {
-  call: {
-    id: number;
-    type: 'Extra' | 'Supplementary';
-    usedAt: string | null;
-    createdAt: string;
-    product?: {
-      id: number;
-      name: string;
-    };
-    subscription?: {
-      id: number;
-      subscription: {
-        title: string;
-      };
-    };
-    order?: {
-      id: number;
-      totalAmount: number;
-      stripePaymentIntentId: string;
-      stripePaymentData: {
-        id: string;
-        amount: number;
-        currency: string;
-        status: string;
-      };
-    };
-  };
+  call: Call;
   title: string;
   subtitle: string;
   typeLabel: string;
@@ -206,6 +181,26 @@ const CallCard: React.FC<CallCardProps> = ({
       currency: currency.toUpperCase(),
     }).format(amount);
   };
+
+  // Helper function to format Apple payment amount (amount is in smallest currency unit like cents)
+  const formatAppleAmount = (amount: number, currency: string) => {
+    const actualAmount = amount / 100; // Convert from cents to actual amount
+    return new Intl.NumberFormat('it-IT', {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+    }).format(actualAmount);
+  };
+
+  // Helper function to format date from timestamp
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleString('it-IT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
   return (
     <Paper sx={styles.callCard} elevation={0}>
       {/* Status indicator dot */}
@@ -278,11 +273,27 @@ const CallCard: React.FC<CallCardProps> = ({
       </Box>
 
       {/* Payment Information Section for Extra calls */}
-      {call.type === 'Extra' && call.order && (
+      {call.type === 'Extra' && call.order && call.order.stripePaymentData && (
         <Box sx={styles.paymentSection}>
-          <Typography sx={styles.paymentTitle}>
-            {t('client.altro.calls.card.payment')}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
+            <Typography sx={styles.paymentTitle}>
+              {t('client.altro.calls.card.payment')}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: '#635BFF',
+                backgroundColor: '#fff',
+                px: 1,
+                py: 0.25,
+                borderRadius: 1,
+                border: '1px solid #ddd',
+              }}
+            >
+              {t('client.altro.calls.card.stripe')}
+            </Typography>
+          </Box>
           
           <Box sx={styles.paymentDetail}>
             <Typography sx={styles.paymentLabel}>
@@ -323,6 +334,91 @@ const CallCard: React.FC<CallCardProps> = ({
             </Typography>
             <Typography sx={styles.paymentValue} style={{ fontSize: 9 }}>
               {call.order.stripePaymentData.id}
+            </Typography>
+          </Box>
+        </Box>
+      )}
+
+      {/* Apple Payment Information Section */}
+      {call.type === 'Extra' && call.order && call.order.applePaymentData && (
+        <Box sx={styles.paymentSection}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
+            <Typography sx={styles.paymentTitle}>
+              {t('client.altro.calls.card.payment')}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: '#000',
+                backgroundColor: '#fff',
+                px: 1,
+                py: 0.25,
+                borderRadius: 1,
+                border: '1px solid #ddd',
+              }}
+            >
+              {t('client.altro.calls.card.applePay')}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.orderId')}
+            </Typography>
+            <Typography sx={styles.paymentValue}>
+              #{call.order.id}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.amount')}
+            </Typography>
+            <Typography sx={styles.paymentValue}>
+              {formatAppleAmount(call.order.applePaymentData.decodedTransaction.price, call.order.applePaymentData.decodedTransaction.currency)}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.transactionId')}
+            </Typography>
+            <Typography sx={styles.paymentValue} style={{ fontSize: 9 }}>
+              {call.order.applePaymentData.decodedTransaction.transactionId}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.purchaseDate')}
+            </Typography>
+            <Typography sx={styles.paymentValue} style={{ fontSize: 9 }}>
+              {formatDate(call.order.applePaymentData.decodedTransaction.purchaseDate)}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.environment')}
+            </Typography>
+            <Chip
+              label={call.order.applePaymentData.decodedTransaction.environment}
+              size="small"
+              sx={{
+                ...styles.statusChip,
+                backgroundColor: call.order.applePaymentData.decodedTransaction.environment === 'Production' ? '#4caf50' : '#ff9800',
+                color: '#fff',
+              }}
+            />
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.storefront')}
+            </Typography>
+            <Typography sx={styles.paymentValue}>
+              {call.order.applePaymentData.decodedTransaction.storefront}
             </Typography>
           </Box>
         </Box>

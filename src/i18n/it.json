@@ -1056,7 +1056,13 @@
           "amount": "Importo:",
           "status": "Stato:",
           "currency": "Valuta:",
-          "paymentId": "ID Pagamento:"
+          "paymentId": "ID Pagamento:",
+          "transactionId": "ID Transazione:",
+          "purchaseDate": "Data Acquisto:",
+          "environment": "Ambiente:",
+          "storefront": "Negozio:",
+          "applePay": " Apple",
+          "stripe": "Stripe"
         },
         "emptyState": {
           "title": "Nessuna chiamata disponibile",
