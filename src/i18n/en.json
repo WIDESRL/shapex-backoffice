@@ -1081,7 +1081,8 @@
           "stripe": "Stripe",
           "product": "Product",
           "productName": "Name",
-          "productPrice": "Price"
+          "productPrice": "Price",
+          "productInfoNote": "Note: This shows the current product title and price, which may differ from the values at the time of purchase."
         },
         "emptyState": {
           "title": "No calls available",

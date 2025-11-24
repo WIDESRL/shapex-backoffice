@@ -296,6 +296,20 @@ const CallCard: React.FC<CallCardProps> = ({
               {formatCurrency(call.product?.price, 'EUR')}
             </Typography>
           </Box>
+          
+          <Box sx={{ 
+            mt: 1, 
+            pt: 1, 
+            borderTop: '1px solid #dee2e6',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 0.5
+          }}>
+            <Typography sx={{ fontSize: 10, color: '#6c757d', lineHeight: 1.4 }}>ℹ️</Typography>
+            <Typography sx={{ fontSize: 9, color: '#6c757d', lineHeight: 1.4, fontStyle: 'italic' }}>
+              {t('client.altro.calls.card.productInfoNote')}
+            </Typography>
+          </Box>
         </Box>
       )}
 

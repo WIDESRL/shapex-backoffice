@@ -1065,7 +1065,8 @@
           "stripe": "Stripe",
           "product": "Prodotto",
           "productName": "Nome",
-          "productPrice": "Prezzo"
+          "productPrice": "Prezzo",
+          "productInfoNote": "Nota: Vengono visualizzati il titolo e il prezzo attuali del prodotto, che potrebbero differire dai valori al momento dell'acquisto."
         },
         "emptyState": {
           "title": "Nessuna chiamata disponibile",
