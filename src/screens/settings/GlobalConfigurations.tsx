@@ -40,6 +40,10 @@ const GlobalConfigurations: React.FC<GlobalConfigurationsProps> = ({ styles }) =
     configs.find(config => config.name === 'CHECK_REMINDER_DAYS_BEFORE'), 
     [configs]
   );
+  const adminEmailConfig = useMemo(() => 
+    configs.find(config => config.name === 'ADMIN_EMAIL'), 
+    [configs]
+  );
 
   const handleConfigEdit = (configName: string, displayName: string) => {
     const config = getConfigByName(configName);
@@ -57,11 +61,22 @@ const GlobalConfigurations: React.FC<GlobalConfigurationsProps> = ({ styles }) =
   const handleConfigUpdate = async () => {
     if (!selectedConfig) return;
     
+    // Check if this is an email field
+    const isEmailField = selectedConfig.name === t('settings.globalConfig.adminEmail');
+    
     // Validate the new value
-    const newValue = Number(selectedConfig.newValue);
-    if (isNaN(newValue) || newValue <= 0) {
-      showSnackbar(t('settings.globalConfig.confirmDialog.invalidValue'), 'error');
-      return;
+    if (isEmailField) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(selectedConfig.newValue)) {
+        showSnackbar(t('settings.globalConfig.confirmDialog.invalidEmail'), 'error');
+        return;
+      }
+    } else {
+      const newValue = Number(selectedConfig.newValue);
+      if (isNaN(newValue) || newValue <= 0) {
+        showSnackbar(t('settings.globalConfig.confirmDialog.invalidValue'), 'error');
+        return;
+      }
     }
     
     try {
@@ -140,6 +155,30 @@ const GlobalConfigurations: React.FC<GlobalConfigurationsProps> = ({ styles }) =
                 </Button>
               </Box>
             </Box>
+
+            {/* Admin Email Configuration */}
+            <Box sx={styles.configItem}>
+              <Box sx={styles.configInfo}>
+                <Typography variant="h6" sx={styles.configTitle}>
+                  {t('settings.globalConfig.adminEmail')}
+                </Typography>
+                <Typography variant="body2" sx={styles.configDescription}>
+                  {t('settings.globalConfig.adminEmailDescription')}
+                </Typography>
+              </Box>
+              <Box sx={styles.configActions}>
+                <Typography variant="h6" sx={styles.configValue}>
+                  {adminEmailConfig?.value || 'Not set'}
+                </Typography>
+                <Button
+                  variant="outlined"
+                  sx={styles.outlinedButton}
+                  onClick={() => handleConfigEdit('ADMIN_EMAIL', t('settings.globalConfig.adminEmail'))}
+                >
+                  {t('settings.globalConfig.editButton')}
+                </Button>
+              </Box>
+            </Box>
           </Box>
         )}
       </Paper>
@@ -184,24 +223,28 @@ const GlobalConfigurations: React.FC<GlobalConfigurationsProps> = ({ styles }) =
               <strong>{t('settings.globalConfig.confirmDialog.newValue')}</strong>
             </Typography>
             <TextField
-              type="number"
+              type={selectedConfig?.name === t('settings.globalConfig.adminEmail') ? 'email' : 'number'}
               value={selectedConfig?.newValue || ''}
               onChange={(e) => setSelectedConfig(prev => prev ? { ...prev, newValue: e.target.value } : null)}
               variant="outlined"
               size="small"
               fullWidth
-              inputProps={{ min: 1 }}
+              inputProps={selectedConfig?.name === t('settings.globalConfig.adminEmail') ? {} : { min: 1 }}
               error={selectedConfig?.newValue !== '' && (
-                isNaN(Number(selectedConfig?.newValue)) || 
-                Number(selectedConfig?.newValue) <= 0 ||
-                selectedConfig?.newValue === '0'
+                selectedConfig?.name === t('settings.globalConfig.adminEmail') 
+                  ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(selectedConfig?.newValue)
+                  : (isNaN(Number(selectedConfig?.newValue)) || 
+                     Number(selectedConfig?.newValue) <= 0 ||
+                     selectedConfig?.newValue === '0')
               )}
               helperText={
                 selectedConfig?.newValue !== '' && (
-                  isNaN(Number(selectedConfig?.newValue)) || 
-                  Number(selectedConfig?.newValue) <= 0 ||
-                  selectedConfig?.newValue === '0'
-                ) ? t('settings.globalConfig.confirmDialog.invalidValue') : ''
+                  selectedConfig?.name === t('settings.globalConfig.adminEmail')
+                    ? (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(selectedConfig?.newValue) ? t('settings.globalConfig.confirmDialog.invalidEmail') : '')
+                    : ((isNaN(Number(selectedConfig?.newValue)) || 
+                        Number(selectedConfig?.newValue) <= 0 ||
+                        selectedConfig?.newValue === '0') ? t('settings.globalConfig.confirmDialog.invalidValue') : '')
+                )
               }
             />
           </Box>
@@ -221,9 +264,11 @@ const GlobalConfigurations: React.FC<GlobalConfigurationsProps> = ({ styles }) =
             disabled={
               !selectedConfig?.newValue || 
               selectedConfig.newValue === selectedConfig.currentValue ||
-              isNaN(Number(selectedConfig.newValue)) ||
-              Number(selectedConfig.newValue) <= 0 ||
-              selectedConfig.newValue === '0'
+              (selectedConfig?.name === t('settings.globalConfig.adminEmail')
+                ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(selectedConfig.newValue)
+                : (isNaN(Number(selectedConfig.newValue)) ||
+                   Number(selectedConfig.newValue) <= 0 ||
+                   selectedConfig.newValue === '0'))
             }
           >
             {t('settings.globalConfig.confirmDialog.confirm')}

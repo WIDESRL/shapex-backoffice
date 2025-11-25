@@ -1270,6 +1270,8 @@
       "checkEditWindowDescription": "Numero di ore durante le quali un utente può modificare un controllo dopo la creazione",
       "checkReminderDays": "Giorni di promemoria controllo",
       "checkReminderDaysDescription": "Numero di giorni prima del prossimo controllo programmato per inviare notifiche di promemoria agli utenti",
+      "adminEmail": "Email Amministratore",
+      "adminEmailDescription": "L'indirizzo email dove verranno inviate le notifiche e gli avvisi di sistema",
       "confirmDialog": {
         "title": "Conferma Modifica",
         "message": "Sei sicuro di voler modificare questa configurazione?",
@@ -1277,7 +1279,8 @@
         "newValue": "Nuovo valore:",
         "confirm": "Conferma",
         "cancel": "Annulla",
-        "invalidValue": "Il valore deve essere un numero positivo maggiore di 0"
+        "invalidValue": "Il valore deve essere un numero positivo maggiore di 0",
+        "invalidEmail": "Inserisci un indirizzo email valido"
       },
       "messages": {
         "updateSuccess": "Configurazione aggiornata con successo",

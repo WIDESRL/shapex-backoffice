@@ -1286,6 +1286,8 @@
       "checkEditWindowDescription": "Number of hours during which a user can edit a check after creation",
       "checkReminderDays": "Check reminder days",
       "checkReminderDaysDescription": "Number of days before the next scheduled check to send reminder notifications to users",
+      "adminEmail": "Admin Email",
+      "adminEmailDescription": "The email address where system notifications and alerts will be sent",
       "confirmDialog": {
         "title": "Confirm Change",
         "message": "Are you sure you want to modify this configuration?",
@@ -1293,7 +1295,8 @@
         "newValue": "New value:",
         "confirm": "Confirm",
         "cancel": "Cancel",
-        "invalidValue": "Value must be a positive number greater than 0"
+        "invalidValue": "Value must be a positive number greater than 0",
+        "invalidEmail": "Please enter a valid email address"
       },
       "messages": {
         "updateSuccess": "Configuration updated successfully",
