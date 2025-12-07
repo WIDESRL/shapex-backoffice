@@ -215,7 +215,7 @@ const CallCard: React.FC<CallCardProps> = ({
             {subtitle}
           </Typography>
         </Box>
-        
+         
         <Box sx={styles.statusSection}>
           <Chip
             label={typeLabel}
