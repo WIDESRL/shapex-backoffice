@@ -372,7 +372,7 @@ const StartConversationDialog: React.FC<{ open: boolean; onClose: () => void; on
                 inputProps={{ maxLength: 1000 }}
               />
               <IconButton component="label" sx={styles.attachButton}>
-                <input type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" hidden onChange={handleFileChange} />
+                <input type="file" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" hidden onChange={handleFileChange} />
                 <AttachFileIcon />
               </IconButton>
             </Paper>

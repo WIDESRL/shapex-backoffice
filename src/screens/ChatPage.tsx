@@ -17,8 +17,12 @@ import StartNewConversationDialogs from '../components/StartNewConversationDialo
 import AddIcon from '@mui/icons-material/Add';
 import ImageCustom from '../components/ImageCustom';
 import AvatarCustom from '../components/AvatarCustom';
+import VideoPlayer from '../components/VideoPlayer';
+import AudioPlayer from '../components/AudioPlayer';
 import { handleApiError } from '../utils/errorUtils';
 import { useSnackbar } from '../Context/SnackbarContext';
+import ClientSectionsModal from '../components/ClientSectionsModal';
+import { Client } from '../Context/ClientContext';
 
 const styles = {
   searchInput: {
@@ -235,6 +239,17 @@ const styles = {
     maxHeight: 180,
     borderRadius: 8,
     cursor: 'pointer',
+    margin: 2,
+  },
+  videoMessage: {
+    maxWidth: 450,
+    maxHeight: 340,
+    borderRadius: 8,
+    margin: 2,
+  },
+  audioMessage: {
+    width: '100%',
+    maxWidth: 300,
     margin: 2,
   },
   fileMessageContainer: {
@@ -485,6 +500,8 @@ const ChatPageContent: React.FC = () => {
 	const [searchInput, setSearchInput] = useState(conversationSearch);
 	const [startDialogOpen, setStartDialogOpen] = useState(false);
 	const [userIdToMessage, setUserIdToMessage] = useState<number | null>(null);
+	const [clientModalOpen, setClientModalOpen] = useState(false);
+	const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 	const messagesEndRef = useRef<HTMLDivElement | null>(null);
 	const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 	const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -661,6 +678,31 @@ const ChatPageContent: React.FC = () => {
 		navigate(`/chat/${conv.userId}`, { replace: true });
 	};
 
+	const handleAvatarClick = (conv: ApiConversation) => {
+		// Convert conversation user to minimal Client object for modal
+		const clientData: Client = {
+			id: conv.user.id,
+			email: '',
+			username: '',
+			firstName: conv.user.firstName,
+			lastName: conv.user.lastName,
+			phoneNumber: null,
+			dateOfBirth: null,
+			placeOfBirth: null,
+			fiscalCode: null,
+			activeSubscription: null,
+			assignedProgram: null,
+			totalMessages: 0,
+		};
+		setSelectedClient(clientData);
+		setClientModalOpen(true);
+	};
+
+	const handleCloseClientModal = () => {
+		setClientModalOpen(false);
+		setSelectedClient(null);
+	};
+
 	// Group messages by date
 	const groupedMessages = messages.reduce((acc: Record<string, Message[]>, msg: Message) => {
 		const dateKey = format(parseISO(msg.date), 'dd/MM/yyyy');
@@ -720,7 +762,16 @@ const ChatPageContent: React.FC = () => {
 									sx={selectedConversationId === conv.id ? styles.conversationItemSelected : undefined}
 								>
 									<ListItemAvatar>
-										<Box sx={styles.avatarContainer}>
+										<Box 
+											sx={{
+												...styles.avatarContainer,
+												cursor: 'pointer',
+											}}
+											onClick={(e) => {
+												e.stopPropagation();
+												handleAvatarClick(conv);
+											}}
+										>
 											<AvatarCustom
 												src={conv.user.profilePictureFile?.signedUrl || '/profile.svg'}
 												alt={((conv.user.firstName || '') + ' ' + (conv.user.lastName || '')).trim() || t('chat.user')}
@@ -866,7 +917,22 @@ const ChatPageContent: React.FC = () => {
 													onClick={() => msg.file && setFullscreenImage(msg.file.signedUrl)}
 												/>
 											)}
-											{msg.type === 'file' && msg.file && (!msg.file.type || !msg.file.type.startsWith('image/')) && (
+											{msg.type === 'file' && msg.file && msg.file.type && msg.file.type.startsWith('video/') && (
+												<VideoPlayer
+													src={msg.file.signedUrl}
+													alt={msg.file.fileName || t('chat.video')}
+													style={styles.videoMessage}
+												/>
+											)}
+											{msg.type === 'file' && msg.file && msg.file.type && msg.file.type.startsWith('audio/') && (
+												<AudioPlayer
+													src={msg.file.signedUrl}
+													alt={msg.file.fileName || t('chat.audio')}
+													style={styles.audioMessage}
+													minWidth={250}
+												/>
+											)}
+											{msg.type === 'file' && msg.file && (!msg.file.type || (!msg.file.type.startsWith('image/') && !msg.file.type.startsWith('video/') && !msg.file.type.startsWith('audio/'))) && (
 												<Box sx={styles.fileMessageContainer}>
 													<IconButton href={msg.file.signedUrl} target="_blank" rel="noopener noreferrer" size="small" sx={styles.fileIcon}>
 														<AttachFileIcon />
@@ -915,9 +981,9 @@ const ChatPageContent: React.FC = () => {
 							sx={styles.chatInputContainer}
 							inputProps={styles.chatInputProps}
 						/>
-						<IconButton component="label" sx={styles.attachButton}>
-							<input type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" hidden onChange={handleFileUpload} />
-							<AttachFileIcon />
+					<IconButton component="label" sx={styles.attachButton}>
+						<input type="file" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" hidden onChange={handleFileUpload} />
+						<AttachFileIcon />
 						</IconButton>
 						<IconButton onClick={handleSend} sx={styles.sendButton}>
 							<SendIcon fontSize="medium" />
@@ -954,6 +1020,12 @@ const ChatPageContent: React.FC = () => {
 			</MainSection>
 			{/* Fullscreen image dialog */}
 			<FullscreenImageDialog open={!!fullscreenImage} imageUrl={fullscreenImage || ''} onClose={() => setFullscreenImage(null)} />
+			{/* Client sections modal */}
+			<ClientSectionsModal
+				open={clientModalOpen}
+				client={selectedClient}
+				onClose={handleCloseClientModal}
+			/>
 		</ChatContainer>
 	);
 };

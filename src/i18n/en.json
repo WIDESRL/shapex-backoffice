@@ -1392,6 +1392,8 @@
     "user": "User",
     "file": "File",
     "image": "image",
+    "video": "video",
+    "audio": "audio",
     "searchPlaceholder": "Search people with name or email...",
     "noConversationsFound": "No conversations found",
     "tryDifferentSearch": "Try a different name or email.",

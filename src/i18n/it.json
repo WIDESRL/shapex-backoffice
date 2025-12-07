@@ -1376,6 +1376,8 @@
     "user": "Utente",
     "file": "File",
     "image": "immagine",
+    "video": "video",
+    "audio": "audio",
     "searchPlaceholder": "Cerca persone per nome o email...",
     "noConversationsFound": "Nessuna conversazione trovata",
     "tryDifferentSearch": "Prova un nome o email diverso.",

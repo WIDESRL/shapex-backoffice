@@ -24,6 +24,8 @@ import { useSnackbar } from '../Context/SnackbarContext';
 import { handleApiError } from '../utils/errorUtils';
 import AvatarCustom from './AvatarCustom';
 import ImageCustom from './ImageCustom';
+import VideoPlayer from './VideoPlayer';
+import AudioPlayer from './AudioPlayer';
 import FullscreenImageDialog from './FullscreenImageDialog';
 
 // ===========================
@@ -569,6 +571,19 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
                               alt={msg.file.fileName || t('chat.image')}
                               onClick={() => msg.file && setFullscreenImage(msg.file.signedUrl)}
                             />
+                          ) : msg.file.type?.startsWith('video/') ? (
+                            <VideoPlayer
+                              src={msg.file.signedUrl}
+                              alt={msg.file.fileName || t('chat.video')}
+                              maxWidth={240}
+                              maxHeight={180}
+                            />
+                          ) : msg.file.type?.startsWith('audio/') ? (
+                            <AudioPlayer
+                              src={msg.file.signedUrl}
+                              alt={msg.file.fileName || t('chat.audio')}
+                              minWidth={150}
+                            />
                           ) : (
                             <FileMessage
                               href={msg.file.signedUrl}
@@ -615,7 +630,7 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
             >
               <input
                 type="file"
-                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
                 hidden
                 onChange={handleFileUpload}
               />

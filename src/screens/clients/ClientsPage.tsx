@@ -1,59 +1,18 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip, Autocomplete, Pagination } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip, Autocomplete, Pagination } from '@mui/material';
 import MagnifierIcon from '../../icons/MagnifierIcon';
 import UserIcon from '../../icons/UserIcon';
 import { Client, useClientContext } from '../../Context/ClientContext';
 import { useSubscriptions, Subscription } from '../../Context/SubscriptionsContext';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DiaryIcon from '../../icons/DiarioIcon';
-import MoreIcon from '../../icons/MoreIcon';
-import AlimentazioneIcon from '../../icons/AlimentazioneIcon2';
 import IntegrazioneIcon from '../../icons/IntegrazioneIcon';
-import DialogCloseIcon from '../../icons/DialogCloseIcon2';
-import Chat from '../../icons/Chat';
-import AnagraficaIcon from '../../icons/AnagraficaIcon';
-import AllenamentiIcon from '../../icons/AllenamentiIcon';
+import AlimentazioneIcon from '../../icons/AlimentazioneIcon2';
 import TrainingProgramConfirmDialog from '../../components/TrainingProgramConfirmDialog';
+import ClientSectionsModal from '../../components/ClientSectionsModal';
 import { getContrastColor } from '../../utils/colorUtils';
 
 const styles = {
-  modalSectionBox: {
-    border: 1,
-    borderColor: '#eee',
-    borderRadius: 2,
-    p: 2,
-    minWidth: 200,
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    '&:hover': {
-      borderColor: '#ccc',
-      backgroundColor: '#fafafa',
-    },
-  },
-  modalSectionTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 1,
-    mb: 1,
-  },
-  modalSectionList: {
-    margin: 0,
-    paddingLeft: 18,
-    color: '#616160',
-    fontSize: 15,
-  },
-  modalSectionListItem: {
-    marginBottom: 14,
-  },
-  modalSectionDivider: {
-    border: 0,
-    borderTop: '1.5px solid #e0e0e0',
-    margin: '12px 0 10px 0',
-  },
   emptyStateBox: {
     display: 'flex',
     flexDirection: 'column',
@@ -360,41 +319,8 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
     setSelectedProgram(null);
   };
 
-  const handleSectionClick = (section: string, clientId: number | string) => {
-    setModalOpen(false);
-    switch (section) {
-      case 'anagrafica':
-        navigate(`/clients/${clientId}/anagrafica`);
-        break;
-      case 'allenamenti':
-        navigate(`/clients/${clientId}/allenamenti`);
-        break;
-      case 'diario':
-        navigate(`/clients/${clientId}/diario`);
-        break;
-      case 'alimentazione':
-        navigate(`/clients/${clientId}/alimentazione`);
-        break;
-      case 'altro':
-        navigate(`/clients/${clientId}/altro`);
-        break;
-      case 'chat':
-        navigate(`/chat/${clientId}`);
-        break;
-      default:
-        break;
-    }
-  };
-
   // Calculate number of columns for colspan
   const totalColumns = useMemo(() => dashboard ? 5 : 9, [dashboard]);
-
-  // Memoize client display name
-  const clientDisplayName = useMemo(() => {
-    if (!selectedClient) return '';
-    const fullName = `${selectedClient.firstName || ''} ${selectedClient.lastName || ''}`.trim();
-    return fullName || selectedClient.email || '';
-  }, [selectedClient]);
 
   return (
     <Box sx={styles.pageContainer}>
@@ -640,96 +566,11 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
       )}
 
       {/* Client Modal */}
-      <Dialog open={modalOpen} onClose={handleModalClose} maxWidth="md" PaperProps={{ sx: styles.dialogPaper }}
-       slotProps={{
-              backdrop: {
-                  timeout: 300,
-                  sx: styles.dialogBackdrop,
-              },
-          }}
-          >
-        <DialogTitle sx={styles.dialogTitle}>
-          {clientDisplayName}
-          <IconButton aria-label="close" onClick={handleModalClose} sx={styles.dialogCloseButton}>
-            <DialogCloseIcon style={styles.dialogCloseIcon} />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={styles.dialogContent}>
-          <Box sx={styles.dialogGrid}>
-            <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('anagrafica', selectedClient?.id || '')}>
-              <Box sx={styles.modalSectionTitle}>
-                <AnagraficaIcon style={{ color: 'grey' }} />
-                <Typography sx={styles.modalSectionText}>{t('client.main.modalSections.anagrafica.title')}</Typography>
-              </Box>
-              <hr style={styles.modalSectionDivider} />
-              <ul style={styles.modalSectionList}>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.anagrafica.items.information')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.anagrafica.items.contacts')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.anagrafica.items.password')}</li>
-              </ul>
-            </Box>
-            <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('allenamenti', selectedClient?.id || '')}>
-              <Box sx={styles.modalSectionTitle}>
-                <AllenamentiIcon />
-                <Typography sx={styles.modalSectionText}>{t('client.main.modalSections.allenamenti.title')}</Typography>
-              </Box>
-              <hr style={styles.modalSectionDivider} />
-              <ul style={styles.modalSectionList}>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.allenamenti.items.programs')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.allenamenti.items.completed')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.allenamenti.items.history')}</li>
-              </ul>
-            </Box>
-            <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('diario', selectedClient?.id || '')}>
-              <Box sx={styles.modalSectionTitle}>
-                <DiaryIcon />
-                <Typography sx={styles.modalSectionText}>{t('client.main.modalSections.diario.title')}</Typography>
-              </Box>
-              <hr style={styles.modalSectionDivider} />
-              <ul style={styles.modalSectionList}>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.diario.items.anamnesis')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.diario.items.measurements')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.diario.items.photos')}</li>
-              </ul>
-            </Box>
-            <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('alimentazione', selectedClient?.id || '')}>
-              <Box sx={styles.modalSectionTitle}>
-                <AlimentazioneIcon style={{ color: 'grey' }} />
-                <Typography sx={styles.modalSectionText}>{t('client.main.modalSections.alimentazione.title')}</Typography>
-              </Box>
-              <hr style={styles.modalSectionDivider} />
-              <ul style={styles.modalSectionList}>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.alimentazione.items.plan')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.alimentazione.items.supplements')}</li>
-              </ul>
-            </Box>
-            <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('altro', selectedClient?.id || '')}>
-              <Box sx={styles.modalSectionTitle}>
-                <MoreIcon />
-                <Typography sx={styles.modalSectionText}>{t('client.main.modalSections.altro.title')}</Typography>
-              </Box>
-              <hr style={styles.modalSectionDivider} />
-              <ul style={styles.modalSectionList}>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.subscription')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.notifications')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.calls')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.altro.items.configuration')}</li>
-              </ul>
-            </Box>
-            <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('chat', selectedClient?.id || '')}>
-              <Box sx={styles.modalSectionTitle}>
-                <Chat style={{ color: 'grey' }} />
-                <Typography sx={styles.modalSectionText}>{t('client.main.modalSections.chat.title')}</Typography>
-              </Box>
-              <hr style={styles.modalSectionDivider} />
-              <ul style={styles.modalSectionList}>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.chat.items.messages')}</li>
-                <li style={styles.modalSectionListItem}>{t('client.main.modalSections.chat.items.conversation')}</li>
-              </ul>
-            </Box>
-          </Box>
-        </DialogContent>
-      </Dialog>
+      <ClientSectionsModal
+        open={modalOpen}
+        client={selectedClient}
+        onClose={handleModalClose}
+      />
 
       {/* Training Program Confirmation Dialog */}
       <TrainingProgramConfirmDialog
