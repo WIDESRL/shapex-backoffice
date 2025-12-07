@@ -464,6 +464,100 @@ const CallCard: React.FC<CallCardProps> = ({
           </Box>
         </Box>
       )}
+
+      {/* Android Payment Information Section */}
+      {call.type === 'Extra' && call.order && call.order.androidPaymentData && (
+        <Box sx={styles.paymentSection}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
+            <Typography sx={styles.paymentTitle}>
+              {t('client.altro.calls.card.payment')}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: '#3DDC84',
+                backgroundColor: '#fff',
+                px: 1,
+                py: 0.25,
+                borderRadius: 1,
+                border: '1px solid #ddd',
+              }}
+            >
+              {t('client.altro.calls.card.androidPay')}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.orderId')}
+            </Typography>
+            <Typography sx={styles.paymentValue}>
+              #{call.order.id}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.androidOrderId')}
+            </Typography>
+            <Typography sx={styles.paymentValue} style={{ fontSize: 9 }}>
+              {call.order.androidPaymentData.latestPurchaseData.orderId}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.productId')}
+            </Typography>
+            <Typography sx={styles.paymentValue}>
+              {call.order.androidPaymentData.latestPurchaseData.productId}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.quantity')}
+            </Typography>
+            <Typography sx={styles.paymentValue}>
+              {call.order.androidPaymentData.latestPurchaseData.quantity}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.purchaseDate')}
+            </Typography>
+            <Typography sx={styles.paymentValue} style={{ fontSize: 9 }}>
+              {formatDate(call.order.androidPaymentData.latestPurchaseData.purchaseTime)}
+            </Typography>
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.purchaseState')}
+            </Typography>
+            <Chip
+              label={call.order.androidPaymentData.latestPurchaseData.purchaseState === 0 ? 'PURCHASED' : 'PENDING'}
+              size="small"
+              sx={{
+                ...styles.statusChip,
+                backgroundColor: call.order.androidPaymentData.latestPurchaseData.purchaseState === 0 ? '#4caf50' : '#ff9800',
+                color: '#fff',
+              }}
+            />
+          </Box>
+          
+          <Box sx={styles.paymentDetail}>
+            <Typography sx={styles.paymentLabel}>
+              {t('client.altro.calls.card.packageName')}
+            </Typography>
+            <Typography sx={styles.paymentValue} style={{ fontSize: 9 }}>
+              {call.order.androidPaymentData.latestPurchaseData.packageName}
+            </Typography>
+          </Box>
+        </Box>
+      )}
     </Paper>
   );
 };

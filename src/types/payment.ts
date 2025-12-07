@@ -31,6 +31,22 @@ export interface ApplePaymentData {
   updatedAt: string;
 }
 
+export interface AndroidPaymentData {
+  androidPaymentId: string;
+  latestPurchaseData: {
+    orderId: string;
+    quantity: number;
+    productId: string;
+    packageName: string;
+    acknowledged: boolean;
+    purchaseTime: number;
+    purchaseState: number;
+    purchaseToken: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Call {
   id: number;
   type: 'Extra' | 'Supplementary';
@@ -53,5 +69,6 @@ export interface Call {
     stripePaymentIntentId?: string;
     stripePaymentData?: StripePaymentData;
     applePaymentData?: ApplePaymentData;
+    androidPaymentData?: AndroidPaymentData;
   };
 }
