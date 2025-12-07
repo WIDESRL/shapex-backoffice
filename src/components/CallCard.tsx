@@ -205,7 +205,7 @@ const CallCard: React.FC<CallCardProps> = ({
     <Paper sx={styles.callCard} elevation={0}>
       {/* Status indicator dot */}
       <Box sx={call.usedAt ? styles.usedIndicator : styles.availableIndicator} />
-      
+    
       <Box sx={styles.cardHeader}>
         <Box sx={styles.titleSection}>
           <Typography sx={styles.callTitle}>
