@@ -423,30 +423,44 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                     component="li" 
                     {...otherProps} 
                     sx={{
-                      ...styles.subscriptionMenuItem,
                       display: 'flex',
-                      alignItems: 'center',
+                      alignItems: 'flex-start',
                       gap: 1,
+                      padding: '8px 16px',
+                      width: '100%',
+                      minHeight: 'auto',
+                      boxSizing: 'border-box',
                     }}
-                    title={option.title.length > 20 ? option.title : ''}
+                    title={option.title}
                   >
                     <Box
                       sx={{
                         width: 12,
                         height: 12,
+                        minWidth: 12,
                         borderRadius: '50%',
                         backgroundColor: option.color || '#ccc',
                         flexShrink: 0,
+                        mt: 0.3,
                       }}
                     />
-                    {option.title}
+                    <Box sx={{ 
+                      flex: 1, 
+                      wordBreak: 'break-word',
+                      whiteSpace: 'normal',
+                      lineHeight: 1.4,
+                    }}>
+                      {option.title}
+                    </Box>
                   </Box>
                 );
               }}
               ListboxProps={{
                 style: {
                   maxHeight: 300,
-                  minWidth: 320,
+                  width: 320,
+                  overflowX: 'hidden',
+                  overflowY: 'auto',
                 },
               }}
               clearOnBlur={false}
