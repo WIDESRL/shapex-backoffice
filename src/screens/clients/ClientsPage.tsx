@@ -239,20 +239,43 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const subscriptionsDebounceRef = useRef<NodeJS.Timeout | null>(null);
   const [localSearch, setLocalSearch] = useState(search);
-  const [subscriptionFilter, setSubscriptionFilter] = useState<Subscription | null>(null);
+  const [subscriptionFilter, setSubscriptionFilter] = useState<Subscription[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [hasInitialFetch, setHasInitialFetch] = useState(false);
   const [confirmProgramOpen, setConfirmProgramOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<{ id: number; title: string } | null>(null);
 
+  // Add suffix to duplicate subscription titles for unique display
+  const processedSubscriptions = useMemo(() => {
+    const titleCounts = new Map<string, number>();
+    
+    return subscriptions.map(sub => {
+      const currentCount = titleCounts.get(sub.title) || 0;
+      titleCounts.set(sub.title, currentCount + 1);
+      
+      if (currentCount === 0) {
+        return sub;
+      }
+      
+      return {
+        ...sub,
+        title: currentCount === 1 
+          ? `${sub.title} (duplicate)` 
+          : `${sub.title} (duplicate ${currentCount})`
+      };
+    });
+  }, [subscriptions]);
+
   // Debounced fetch on page/search change (debounce only the fetch, not the state update)
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       setHasInitialFetch(true);
-      const subscriptionId = subscriptionFilter?.id?.toString() || undefined;
-      fetchClients({ page, pageSize, search, subscriptionId, append: false });
+      const subscriptionIds = subscriptionFilter.length > 0 
+        ? subscriptionFilter.map(sub => sub.id) 
+        : undefined;
+      fetchClients({ page, pageSize, search, subscriptionIds, append: false });
     }, 500);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -281,7 +304,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   };
 
   // Subscription filter handler
-  const handleSubscriptionFilterChange = (_event: React.SyntheticEvent, value: Subscription | null) => {
+  const handleSubscriptionFilterChange = (_event: React.SyntheticEvent, value: Subscription[]) => {
     setSubscriptionFilter(value);
     setPage(1);
   };
@@ -339,63 +362,91 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
               sx={styles.searchInput}
             />
             <Autocomplete
+              multiple
               size="small"
-              options={subscriptions}
+              options={processedSubscriptions}
               getOptionLabel={(option) => option.title}
               value={subscriptionFilter}
               onChange={handleSubscriptionFilterChange}
               isOptionEqualToValue={(option, value) => option.id === value.id}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={t('client.main.subscription')}
-                  placeholder={t('client.main.allSubscriptions')}
-                  sx={styles.subscriptionFilter}
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: subscriptionFilter ? (
-                      <Box
-                        sx={{
-                          width: 12,
-                          height: 12,
-                          borderRadius: '50%',
-                          backgroundColor: subscriptionFilter.color || '#ccc',
-                          marginLeft: 1,
-                          marginRight: 0.5,
-                          flexShrink: 0,
-                        }}
-                      />
-                    ) : null,
-                  }}
-                />
-              )}
-              renderOption={(props, option) => (
-                <Box 
-                  component="li" 
-                  {...props} 
-                  sx={{
-                    ...styles.subscriptionMenuItem,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                  }}
-                  title={option.title.length > 20 ? option.title : ''}
-                >
-                  <Box
-                    sx={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: '50%',
-                      backgroundColor: option.color || '#ccc',
-                      flexShrink: 0,
+              sx={{
+                '& .MuiInputBase-root': {
+                  flexWrap: 'nowrap',
+                  overflow: 'hidden',
+                },
+              }}
+              renderInput={(params) => {
+                const { InputProps, ...restParams } = params;
+                const hasSelection = subscriptionFilter.length > 0;
+                
+                return (
+                  <TextField
+                    {...restParams}
+                    label={t('client.main.subscription')}
+                    placeholder={hasSelection ? '' : t('client.main.allSubscriptions')}
+                    sx={styles.subscriptionFilter}
+                    InputProps={{
+                      ...InputProps,
+                      startAdornment: hasSelection && !params.inputProps.value ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 1, flexShrink: 0 }}>
+                          <Chip
+                            size="small"
+                            label={subscriptionFilter[0].title}
+                            sx={{
+                              backgroundColor: subscriptionFilter[0].color || '#ccc',
+                              color: getContrastColor(subscriptionFilter[0].color || '#ccc'),
+                              maxWidth: 150,
+                              '& .MuiChip-label': {
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              },
+                            }}
+                          />
+                          {subscriptionFilter.length > 1 && (
+                            <Typography variant="body2" sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
+                              +{subscriptionFilter.length - 1}
+                            </Typography>
+                          )}
+                        </Box>
+                      ) : InputProps.startAdornment,
                     }}
                   />
-                  {option.title}
-                </Box>
-              )}
+                );
+              }}
+              renderTags={() => null}
+              renderOption={(props, option) => {
+                const { key, ...otherProps } = props;
+                return (
+                  <Box 
+                    key={option.id + key}
+                    component="li" 
+                    {...otherProps} 
+                    sx={{
+                      ...styles.subscriptionMenuItem,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                    }}
+                    title={option.title.length > 20 ? option.title : ''}
+                  >
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '50%',
+                        backgroundColor: option.color || '#ccc',
+                        flexShrink: 0,
+                      }}
+                    />
+                    {option.title}
+                  </Box>
+                );
+              }}
               ListboxProps={{
                 style: {
                   maxHeight: 300,
+                  minWidth: 320,
                 },
               }}
               clearOnBlur={false}
@@ -520,7 +571,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                     <UserIcon  />
                     <span>{t('client.main.noClientsTitle')}</span>
                     <span style={styles.emptyStateDesc}>
-                      {subscriptionFilter ? t('client.main.noClientsForSubscription') : t('client.main.noClientsDescription')}
+                      {subscriptionFilter.length > 0 ? t('client.main.noClientsForSubscription') : t('client.main.noClientsDescription')}
                     </span>
                   </Box>
                 </TableCell>
