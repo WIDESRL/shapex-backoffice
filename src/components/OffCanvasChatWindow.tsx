@@ -27,6 +27,8 @@ import ImageCustom from './ImageCustom';
 import VideoPlayer from './VideoPlayer';
 import AudioPlayer from './AudioPlayer';
 import FullscreenImageDialog from './FullscreenImageDialog';
+import ClientSectionsModal from './ClientSectionsModal';
+import { Client } from '../Context/ClientContext';
 
 // ===========================
 // TYPES & INTERFACES
@@ -253,9 +255,7 @@ const LoadingIndicator = styled(CircularProgress)({
 });
 
 // Input components
-const FileUploadButton = styled(IconButton, {
-  shouldForwardProp: (prop) => prop !== 'component',
-})<{ component?: React.ElementType }>({
+const FileUploadButton = styled(IconButton)<{ component?: React.ElementType }>({
   color: '#E6BB4A',
   padding: 4,
 });
@@ -291,6 +291,8 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [clientModalOpen, setClientModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -406,6 +408,31 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     setMessage(e.target.value);
   }, []);
 
+  const handleAvatarClick = useCallback(() => {
+    // Convert conversation user to minimal Client object for modal
+    const clientData: Client = {
+      id: chat.conversation.user.id,
+      email: '',
+      username: '',
+      firstName: chat.conversation.user.firstName,
+      lastName: chat.conversation.user.lastName,
+      phoneNumber: null,
+      dateOfBirth: null,
+      placeOfBirth: null,
+      fiscalCode: null,
+      activeSubscription: null,
+      assignedProgram: null,
+      totalMessages: 0,
+    };
+    setSelectedClient(clientData);
+    setClientModalOpen(true);
+  }, [chat.conversation.user]);
+
+  const handleCloseClientModal = useCallback(() => {
+    setClientModalOpen(false);
+    setSelectedClient(null);
+  }, []);
+
   const loadMoreMessagesHandler = useCallback(async () => {
     if (loadingMoreMessages) return;
     if (reversedMessages.length === 0) return;
@@ -488,11 +515,19 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
       {/* Header */}
       <ChatHeader onClick={() => toggleChat(chat.id)}>
         <HeaderUserContainer>
-          <HeaderAvatar
-            src={chat.conversation.user.profilePictureFile?.signedUrl || '/profile.svg'}
-            alt={userName}
-            fallback={`${chat.conversation.user.firstName?.[0] || ''}${chat.conversation.user.lastName?.[0] || ''}`}
-          />
+          <Box
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              handleAvatarClick();
+            }}
+            sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          >
+            <HeaderAvatar
+              src={chat.conversation.user.profilePictureFile?.signedUrl || '/profile.svg'}
+              alt={userName}
+              fallback={`${chat.conversation.user.firstName?.[0] || ''}${chat.conversation.user.lastName?.[0] || ''}`}
+            />
+          </Box>
           <HeaderUserName variant="body2">
             {userName}
           </HeaderUserName>
@@ -652,6 +687,13 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
         open={!!fullscreenImage} 
         imageUrl={fullscreenImage || ''} 
         onClose={() => setFullscreenImage(null)} 
+      />
+      
+      {/* Client Sections Modal */}
+      <ClientSectionsModal
+        open={clientModalOpen}
+        client={selectedClient}
+        onClose={handleCloseClientModal}
       />
     </ChatWindow>
   );

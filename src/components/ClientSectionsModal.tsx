@@ -221,7 +221,7 @@ const ClientSectionsModal: React.FC<ClientSectionsModalProps> = ({ open, client,
           </Box>
           <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('chat', client?.id || '')}>
             <Box sx={styles.modalSectionTitle}>
-              <Chat style={{ color: 'grey' }} />
+              <Chat style={{ color: 'grey' }} strokeColor="#616160" />
               <Typography sx={styles.modalSectionText}>{t('client.main.modalSections.chat.title')}</Typography>
             </Box>
             <hr style={styles.modalSectionDivider} />
