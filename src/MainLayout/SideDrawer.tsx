@@ -31,6 +31,7 @@ import { useMessages } from "../Context/MessagesContext";
 import { useSystemNotificationsContext } from "../Context/SystemNotificationsContext";
 import { useReminderContext } from "../Context/ReminderContext";
 import NotificationBadge from "../components/NotificationBadge";
+import ChatRedirectConfirmDialog from "../components/ChatRedirectConfirmDialog";
 
 const menuColor = "#EDB528";
 const hoverBg = "rgba(237,181,40,0.08)";
@@ -80,6 +81,7 @@ export enum ClientiSubMenu {
   Diario = "Diario",
   Alimentazione = "Alimentazione",
   Altro = "Altro",
+  Chat = "Chat",
 }
 
 export enum TrainingSubMenu {
@@ -143,6 +145,8 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
 }) => {
   const { t } = useTranslation();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const [chatConfirmOpen, setChatConfirmOpen] = useState(false);
+  const [pendingClientId, setPendingClientId] = useState<string | null>(null);
   const { logout } = useAuth();
   const { conversations } = useMessages();
   const { unreadCount } = useSystemNotificationsContext();
@@ -195,6 +199,7 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
       else if (path.includes("/alimentazione"))
         activeSubmenu = ClientiSubMenu.Alimentazione;
       else if (path.includes("/altro")) activeSubmenu = ClientiSubMenu.Altro;
+      else if (path.startsWith("/chat/")) activeSubmenu = ClientiSubMenu.Chat;
     } else if (path.startsWith(MenuPath.Training)) {
       activeMenu = ActiveMenu.Training;
       if (path.startsWith(MenuPath.TrainingExercise))
@@ -262,6 +267,10 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
         );
         break;
       }
+      case ClientiSubMenu.Chat:
+        setPendingClientId(clientId);
+        setChatConfirmOpen(true);
+        break;
       default:
         handleNavigation("/clients");
     }
@@ -937,6 +946,19 @@ const SideDrawer: React.FC<SideDrawerProps> = ({
           </ListItemButton>
         </ListItem>
       </List>
+
+      {/* Chat Confirmation Dialog */}
+      <ChatRedirectConfirmDialog
+        open={chatConfirmOpen}
+        onClose={() => setChatConfirmOpen(false)}
+        onConfirm={() => {
+          if (pendingClientId) {
+            handleNavigation(`/chat/${pendingClientId}`);
+          }
+          setChatConfirmOpen(false);
+          setPendingClientId(null);
+        }}
+      />
     </Drawer>
   );
 };

@@ -247,7 +247,12 @@
     "Diario": "Diario",
     "Alimentazione": "Alimentazione",
     "Altro": "Altro",
-    "pleaseSelectClient": "Seleziona un cliente"
+    "Chat": "Chat",
+    "pleaseSelectClient": "Seleziona un cliente",
+    "chatConfirmTitle": "Reindirizzamento alla Chat",
+    "chatConfirmMessage": "Verrai reindirizzato alla schermata della chat. Sei sicuro?",
+    "chatConfirmCancel": "Annulla",
+    "chatConfirmOk": "Continua"
   },
   "trainingSubMenu": {
     "exercise": "Esercizio",
