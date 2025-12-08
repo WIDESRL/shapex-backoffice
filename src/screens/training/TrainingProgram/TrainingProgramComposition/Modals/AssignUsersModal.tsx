@@ -8,6 +8,8 @@ import PendingIcon from '@mui/icons-material/Pending';
 import { useSnackbar } from '../../../../../Context/SnackbarContext';
 import { useTranslation } from 'react-i18next';
 import { handleApiError } from '../../../../../utils/errorUtils';
+import ClientSectionsModal from '../../../../../components/ClientSectionsModal';
+import type { Client } from '../../../../../Context/ClientContext';
 
 // --- Styles ---
 const styles = {
@@ -72,6 +74,12 @@ const styles = {
     backgroundColor: 'rgba(33,33,33,0.8)',
     backdropFilter: 'blur(5px)',
   },
+  clickableName: {
+    cursor: 'pointer',
+    '&:hover': {
+      textDecoration: 'underline',
+    },
+  },
 };
 // --- End Styles ---
 
@@ -90,6 +98,8 @@ const AssignUsersModal: React.FC<AssignUsersModalProps> = ({ open, onClose }) =>
   const [usersToRemove, setUsersToRemove] = useState<User[]>([]);
   const [saving, setSaving] = useState(false);
   const { showSnackbar } = useSnackbar();
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [clientModalOpen, setClientModalOpen] = useState(false);
 
   const prevOpenRef = React.useRef(open);
   useEffect(() => {
@@ -134,6 +144,30 @@ const AssignUsersModal: React.FC<AssignUsersModalProps> = ({ open, onClose }) =>
     if (user.firstName && user.lastName) return `${user.firstName} ${user.lastName}`;
     if (user.username) return user.username;
     return user.email || '';
+  };
+
+  const handleUserClick = (user: User) => {
+    const clientData: Client = {
+      id: user.id,
+      email: user.email || '',
+      username: user.username || '',
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      phoneNumber: null,
+      dateOfBirth: null,
+      placeOfBirth: null,
+      fiscalCode: null,
+      activeSubscription: null,
+      assignedProgram: null,
+      totalMessages: 0,
+    };
+    setSelectedClient(clientData);
+    setClientModalOpen(true);
+  };
+
+  const handleClientModalClose = () => {
+    setClientModalOpen(false);
+    setSelectedClient(null);
   };
 
   // Calculate effective assigned users (right section)
@@ -278,7 +312,13 @@ const AssignUsersModal: React.FC<AssignUsersModalProps> = ({ open, onClose }) =>
                       <Box sx={styles.userRow}>
                         <Box sx={styles.flexColAlignStart}>
                           <Box sx={styles.flexRowAlignCenter}>
-                            {getUserDisplayName(user)}
+                            <Typography
+                              component="span"
+                              sx={styles.clickableName}
+                              onClick={() => handleUserClick(user)}
+                            >
+                              {getUserDisplayName(user)}
+                            </Typography>
                             {isTempRemoved && (
                               <PendingIcon
                                 sx={styles.pendingIconRemove}
@@ -359,7 +399,13 @@ const AssignUsersModal: React.FC<AssignUsersModalProps> = ({ open, onClose }) =>
                         <Box
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
-                          {getUserDisplayName(user)}
+                          <Typography
+                            component="span"
+                            sx={styles.clickableName}
+                            onClick={() => handleUserClick(user)}
+                          >
+                            {getUserDisplayName(user)}
+                          </Typography>
                           {isTempAssigned && (
                             <PendingIcon
                               sx={styles.pendingIconAssign}
@@ -407,6 +453,11 @@ const AssignUsersModal: React.FC<AssignUsersModalProps> = ({ open, onClose }) =>
           {t("assignUsersModal.save")}
         </Button>
       </DialogActions>
+      <ClientSectionsModal
+        open={clientModalOpen}
+        client={selectedClient}
+        onClose={handleClientModalClose}
+      />
     </Dialog>
   );
 };
