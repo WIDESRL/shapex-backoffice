@@ -282,6 +282,12 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     setTrainingPrograms(prev => prev.filter(p => p.id !== id));
   };
 
+  const cloneTrainingProgram = async (originalProgramId: number, newTitle: string): Promise<TrainingProgram> => {
+    const res = await api.post(`/trainning/program/${originalProgramId}/clone`, { title: newTitle });
+    await fetchTrainingPrograms();
+    return res;
+  };
+
   const fetchTrainingProgramById = React.useCallback(async (id: string | number, loading = true) => {
     if(loading) setIsLoading(true);
     try {
@@ -528,6 +534,7 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       addTrainingProgram,
       updateTrainingProgram,
       deleteTrainingProgram,
+      cloneTrainingProgram,
       selectedTrainingProgram,
       fetchTrainingProgramById,
       modifyTrainingProgram,

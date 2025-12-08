@@ -17,12 +17,14 @@ import {
 import EditIcon from '../../../icons/EditIcon';
 import DeleteIcon from '../../../icons/DeleteIcon';
 import PlusIcon from '../../../icons/PlusIcon';
+import DublicateIcon from '../../../icons/DublicateIcon';
 import { TrainingProgram } from '../../../types/trainingProgram.types';
 import { useTraining } from '../../../Context/TrainingContext';
 import { useTranslation } from 'react-i18next';
 import DeleteDialog from '../DeleteDialog';
 import OutlinedTextIconButton from '../../../components/OutlinedTextIconButton';
 import TrainingProgramDialog from './TrainingProgramDialog';
+import DuplicateTrainingProgramDialog from './DuplicateTrainingProgramDialog';
 import { useNavigate } from 'react-router-dom';
 
 // Constants
@@ -109,7 +111,8 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
     loadMoreTrainingPrograms,
     addTrainingProgram, 
     updateTrainingProgram, 
-    deleteTrainingProgram, 
+    deleteTrainingProgram,
+    cloneTrainingProgram,
     isLoading,
     itemsPerPage
   } = useTraining();
@@ -119,6 +122,7 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deleteTarget, setDeleteTarget] = React.useState<TrainingProgram | null>(null);
   const [saving, setSaving] = React.useState(false);
+  const [duplicateDialogData, setDuplicateDialogData] = React.useState<{ id: number; name: string } | null>(null);
   
   // Search and filter states
   const [searchValue, setSearchValue] = React.useState('');
@@ -176,6 +180,21 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
     console.log('Deleting program:', row);
     setDeleteTarget(row);
     setDeleteDialogOpen(true);
+  };
+
+  const handleDuplicate = (row: TrainingProgram) => {
+    setDuplicateDialogData({ id: row.id, name: row.title || '' });
+  };
+
+  const handleDuplicateSuccess = () => {
+    // Refresh the training programs list after successful duplication
+    fetchTrainingPrograms({
+      search: searchValue || undefined,
+      type: selectedType || undefined,
+      page: currentPage,
+      limit: itemsPerPage,
+      resetPagination: false
+    });
   };
 
   const handleConfirmDelete = async () => {
@@ -333,6 +352,7 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
                     <TableCell sx={styles.tableCell} align="center">{pr.type}</TableCell>
                     <TableCell sx={styles.actionCell}>
                       <IconButton size="small" sx={{ mr: 1 }} onClick={e => { e.stopPropagation(); handleEdit(pr); }}><EditIcon style={styles.editIcon} /></IconButton>
+                      <IconButton size="small" sx={{ mr: 1 }} onClick={e => { e.stopPropagation(); handleDuplicate(pr); }}><DublicateIcon style={{ fontSize: 22, color: '#64B5F6' }} /></IconButton>
                       <IconButton size="small" onClick={e => { e.stopPropagation(); handleDelete(pr); }}><DeleteIcon style={styles.deleteIcon} /></IconButton>
                     </TableCell>
                   </TableRow>
@@ -396,6 +416,17 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
           setDeleteTarget(null);
         }}
         onConfirm={handleConfirmDelete}
+      />
+      
+      {/* Duplicate Dialog */}
+      <DuplicateTrainingProgramDialog
+        open={!!duplicateDialogData}
+        programId={duplicateDialogData?.id || null}
+        programName={duplicateDialogData?.name || null}
+        onClose={() => setDuplicateDialogData(null)}
+        onSuccess={handleDuplicateSuccess}
+        onCancel={() => setDuplicateDialogData(null)}
+        cloneTrainingProgram={cloneTrainingProgram}
       />
     </Box>
   );

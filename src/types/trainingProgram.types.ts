@@ -314,6 +314,7 @@ export interface TrainingContextType {
   addTrainingProgram: (data: { title: string; description: string; type: string;}) => Promise<TrainingProgram>;
   updateTrainingProgram: (id: number, data: { title?: string; description?: string; type?: string; }) => Promise<TrainingProgram>;
   deleteTrainingProgram: (id: number) => Promise<void>;
+  cloneTrainingProgram: (originalProgramId: number, newTitle: string) => Promise<TrainingProgram>;
   selectedTrainingProgram: FullTrainningProgram | null;
   fetchTrainingProgramById: (id: string | number) => Promise<TrainingProgram>;
   modifyTrainingProgram: (id: number, data: TrainingProgramPayload) => Promise<void>;
