@@ -15,6 +15,7 @@ export interface BannerForm {
   link: string;
   couponCode: string;
   color: string;
+  order: number;
   image: string | File | ImageWithSignedUrl | null;
   imageUrl?: string;
   imageId?: string | null;
@@ -38,6 +39,7 @@ const defaultBanner: BannerForm = {
   link: '',
   couponCode: '',
   color: '#E6BB4A',
+  order: 0,
   image: '',
 };
 
@@ -395,6 +397,16 @@ const BannerFormDialog = ({ open, onClose, onSubmit, initialValues }: BannerForm
               {sizeOptions.map(opt => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}
             </Select>
           </FormControl>
+          <TextField 
+            label={t('banners.order', 'Order')} 
+            name="order" 
+            type="number" 
+            value={form.order} 
+            onChange={handleTextFieldChange} 
+            fullWidth 
+            sx={styles.textField} 
+            InputProps={{ sx: styles.textFieldInput }} 
+          />
           <TextField 
             label={t('banners.link')} 
             name="link" 

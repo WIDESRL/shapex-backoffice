@@ -12,6 +12,7 @@ export interface Banner {
     link: string;
     couponCode: string;
     color: string;
+    order: number;
     imageId?: number;
     image?: {
         id: number;
@@ -93,7 +94,9 @@ export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children })
                 size: banner.size,
                 link: banner.link,
                 couponCode: banner.couponCode,
-                color: banner.color, imageId
+                color: banner.color,
+                order: banner.order,
+                imageId
             };
             return api.post('/banners', payload);
         },
@@ -116,6 +119,7 @@ export const BannersProvider: React.FC<{ children: ReactNode }> = ({ children })
                 link: banner.link,
                 couponCode: banner.couponCode,
                 color: banner.color,
+                order: banner.order,
                 imageId
             };
 

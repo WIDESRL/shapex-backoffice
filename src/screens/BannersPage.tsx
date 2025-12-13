@@ -243,6 +243,7 @@ const BannersPage: React.FC = () => {
 		link: banner.link,
 		couponCode: banner.couponCode,
 		color: banner.color,
+		order: banner.order,
 		imageId: banner.imageId?.toString() || null,
 		image: banner.image || null
 	});
@@ -256,6 +257,7 @@ const BannersPage: React.FC = () => {
 			link: banner.link,
 			couponCode: banner.couponCode,
 			color: banner.color,
+			order: Number(banner.order),
 			...(banner.imageId && { imageId: parseInt(banner.imageId) })
 		};
 
@@ -383,8 +385,7 @@ const BannersPage: React.FC = () => {
 					<TableHead>
 						<TableRow>
 							<TableCell sx={styles.tableHeaderCell}> {t('banners.title')} </TableCell>
-							<TableCell sx={styles.tableHeaderCell}> {t('banners.size')} </TableCell>
-							<TableCell sx={styles.tableHeaderCell}> {t('banners.link')} </TableCell>
+							<TableCell sx={styles.tableHeaderCell}> {t('banners.size')} </TableCell>						<TableCell sx={styles.tableHeaderCell}> {t('banners.order', 'Order')} </TableCell>							<TableCell sx={styles.tableHeaderCell}> {t('banners.link')} </TableCell>
 							<TableCell sx={styles.tableHeaderCell}> {t('banners.couponCode')} </TableCell>
 							<TableCell sx={styles.tableHeaderCell}> {t('banners.color')} </TableCell>
 							<TableCell sx={styles.tableHeaderCell}> {t('banners.image')} </TableCell>
@@ -395,13 +396,13 @@ const BannersPage: React.FC = () => {
 					<TableBody>
 						{isLoading ? (
 							<TableRow>
-								<TableCell colSpan={8} align="center" sx={styles.loadingCell}>
+								<TableCell colSpan={9} align="center" sx={styles.loadingCell}>
 									<CircularProgress size={48} sx={styles.circularProgress} />
 								</TableCell>
 							</TableRow>
 						) : filteredBanners.length === 0 ? (
 							<TableRow>
-								<TableCell colSpan={8} align="center" sx={styles.loadingCell}>
+								<TableCell colSpan={9} align="center" sx={styles.loadingCell}>
 									<Box sx={styles.emptyStateContainer}>
 										<svg width="64" height="64" fill="none" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#F6F6F6"/><path d="M20 44V20h24v24H20Z" stroke="#E6BB4A" strokeWidth="2" strokeLinejoin="round"/><path d="M28 28h8v8h-8v-8Z" stroke="#E6BB4A" strokeWidth="2" strokeLinejoin="round"/></svg>
 										<Typography sx={styles.emptyStateTitle}>
@@ -417,8 +418,7 @@ const BannersPage: React.FC = () => {
 							filteredBanners.map(banner => (
 								<TableRow key={banner.id} sx={styles.tableRow}>
 									<TableCell sx={styles.tableCellTitle} title={banner.title}>{banner.title}</TableCell>
-									<TableCell sx={styles.tableCell}>{t(`banners.size${banner.size}`)}</TableCell>
-									<TableCell sx={styles.tableCellUrl} title={banner.link}>
+									<TableCell sx={styles.tableCell}>{t(`banners.size${banner.size}`)}</TableCell>										<TableCell sx={styles.tableCell}>{banner.order}</TableCell>									<TableCell sx={styles.tableCellUrl} title={banner.link}>
 										{banner.link && banner.link.trim() !== '' && isValidUrl(banner.link) ? (
 											<Typography
 												component="span"
