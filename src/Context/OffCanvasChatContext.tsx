@@ -258,7 +258,7 @@ export const OffCanvasChatProvider: React.FC<{ children: ReactNode }> = ({ child
         })
       );
       
-      const isOnChatPage = window.location.pathname === '/chat';
+      const isOnChatPage = window.location.pathname.startsWith('/chat');
       if (isOnChatPage) return;
       
       const isAlreadyOpen = activeChats.some(chat => chat.conversation.id === conversation.id);
