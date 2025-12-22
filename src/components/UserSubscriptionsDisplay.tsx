@@ -11,7 +11,8 @@ import {
   Stack,
   Paper,
   IconButton,
-  Tooltip
+  Tooltip,
+  Button
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useClientContext } from '../Context/ClientContext';
@@ -19,6 +20,7 @@ import Subscriptions from '../icons/Subscriptions';
 import RefreshIcon from '../icons/RefreshIcon';
 import { formatDistance } from 'date-fns';
 import SubscriptionDetailDialog from './SubscriptionDetailDialog';
+import UserSubscriptionLogsDialog from './UserSubscriptionLogsDialog';
 import { it, enUS } from 'date-fns/locale';
 
 interface UserSubscriptionsDisplayProps {
@@ -120,6 +122,10 @@ export const UserSubscriptionsDisplay: React.FC<UserSubscriptionsDisplayProps> =
   // Dialog state for subscription details
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<number | null>(null);
+  
+  // Dialog state for technical logs
+  const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+  const [selectedUserSubscriptionId, setSelectedUserSubscriptionId] = useState<number | null>(null);
 
   useEffect(() => {
     if (userId) {
@@ -142,6 +148,16 @@ export const UserSubscriptionsDisplay: React.FC<UserSubscriptionsDisplayProps> =
   const handleDialogClose = () => {
     setDialogOpen(false);
     setSelectedSubscriptionId(null);
+  };
+
+  const handleLogsClick = (userSubscriptionId: number) => {
+    setSelectedUserSubscriptionId(userSubscriptionId);
+    setLogsDialogOpen(true);
+  };
+
+  const handleLogsDialogClose = () => {
+    setLogsDialogOpen(false);
+    setSelectedUserSubscriptionId(null);
   };
 
   if (loadingUserSubscriptions) {
@@ -358,6 +374,22 @@ export const UserSubscriptionsDisplay: React.FC<UserSubscriptionsDisplayProps> =
                       </Typography>
                     </Box>
                   )}
+
+                  {/* Technical Logs Button */}
+                  <Box mt={2}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      fullWidth
+                      onClick={() => handleLogsClick(subscription.id)}
+                      sx={{
+                        textTransform: 'none',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t('subscriptions.userSubscriptions.technicalLogs', 'Technical Logs')}
+                    </Button>
+                  </Box>
                 </Stack>
               </CardContent>
             </Card>
@@ -369,6 +401,13 @@ export const UserSubscriptionsDisplay: React.FC<UserSubscriptionsDisplayProps> =
         open={dialogOpen}
         subscriptionId={selectedSubscriptionId}
         onClose={handleDialogClose}
+      />
+
+      {/* Technical Logs Dialog */}
+      <UserSubscriptionLogsDialog
+        open={logsDialogOpen}
+        userSubscriptionId={selectedUserSubscriptionId}
+        onClose={handleLogsDialogClose}
       />
     </Box>
   );

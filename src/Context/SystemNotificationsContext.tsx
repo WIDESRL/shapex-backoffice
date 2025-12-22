@@ -65,7 +65,7 @@ export type NotificationMetadata = {
 export type SystemNotification = {
   id: number;
   userId: number;
-  type: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call';
+  type: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call' | 'subscription_renewed' | 'subscription_tier_changed' | 'subscription_cancelled' | 'subscription_expired' | 'subscription_refunded' | 'subscription_payment_issue';
   seen: boolean;
   metadata: NotificationMetadata;
   createdAt: string;
@@ -91,7 +91,7 @@ export type UnreadCountResponse = {
 // Type for filters
 export type SystemNotificationFilters = {
   seen?: boolean;
-  type?: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call';
+  type?: 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call' | 'subscription_renewed' | 'subscription_tier_changed' | 'subscription_cancelled' | 'subscription_expired' | 'subscription_refunded' | 'subscription_payment_issue';
   userId?: number;
   page?: number;
   limit?: number;

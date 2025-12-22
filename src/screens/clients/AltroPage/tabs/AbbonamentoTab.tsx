@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Typography, Chip, Paper, CircularProgress, Divider } from '@mui/material';
+import { Box, Typography, Chip, Paper, CircularProgress, Divider, Tabs, Tab, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useClientContext } from '../../../../Context/ClientContext';
 import { getContrastColor } from '../../../../utils/colorUtils';
+import SubscriptionTransactionsDisplay from '../../../../components/SubscriptionTransactionsDisplay';
 import UserSubscriptionsDisplay from '../../../../components/UserSubscriptionsDisplay';
 import SubscriptionDetailDialog from '../../../../components/SubscriptionDetailDialog';
+import UserSubscriptionLogsDialog from '../../../../components/UserSubscriptionLogsDialog';
 import { useParams } from 'react-router-dom';
 
 const styles = {
@@ -100,6 +102,11 @@ const AbbonamentoTab: React.FC = () => {
   // Dialog state for subscription details
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<'cards' | 'transactions'>('cards');
+  
+  // Dialog state for technical logs
+  const [logsDialogOpen, setLogsDialogOpen] = useState(false);
+  const [selectedLogsSubscriptionId, setSelectedLogsSubscriptionId] = useState<number | null>(null);
 
   // Handle subscription click
   const handleSubscriptionClick = (subscriptionId: number) => {
@@ -110,6 +117,20 @@ const AbbonamentoTab: React.FC = () => {
   const handleDialogClose = () => {
     setDialogOpen(false);
     setSelectedSubscriptionId(null);
+  };
+
+  const handleLogsClick = (userSubscriptionId: number) => {
+    setSelectedLogsSubscriptionId(userSubscriptionId);
+    setLogsDialogOpen(true);
+  };
+
+  const handleLogsDialogClose = () => {
+    setLogsDialogOpen(false);
+    setSelectedLogsSubscriptionId(null);
+  };
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: 'cards' | 'transactions') => {
+    setActiveTab(newValue);
   };
 
   // Format date helper function
@@ -208,6 +229,21 @@ const AbbonamentoTab: React.FC = () => {
               }}
             />
           </Box>
+
+          {/* Technical Logs Button */}
+          <Box mt={2}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => clientAnagrafica?.activeSubscription?.id && handleLogsClick(clientAnagrafica.activeSubscription.userSubscriptionId)}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 600,
+              }}
+            >
+              {t('subscriptions.userSubscriptions.technicalLogs', 'Technical Logs')}
+            </Button>
+          </Box>
         </Paper>
       ) : (
         <Paper 
@@ -233,12 +269,41 @@ const AbbonamentoTab: React.FC = () => {
       <Divider sx={{ my: 3 }} />
 
       {/* All Subscriptions History */}
-      <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         {t('client.altro.abbonamento.subscriptionHistory')}
       </Typography>
       
       {clientId ? (
-        <UserSubscriptionsDisplay userId={clientId} />
+        <Box>
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange}
+            sx={{ 
+              mb: 2,
+              borderBottom: 1,
+              borderColor: 'divider'
+            }}
+          >
+            <Tab 
+              label="Subscriptions" 
+              value="cards"
+              sx={{ textTransform: 'none', fontWeight: 500 }}
+            />
+            <Tab 
+              label="Transaction Events" 
+              value="transactions"
+              sx={{ textTransform: 'none', fontWeight: 500 }}
+            />
+          </Tabs>
+
+          {activeTab === 'cards' && (
+            <UserSubscriptionsDisplay userId={clientId} />
+          )}
+
+          {activeTab === 'transactions' && (
+            <SubscriptionTransactionsDisplay userId={clientId} />
+          )}
+        </Box>
       ) : (
         <EmptyState />
       )}
@@ -248,6 +313,13 @@ const AbbonamentoTab: React.FC = () => {
         open={dialogOpen}
         subscriptionId={selectedSubscriptionId}
         onClose={handleDialogClose}
+      />
+
+      {/* Technical Logs Dialog */}
+      <UserSubscriptionLogsDialog
+        open={logsDialogOpen}
+        userSubscriptionId={selectedLogsSubscriptionId}
+        onClose={handleLogsDialogClose}
       />
     </Box>
   );

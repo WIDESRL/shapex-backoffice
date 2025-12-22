@@ -230,6 +230,7 @@ export type ClientAnagrafica = {
     status: string,
     integrationPlan: boolean,
     mealPlan: boolean,
+    userSubscriptionId: number
   } | null;
 
 };
@@ -253,6 +254,113 @@ export type UserSubscription = {
     currency: string;
     status: string;
   };
+};
+
+// Type for subscription transactions
+export type SubscriptionTransaction = {
+  id: number;
+  transactionType?: string;
+  eventType?: string;
+  transactionDate: string;
+  periodStartDate: string;
+  periodEndDate: string;
+  amount: number | string;
+  currency: string;
+  priceInCents?: number;
+  status?: string;
+  platform?: string;
+  androidProductId?: string;
+  appleProductId?: string;
+  androidOrderId?: string;
+  androidPurchaseToken?: string;
+  appleTransactionId?: string;
+  appleOriginalTransactionId?: string;
+  appleWebOrderLineItemId?: string;
+  appleEnvironment?: string;
+  isTrialPeriod?: boolean;
+  isIntroPeriod?: boolean;
+  isAutoRenewing?: boolean;
+  inGracePeriod?: boolean;
+  willCancelAtPeriodEnd?: boolean;
+  introOfferPeriods?: number;
+  refundedAt?: string;
+  refundAmount?: number | string;
+  refundReason?: string;
+  rawTransactionData?: Record<string, unknown>;
+  subscription?: {
+    id: number;
+    title: string;
+    color: string;
+  };
+};
+
+// Type for Apple payment data
+export type ApplePayment = {
+  id: number;
+  applePaymentId: string;
+  userId: number;
+  latestReceiptInfo: Record<string, unknown> | null;
+  pendingRenewalInfo: Record<string, unknown> | null;
+  decodedTransaction?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+  subscription?: {
+    id: number;
+    title: string;
+    color: string;
+  };
+};
+
+// Type for Android payment data
+export type AndroidPayment = {
+  id: number;
+  androidPaymentId: string;
+  userId: number;
+  latestPurchaseData: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+  subscription?: {
+    id: number;
+    title: string;
+    color: string;
+  };
+};
+
+// Type for subscription webhook data
+export type SubscriptionWebhook = {
+  id: number;
+  platform: 'android' | 'apple';
+  notificationType: string;
+  subtype?: string | null;
+  transactionId: string;
+  originalTransactionId?: string | null;
+  userId: number;
+  userSubscriptionId: number;
+  payload: Record<string, unknown>;
+  processed: boolean;
+  processedAt?: string | null;
+  processingError?: string | null;
+  retryCount: number;
+  receivedAt: string;
+  environment?: string;
+  createdAt: string;
+  updatedAt: string;
+  subscription?: {
+    id: number;
+    title: string;
+    color: string;
+  };
+};
+
+// Type for subscription details response
+export type UserSubscriptionDetails = {
+  userSubscription: UserSubscription;
+  transactions: SubscriptionTransaction[];
+  applePayments: ApplePayment[];
+  androidPayments: AndroidPayment[];
+  subscriptionWebhooks: SubscriptionWebhook[];
 };
 
 // Type for notification data
@@ -377,6 +485,8 @@ export type ClientContextType = {
   userConsents: UserConsent[];
   userCalls: UserCall[];
   userSubscriptions: UserSubscription[];
+  subscriptionTransactions: SubscriptionTransaction[];
+  userSubscriptionDetails: UserSubscriptionDetails | null;
   notificationsPagination: Pagination | null;
   userImagesAlbumPagination: Pagination | null;
   userCallsPagination: Pagination | null;
@@ -396,6 +506,8 @@ export type ClientContextType = {
   loadingUserConsents: boolean;
   loadingUserCalls: boolean;
   loadingUserSubscriptions: boolean;
+  loadingSubscriptionTransactions: boolean;
+  loadingSubscriptionDetails: boolean;
   loadingSelectedCheck: boolean;
   loadingUserNextCheckDate: boolean;
   page: number;
@@ -420,6 +532,8 @@ export type ClientContextType = {
   fetchUserConsents: (userId: string) => Promise<void>;
   fetchUserCalls: (userId: string, page?: number, pageLimit?: number, append?: boolean, used?: boolean, type?: 'Extra' | 'Supplementary') => Promise<void>;
   fetchUserSubscriptions: (userId: string) => Promise<void>;
+  fetchSubscriptionTransactions: (userId: string) => Promise<void>;
+  fetchUserSubscriptionDetails: (userSubscriptionId: number) => Promise<void>;
   fetchCheckById: (checkId: number) => Promise<void>;
   fetchUserNextCheckDate: (clientId: string) => Promise<void>;
   changeUserPassword: (userId: string, newPassword: string) => Promise<void>;
@@ -443,6 +557,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [userConsents, setUserConsents] = useState<UserConsent[]>([]);
   const [userCalls, setUserCalls] = useState<UserCall[]>([]);
   const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
+  const [subscriptionTransactions, setSubscriptionTransactions] = useState<SubscriptionTransaction[]>([]);
+  const [userSubscriptionDetails, setUserSubscriptionDetails] = useState<UserSubscriptionDetails | null>(null);
   const [notificationsPagination, setNotificationsPagination] = useState<Pagination | null>(null);
   const [userImagesAlbumPagination, setUserImagesAlbumPagination] = useState<Pagination | null>(null);
   const [userCallsPagination, setUserCallsPagination] = useState<Pagination | null>(null);
@@ -462,6 +578,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingUserConsents, setLoadingUserConsents] = useState(false);
   const [loadingUserCalls, setLoadingUserCalls] = useState(false);
   const [loadingUserSubscriptions, setLoadingUserSubscriptions] = useState(false);
+  const [loadingSubscriptionTransactions, setLoadingSubscriptionTransactions] = useState(false);
+  const [loadingSubscriptionDetails, setLoadingSubscriptionDetails] = useState(false);
   const [loadingSelectedCheck, setLoadingSelectedCheck] = useState(false);
   const [loadingUserNextCheckDate, setLoadingUserNextCheckDate] = useState(false);
   const [page, setPage] = useState(1);
@@ -811,6 +929,34 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
+  const fetchSubscriptionTransactions = useCallback(async (userId: string): Promise<void> => {
+    try {
+      setLoadingSubscriptionTransactions(true);
+      const response = await axiosInstance.get(`/client/${userId}/subscription-transactions`);
+      setSubscriptionTransactions(response.data.data || response.data || []);
+    } catch (error) {
+      console.error('Error fetching subscription transactions:', error);
+      setSubscriptionTransactions([]);
+      throw error;
+    } finally {
+      setLoadingSubscriptionTransactions(false);
+    }
+  }, []);
+
+  const fetchUserSubscriptionDetails = useCallback(async (userSubscriptionId: number): Promise<void> => {
+    try {
+      setLoadingSubscriptionDetails(true);
+      const response = await axiosInstance.get(`/client/user-subscription/${userSubscriptionId}/details`);
+      setUserSubscriptionDetails(response.data.data || response.data || null);
+    } catch (error) {
+      console.error('Error fetching user subscription details:', error);
+      setUserSubscriptionDetails(null);
+      throw error;
+    } finally {
+      setLoadingSubscriptionDetails(false);
+    }
+  }, []);
+
   const fetchCheckById = useCallback(async (checkId: number): Promise<void> => {
     try {
       setLoadingSelectedCheck(true);
@@ -868,6 +1014,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         userConsents,
         userCalls,
         userSubscriptions,
+        subscriptionTransactions,
+        userSubscriptionDetails,
         notificationsPagination,
         userImagesAlbumPagination,
         userCallsPagination,
@@ -887,6 +1035,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingUserConsents,
         loadingUserCalls,
         loadingUserSubscriptions,
+        loadingSubscriptionTransactions,
+        loadingSubscriptionDetails,
         loadingSelectedCheck,
         loadingUserNextCheckDate,
         page, 
@@ -910,7 +1060,9 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchUserNotifications,
         fetchUserConsents,
         fetchUserCalls,
+        fetchSubscriptionTransactions,
         fetchUserSubscriptions,
+        fetchUserSubscriptionDetails,
         fetchCheckById,
         fetchUserNextCheckDate,
         changeUserPassword

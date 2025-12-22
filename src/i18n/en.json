@@ -292,6 +292,12 @@
       "userPurchasedSubscription": "User Purchased Subscription",
       "userBookedExtraCall": "User Booked Extra Call",
       "userBookedSupplementaryCall": "User Booked Supplementary Call",
+      "subscriptionRenewed": "Subscription Renewed",
+      "subscriptionTierChanged": "Subscription Tier Changed",
+      "subscriptionCancelled": "Subscription Cancelled",
+      "subscriptionExpired": "Subscription Expired",
+      "subscriptionRefunded": "Subscription Refunded",
+      "subscriptionPaymentIssue": "Subscription Payment Issue",
       "all": "All",
       "unread": "Unread",
       "read": "Read",
@@ -310,7 +316,13 @@
       "userCompletedProfile": "User Complete Profile",
       "userPurchasedSubscription": "User Purchased Subscription",
       "userBookedExtraCall": "User Booked Extra Call",
-      "userBookedSupplementaryCall": "User Booked Supplementary Call"
+      "userBookedSupplementaryCall": "User Booked Supplementary Call",
+      "subscriptionRenewed": "Subscription Renewed",
+      "subscriptionTierChanged": "Subscription Tier Changed",
+      "subscriptionCancelled": "Subscription Cancelled",
+      "subscriptionExpired": "Subscription Expired",
+      "subscriptionRefunded": "Subscription Refunded",
+      "subscriptionPaymentIssue": "Subscription Payment Issue"
     },
     "descriptions": {
       "trainingCompletedWithTitle": "Completed \"{{title}}\" training program",
@@ -328,6 +340,18 @@
       "userBookedExtraCallWithName": "User has booked \"{{name}}\" extra call session",
       "userBookedSupplementaryCall": "User has booked a supplementary call session",
       "userBookedSupplementaryCallWithName": "User has booked \"{{name}}\" supplementary call session",
+      "subscriptionRenewed": "User's subscription has been renewed",
+      "subscriptionRenewedWithTitle": "User's subscription \"{{title}}\" has been renewed",
+      "subscriptionTierChanged": "User has changed their subscription tier",
+      "subscriptionTierChangedWithTitle": "User has changed to \"{{title}}\" subscription",
+      "subscriptionCancelled": "User has cancelled their subscription",
+      "subscriptionCancelledWithTitle": "User has cancelled \"{{title}}\" subscription",
+      "subscriptionExpired": "User's subscription has expired",
+      "subscriptionExpiredWithTitle": "User's \"{{title}}\" subscription has expired",
+      "subscriptionRefunded": "User's subscription has been refunded",
+      "subscriptionRefundedWithTitle": "User's \"{{title}}\" subscription has been refunded",
+      "subscriptionPaymentIssue": "Payment issue detected for user's subscription",
+      "subscriptionPaymentIssueWithTitle": "Payment issue detected for \"{{title}}\" subscription",
       "systemNotificationGeneric": "System notification"
     },
     "timeLabels": {
@@ -1288,6 +1312,30 @@
       "userBookedSupplementaryCall": {
         "title": "User Booked Supplementary Call", 
         "description": "Receive alerts when users schedule supplementary consultation calls"
+      },
+      "subscriptionRenewed": {
+        "title": "Subscription Renewed",
+        "description": "Get notified when a user's subscription is automatically renewed"
+      },
+      "subscriptionTierChanged": {
+        "title": "Subscription Tier Changed",
+        "description": "Receive alerts when users upgrade or downgrade their subscription tier"
+      },
+      "subscriptionCancelled": {
+        "title": "Subscription Cancelled",
+        "description": "Get notified when users cancel their active subscriptions"
+      },
+      "subscriptionExpired": {
+        "title": "Subscription Expired",
+        "description": "Receive notifications when user subscriptions expire"
+      },
+      "subscriptionRefunded": {
+        "title": "Subscription Refunded",
+        "description": "Get alerted when subscription payments are refunded"
+      },
+      "subscriptionPaymentIssue": {
+        "title": "Subscription Payment Issue",
+        "description": "Receive notifications when there are payment problems with subscriptions"
       }
     },
     "globalConfig": {

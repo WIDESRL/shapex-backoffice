@@ -276,6 +276,12 @@
       "userPurchasedSubscription": "Utente Ha Acquistato Abbonamento",
       "userBookedExtraCall": "Utente Ha Prenotato Chiamata Extra",
       "userBookedSupplementaryCall": "Utente Ha Prenotato Chiamata Supplementare",
+      "subscriptionRenewed": "Abbonamento Rinnovato",
+      "subscriptionTierChanged": "Livello Abbonamento Modificato",
+      "subscriptionCancelled": "Abbonamento Annullato",
+      "subscriptionExpired": "Abbonamento Scaduto",
+      "subscriptionRefunded": "Abbonamento Rimborsato",
+      "subscriptionPaymentIssue": "Problema Pagamento Abbonamento",
       "all": "Tutti",
       "unread": "Non Letti",
       "read": "Letti",
@@ -294,7 +300,13 @@
       "userCompletedProfile": "Utente Ha Completato Profilo",
       "userPurchasedSubscription": "Utente Ha Acquistato Abbonamento",
       "userBookedExtraCall": "Utente Ha Prenotato Chiamata Extra",
-      "userBookedSupplementaryCall": "Utente Ha Prenotato Chiamata Supplementare"
+      "userBookedSupplementaryCall": "Utente Ha Prenotato Chiamata Supplementare",
+      "subscriptionRenewed": "Abbonamento Rinnovato",
+      "subscriptionTierChanged": "Livello Abbonamento Modificato",
+      "subscriptionCancelled": "Abbonamento Annullato",
+      "subscriptionExpired": "Abbonamento Scaduto",
+      "subscriptionRefunded": "Abbonamento Rimborsato",
+      "subscriptionPaymentIssue": "Problema Pagamento Abbonamento"
     },
     "descriptions": {
       "trainingCompletedWithTitle": "Completato il programma di allenamento \"{{title}}\"",
@@ -312,6 +324,18 @@
       "userBookedExtraCallWithName": "L'utente ha prenotato la sessione \"{{name}}\" di chiamata extra",
       "userBookedSupplementaryCall": "L'utente ha prenotato una sessione di chiamata supplementare",
       "userBookedSupplementaryCallWithName": "L'utente ha prenotato la sessione \"{{name}}\" di chiamata supplementare",
+      "subscriptionRenewed": "L'abbonamento dell'utente è stato rinnovato",
+      "subscriptionRenewedWithTitle": "L'abbonamento \"{{title}}\" dell'utente è stato rinnovato",
+      "subscriptionTierChanged": "L'utente ha modificato il livello dell'abbonamento",
+      "subscriptionTierChangedWithTitle": "L'utente è passato all'abbonamento \"{{title}}\"",
+      "subscriptionCancelled": "L'utente ha annullato l'abbonamento",
+      "subscriptionCancelledWithTitle": "L'utente ha annullato l'abbonamento \"{{title}}\"",
+      "subscriptionExpired": "L'abbonamento dell'utente è scaduto",
+      "subscriptionExpiredWithTitle": "L'abbonamento \"{{title}}\" dell'utente è scaduto",
+      "subscriptionRefunded": "L'abbonamento dell'utente è stato rimborsato",
+      "subscriptionRefundedWithTitle": "L'abbonamento \"{{title}}\" dell'utente è stato rimborsato",
+      "subscriptionPaymentIssue": "Rilevato problema di pagamento per l'abbonamento dell'utente",
+      "subscriptionPaymentIssueWithTitle": "Rilevato problema di pagamento per l'abbonamento \"{{title}}\"",
       "systemNotificationGeneric": "Notifica di sistema"
     },
     "timeLabels": {
@@ -1272,6 +1296,30 @@
       "userBookedSupplementaryCall": {
         "title": "Utente ha Prenotato Chiamata Supplementare",
         "description": "Ricevi avvisi quando gli utenti programmano chiamate di consulenza supplementari"
+      },
+      "subscriptionRenewed": {
+        "title": "Abbonamento Rinnovato",
+        "description": "Ricevi notifiche quando l'abbonamento di un utente viene rinnovato automaticamente"
+      },
+      "subscriptionTierChanged": {
+        "title": "Livello Abbonamento Modificato",
+        "description": "Ricevi avvisi quando gli utenti effettuano un upgrade o downgrade del loro livello di abbonamento"
+      },
+      "subscriptionCancelled": {
+        "title": "Abbonamento Annullato",
+        "description": "Ricevi notifiche quando gli utenti annullano i loro abbonamenti attivi"
+      },
+      "subscriptionExpired": {
+        "title": "Abbonamento Scaduto",
+        "description": "Ricevi notifiche quando gli abbonamenti degli utenti scadono"
+      },
+      "subscriptionRefunded": {
+        "title": "Abbonamento Rimborsato",
+        "description": "Ricevi avvisi quando i pagamenti degli abbonamenti vengono rimborsati"
+      },
+      "subscriptionPaymentIssue": {
+        "title": "Problema Pagamento Abbonamento",
+        "description": "Ricevi notifiche quando ci sono problemi di pagamento con gli abbonamenti"
       }
     },
     "globalConfig": {
