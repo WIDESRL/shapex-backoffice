@@ -67,6 +67,12 @@ type LatestPurchaseData = {
   [key: string]: unknown;
 };
 
+// Helper type for Android payment metadata
+type AndroidPaymentMetadata = {
+  transactionDate?: number;
+  [key: string]: unknown;
+};
+
 // Helper type for Apple payment latestReceiptInfo
 type LatestReceiptInfo = {
   price?: string;
@@ -1083,22 +1089,21 @@ export const UserSubscriptionLogsDialog: React.FC<UserSubscriptionLogsDialogProp
                                 </Typography>
                               </Box>
                             )}
-                            {(payment.latestPurchaseData as LatestPurchaseData | null)?.countryCode && (
+                            {(payment.metadata as AndroidPaymentMetadata | null)?.transactionDate && (
                               <Box>
                                 <Typography variant="caption" color="text.secondary">
-                                  {t('subscriptions.technicalLogs.fields.countryCode', 'Country Code')}
+                                  {t('subscriptions.technicalLogs.fields.transactionDate', 'Transaction Date')}
                                 </Typography>
                                 <Typography variant="body2">
-                                  {(payment.latestPurchaseData as LatestPurchaseData).countryCode?.toUpperCase()}
+                                  {(() => {
+                                    const timestamp = (payment.metadata as AndroidPaymentMetadata).transactionDate;
+                                    if (!timestamp) return 'N/A';
+                                    const dateInMs = timestamp.toString().length === 10 ? timestamp * 1000 : timestamp;
+                                    return formatDateTime(new Date(dateInMs).toISOString());
+                                  })()}
                                 </Typography>
                               </Box>
                             )}
-                            <Box>
-                              <Typography variant="caption" color="text.secondary">
-                                {t('subscriptions.technicalLogs.fields.createdAt', 'Created At')}
-                              </Typography>
-                              <Typography variant="body2">{formatDateTime(payment.createdAt)}</Typography>
-                            </Box>
                           </Box>
 
                           {payment.latestPurchaseData && (payment.latestPurchaseData as LatestPurchaseData | null)?.autoRenewing !== undefined && (
