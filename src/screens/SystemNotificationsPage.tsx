@@ -344,7 +344,7 @@ const SystemNotificationsPage: React.FC = () => {
     const filters: SystemNotificationFilters = {};
     
     if (filterType !== 'all') {
-      filters.type = filterType as 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call';
+      filters.type = filterType as 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call' | 'subscription_renewed' | 'subscription_tier_changed' | 'subscription_cancelled' | 'subscription_expired' | 'subscription_refunded' | 'subscription_payment_issue';
     }
     
     if (filterStatus !== 'all') {
@@ -438,6 +438,18 @@ const SystemNotificationsPage: React.FC = () => {
         return t('systemNotifications.types.userBookedExtraCall');
       case 'user_booked_supplementary_call':
         return t('systemNotifications.types.userBookedSupplementaryCall');
+      case 'subscription_renewed':
+        return t('systemNotifications.types.subscriptionRenewed');
+      case 'subscription_tier_changed':
+        return t('systemNotifications.types.subscriptionTierChanged');
+      case 'subscription_cancelled':
+        return t('systemNotifications.types.subscriptionCancelled');
+      case 'subscription_expired':
+        return t('systemNotifications.types.subscriptionExpired');
+      case 'subscription_refunded':
+        return t('systemNotifications.types.subscriptionRefunded');
+      case 'subscription_payment_issue':
+        return t('systemNotifications.types.subscriptionPaymentIssue');
       default:
         return 'System Notification';
     }
@@ -476,6 +488,30 @@ const SystemNotificationsPage: React.FC = () => {
         return notification.metadata.name 
           ? t('systemNotifications.descriptions.userBookedSupplementaryCallWithName', { name: notification.metadata.name })
           : t('systemNotifications.descriptions.userBookedSupplementaryCall');
+      case 'subscription_renewed':
+        return notification.relatedData?.subscription?.title 
+          ? t('systemNotifications.descriptions.subscriptionRenewedWithTitle', { title: notification.relatedData.subscription.title })
+          : t('systemNotifications.descriptions.subscriptionRenewed');
+      case 'subscription_tier_changed':
+        return notification.relatedData?.subscription?.title 
+          ? t('systemNotifications.descriptions.subscriptionTierChangedWithTitle', { title: notification.relatedData.subscription.title })
+          : t('systemNotifications.descriptions.subscriptionTierChanged');
+      case 'subscription_cancelled':
+        return notification.relatedData?.subscription?.title 
+          ? t('systemNotifications.descriptions.subscriptionCancelledWithTitle', { title: notification.relatedData.subscription.title })
+          : t('systemNotifications.descriptions.subscriptionCancelled');
+      case 'subscription_expired':
+        return notification.relatedData?.subscription?.title 
+          ? t('systemNotifications.descriptions.subscriptionExpiredWithTitle', { title: notification.relatedData.subscription.title })
+          : t('systemNotifications.descriptions.subscriptionExpired');
+      case 'subscription_refunded':
+        return notification.relatedData?.subscription?.title 
+          ? t('systemNotifications.descriptions.subscriptionRefundedWithTitle', { title: notification.relatedData.subscription.title })
+          : t('systemNotifications.descriptions.subscriptionRefunded');
+      case 'subscription_payment_issue':
+        return notification.relatedData?.subscription?.title 
+          ? t('systemNotifications.descriptions.subscriptionPaymentIssueWithTitle', { title: notification.relatedData.subscription.title })
+          : t('systemNotifications.descriptions.subscriptionPaymentIssue');
       default:
         return t('systemNotifications.descriptions.systemNotificationGeneric');
     }
@@ -497,6 +533,18 @@ const SystemNotificationsPage: React.FC = () => {
       notification.type === 'user_booked_extra_call'
     ) || (
       notification.type === 'user_booked_supplementary_call'
+    ) || (
+      notification.type === 'subscription_renewed'
+    ) || (
+      notification.type === 'subscription_tier_changed'
+    ) || (
+      notification.type === 'subscription_cancelled'
+    ) || (
+      notification.type === 'subscription_expired'
+    ) || (
+      notification.type === 'subscription_refunded'
+    ) || (
+      notification.type === 'subscription_payment_issue'
     );
   };
 
@@ -549,6 +597,13 @@ const SystemNotificationsPage: React.FC = () => {
       case 'user_booked_extra_call':
       case 'user_booked_supplementary_call':
         return <CameraAltIcon sx={styles.typeIcon} />;
+      case 'subscription_renewed':
+      case 'subscription_tier_changed':
+      case 'subscription_cancelled':
+      case 'subscription_expired':
+      case 'subscription_refunded':
+      case 'subscription_payment_issue':
+        return <ShoppingCartIcon sx={styles.typeIcon} />;
       default:
         return <InfoIcon style={styles.typeIcon} />;
     }
@@ -700,6 +755,15 @@ const SystemNotificationsPage: React.FC = () => {
         navigate(`/clients/${notification.user.id}/altro/calls`);
         break;
       }
+      case 'subscription_renewed':
+      case 'subscription_tier_changed':
+      case 'subscription_cancelled':
+      case 'subscription_expired':
+      case 'subscription_refunded':
+      case 'subscription_payment_issue': {
+        navigate(`/clients/${notification.user.id}/altro/subscription`);
+        break;
+      }
       default:
         // Do nothing for other types
         break;
@@ -793,6 +857,12 @@ const SystemNotificationsPage: React.FC = () => {
                   <MenuItem value="user_purchased_subscription">{t('systemNotifications.filters.userPurchasedSubscription')}</MenuItem>
                   <MenuItem value="user_booked_extra_call">{t('systemNotifications.filters.userBookedExtraCall')}</MenuItem>
                   <MenuItem value="user_booked_supplementary_call">{t('systemNotifications.filters.userBookedSupplementaryCall')}</MenuItem>
+                  <MenuItem value="subscription_renewed">{t('systemNotifications.filters.subscriptionRenewed')}</MenuItem>
+                  <MenuItem value="subscription_tier_changed">{t('systemNotifications.filters.subscriptionTierChanged')}</MenuItem>
+                  <MenuItem value="subscription_cancelled">{t('systemNotifications.filters.subscriptionCancelled')}</MenuItem>
+                  <MenuItem value="subscription_expired">{t('systemNotifications.filters.subscriptionExpired')}</MenuItem>
+                  {/* <MenuItem value="subscription_refunded">{t('systemNotifications.filters.subscriptionRefunded')}</MenuItem> */}
+                  <MenuItem value="subscription_payment_issue">{t('systemNotifications.filters.subscriptionPaymentIssue')}</MenuItem>
                 </Select>
               </FormControl>
               

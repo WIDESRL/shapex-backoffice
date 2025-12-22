@@ -93,6 +93,36 @@ const PushNotificationSettings: React.FC<PushNotificationSettingsProps> = ({ sty
       titleKey: 'settings.pushNotifications.userBookedSupplementaryCall.title',
       descriptionKey: 'settings.pushNotifications.userBookedSupplementaryCall.description',
     },
+    {
+      key: 'SUBSCRIPTION_RENEWED' as const,
+      titleKey: 'settings.pushNotifications.subscriptionRenewed.title',
+      descriptionKey: 'settings.pushNotifications.subscriptionRenewed.description',
+    },
+    {
+      key: 'SUBSCRIPTION_TIER_CHANGED' as const,
+      titleKey: 'settings.pushNotifications.subscriptionTierChanged.title',
+      descriptionKey: 'settings.pushNotifications.subscriptionTierChanged.description',
+    },
+    {
+      key: 'SUBSCRIPTION_CANCELLED' as const,
+      titleKey: 'settings.pushNotifications.subscriptionCancelled.title',
+      descriptionKey: 'settings.pushNotifications.subscriptionCancelled.description',
+    },
+    {
+      key: 'SUBSCRIPTION_EXPIRED' as const,
+      titleKey: 'settings.pushNotifications.subscriptionExpired.title',
+      descriptionKey: 'settings.pushNotifications.subscriptionExpired.description',
+    },
+    // {
+    //   key: 'SUBSCRIPTION_REFUNDED' as const,
+    //   titleKey: 'settings.pushNotifications.subscriptionRefunded.title',
+    //   descriptionKey: 'settings.pushNotifications.subscriptionRefunded.description',
+    // },
+    {
+      key: 'SUBSCRIPTION_PAYMENT_ISSUE' as const,
+      titleKey: 'settings.pushNotifications.subscriptionPaymentIssue.title',
+      descriptionKey: 'settings.pushNotifications.subscriptionPaymentIssue.description',
+    },
   ];
 
   return (
