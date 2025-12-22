@@ -61,6 +61,24 @@ type WebhookPayloadData = {
 type LatestPurchaseData = {
   orderId?: string;
   autoRenewing?: boolean;
+  priceAmountMicros?: string;
+  priceCurrencyCode?: string;
+  countryCode?: string;
+  [key: string]: unknown;
+};
+
+// Helper type for Apple payment latestReceiptInfo
+type LatestReceiptInfo = {
+  price?: string;
+  currency?: string;
+  [key: string]: unknown;
+};
+
+// Helper type for Apple payment decodedTransaction
+type DecodedTransaction = {
+  price?: string;
+  currency?: string;
+  purchaseDate?: number;
   [key: string]: unknown;
 };
 
@@ -896,24 +914,35 @@ export const UserSubscriptionLogsDialog: React.FC<UserSubscriptionLogsDialogProp
                                 {payment.applePaymentId}
                               </Typography>
                             </Box>
-                            <Box>
-                              <Typography variant="caption" color="text.secondary">
-                                {t('subscriptions.technicalLogs.fields.userId', 'User ID')}
-                              </Typography>
-                              <Typography variant="body2">{payment.userId}</Typography>
-                            </Box>
-                            <Box>
-                              <Typography variant="caption" color="text.secondary">
-                                {t('subscriptions.technicalLogs.fields.createdAt', 'Created At')}
-                              </Typography>
-                              <Typography variant="body2">{formatDateTime(payment.createdAt)}</Typography>
-                            </Box>
-                            <Box>
-                              <Typography variant="caption" color="text.secondary">
-                                {t('subscriptions.technicalLogs.fields.updatedAt', 'Updated At')}
-                              </Typography>
-                              <Typography variant="body2">{formatDateTime(payment.updatedAt)}</Typography>
-                            </Box>
+                            {((payment.latestReceiptInfo as LatestReceiptInfo | null)?.price || (payment.decodedTransaction as DecodedTransaction | null)?.price) && (
+                              <Box>
+                                <Typography variant="caption" color="text.secondary">
+                                  {t('subscriptions.technicalLogs.fields.price', 'Price')}
+                                </Typography>
+                                <Typography variant="body2" fontWeight="bold">
+                                  {(() => {
+                                    const price = (payment.decodedTransaction as DecodedTransaction | null)?.price || (payment.latestReceiptInfo as LatestReceiptInfo | null)?.price;
+                                    const currency = (payment.decodedTransaction as DecodedTransaction | null)?.currency || (payment.latestReceiptInfo as LatestReceiptInfo | null)?.currency;
+                                    return `${(parseFloat(price || '0') / 1000).toFixed(2)} ${currency?.toUpperCase() || ''}`;
+                                  })()}
+                                </Typography>
+                              </Box>
+                            )}
+                            {(payment.decodedTransaction as DecodedTransaction | null)?.purchaseDate && (
+                              <Box>
+                                <Typography variant="caption" color="text.secondary">
+                                  {t('subscriptions.technicalLogs.fields.transactionDate', 'Transaction Date')}
+                                </Typography>
+                                <Typography variant="body2">
+                                  {(() => {
+                                    const timestamp = (payment.decodedTransaction as DecodedTransaction).purchaseDate;
+                                    if (!timestamp) return 'N/A';
+                                    const dateInMs = timestamp.toString().length === 10 ? timestamp * 1000 : timestamp;
+                                    return formatDateTime(new Date(dateInMs).toISOString());
+                                  })()}
+                                </Typography>
+                              </Box>
+                            )}
                           </Box>
 
                           <Divider sx={{ my: 2 }} />
@@ -1030,55 +1059,67 @@ export const UserSubscriptionLogsDialog: React.FC<UserSubscriptionLogsDialogProp
                                 {payment.androidPaymentId}
                               </Typography>
                             </Box>
-                            <Box>
-                              <Typography variant="caption" color="text.secondary">
-                                {t('subscriptions.technicalLogs.fields.userId', 'User ID')}
-                              </Typography>
-                              <Typography variant="body2">{payment.userId}</Typography>
-                            </Box>
+                            {(payment.latestPurchaseData as LatestPurchaseData | null)?.priceAmountMicros && (
+                              <Box>
+                                <Typography variant="caption" color="text.secondary">
+                                  {t('subscriptions.technicalLogs.fields.price', 'Price')}
+                                </Typography>
+                                <Typography variant="body2" fontWeight="bold">
+                                  {(() => {
+                                    const priceMicros = (payment.latestPurchaseData as LatestPurchaseData).priceAmountMicros;
+                                    const currency = (payment.latestPurchaseData as LatestPurchaseData).priceCurrencyCode;
+                                    return `${(parseFloat(priceMicros || '0') / 1000000).toFixed(2)} ${currency?.toUpperCase() || ''}`;
+                                  })()}
+                                </Typography>
+                              </Box>
+                            )}
+                            {(payment.latestPurchaseData as LatestPurchaseData | null)?.orderId && (
+                              <Box>
+                                <Typography variant="caption" color="text.secondary">
+                                  {t('subscriptions.technicalLogs.fields.orderId', 'Order ID')}
+                                </Typography>
+                                <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
+                                  {(payment.latestPurchaseData as LatestPurchaseData).orderId}
+                                </Typography>
+                              </Box>
+                            )}
+                            {(payment.latestPurchaseData as LatestPurchaseData | null)?.countryCode && (
+                              <Box>
+                                <Typography variant="caption" color="text.secondary">
+                                  {t('subscriptions.technicalLogs.fields.countryCode', 'Country Code')}
+                                </Typography>
+                                <Typography variant="body2">
+                                  {(payment.latestPurchaseData as LatestPurchaseData).countryCode?.toUpperCase()}
+                                </Typography>
+                              </Box>
+                            )}
                             <Box>
                               <Typography variant="caption" color="text.secondary">
                                 {t('subscriptions.technicalLogs.fields.createdAt', 'Created At')}
                               </Typography>
                               <Typography variant="body2">{formatDateTime(payment.createdAt)}</Typography>
                             </Box>
-                            <Box>
-                              <Typography variant="caption" color="text.secondary">
-                                {t('subscriptions.technicalLogs.fields.updatedAt', 'Updated At')}
-                              </Typography>
-                              <Typography variant="body2">{formatDateTime(payment.updatedAt)}</Typography>
-                            </Box>
                           </Box>
 
-                          {payment.latestPurchaseData && (
+                          {payment.latestPurchaseData && (payment.latestPurchaseData as LatestPurchaseData | null)?.autoRenewing !== undefined && (
                             <>
                               <Divider sx={{ my: 2 }} />
                               <Typography variant="subtitle2" gutterBottom>
                                 {t('subscriptions.technicalLogs.latestPurchaseData', 'Latest Purchase Data')}
                               </Typography>
                               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 2, mb: 2 }}>
-                                {(payment.latestPurchaseData as LatestPurchaseData | null)?.orderId && (
-                                  <Box>
-                                    <Typography variant="caption" color="text.secondary">
-                                      Order ID
-                                    </Typography>
-                                    <Typography variant="body2">{(payment.latestPurchaseData as LatestPurchaseData).orderId}</Typography>
-                                  </Box>
-                                )}
-                                {(payment.latestPurchaseData as LatestPurchaseData | null)?.autoRenewing !== undefined && (
-                                  <Box>
-                                    <Typography variant="caption" color="text.secondary">
-                                      Auto Renewing
-                                    </Typography>
-                                    <Typography variant="body2">
-                                      <Chip
-                                        label={(payment.latestPurchaseData as LatestPurchaseData).autoRenewing ? 'Yes' : 'No'}
-                                        size="small"
-                                        color={(payment.latestPurchaseData as LatestPurchaseData).autoRenewing ? 'success' : 'default'}
-                                      />
-                                    </Typography>
-                                  </Box>
-                                )}
+                                <Box>
+                                  <Typography variant="caption" color="text.secondary">
+                                    Auto Renewing
+                                  </Typography>
+                                  <Typography variant="body2">
+                                    <Chip
+                                      label={(payment.latestPurchaseData as LatestPurchaseData).autoRenewing ? 'Yes' : 'No'}
+                                      size="small"
+                                      color={(payment.latestPurchaseData as LatestPurchaseData).autoRenewing ? 'success' : 'default'}
+                                    />
+                                  </Typography>
+                                </Box>
                               </Box>
                             </>
                           )}
