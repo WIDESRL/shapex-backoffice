@@ -794,18 +794,6 @@ export const UserSubscriptionLogsDialog: React.FC<UserSubscriptionLogsDialogProp
                             </>
                           )}
 
-                          {webhook.processingError && (
-                            <>
-                              <Divider sx={{ my: 2 }} />
-                              <Alert severity="error">
-                                <Typography variant="subtitle2" gutterBottom>
-                                  {t('subscriptions.technicalLogs.processingError', 'Processing Error')}
-                                </Typography>
-                                <Typography variant="body2">{webhook.processingError}</Typography>
-                              </Alert>
-                            </>
-                          )}
-
                           <Divider sx={{ my: 2 }} />
 
                           <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
