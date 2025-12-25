@@ -12,9 +12,13 @@ import {
   TextField,
   Stack,
 } from '@mui/material';
+import AppleIcon from '@mui/icons-material/Apple';
+import AndroidIcon from '@mui/icons-material/Android';
 import { useTranslation } from 'react-i18next';
 import { useProducts, Order } from '../../Context/ProductsContext';
 import DateRangePicker from '../../components/DateRangePicker';
+import ClientSectionsModal from '../../components/ClientSectionsModal';
+import { Client } from '../../Context/ClientContext';
 
 const OrdersScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -33,6 +37,10 @@ const OrdersScreen: React.FC = () => {
 
   // Local state for search input
   const [searchQuery, setSearchQuery] = useState(ordersFilters.search || '');
+
+  // Client modal state
+  const [clientModalOpen, setClientModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   // Fetch orders when component mounts
   useEffect(() => {
@@ -94,6 +102,30 @@ const OrdersScreen: React.FC = () => {
     }).format(amount);
   };
 
+  const handleCustomerClick = (order: Order) => {
+    const clientData: Client = {
+      id: order.user.id,
+      email: order.user.email,
+      username: '',
+      firstName: order.user.firstName,
+      lastName: order.user.lastName,
+      phoneNumber: null,
+      dateOfBirth: null,
+      placeOfBirth: null,
+      fiscalCode: null,
+      activeSubscription: null,
+      assignedProgram: null,
+      totalMessages: 0,
+    };
+    setSelectedClient(clientData);
+    setClientModalOpen(true);
+  };
+
+  const handleCloseClientModal = () => {
+    setClientModalOpen(false);
+    setSelectedClient(null);
+  };
+
   const renderOrderCard = (order: Order) => (
     <Card 
       key={order.id} 
@@ -147,12 +179,22 @@ const OrdersScreen: React.FC = () => {
             <Typography variant="body2" color="text.secondary" sx={{ fontSize: 11, fontWeight: 500 }}>
               {t('orders.customer')}:
             </Typography>
-            <Typography variant="body1" sx={{ fontSize: 12, fontWeight: 500 }}>
-              {order.user.firstName} {order.user.lastName}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10 }}>
-              {order.user.email}
-            </Typography>
+            <Box 
+              onClick={() => handleCustomerClick(order)}
+              sx={{ 
+                cursor: 'pointer',
+                '&:hover': {
+                  opacity: 0.8,
+                },
+              }}
+            >
+              <Typography variant="body1" sx={{ fontSize: 12, fontWeight: 500 }}>
+                {order.user.firstName} {order.user.lastName}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10 }}>
+                {order.user.email}
+              </Typography>
+            </Box>
           </Box>
 
           {order.paidAt && (
@@ -209,7 +251,7 @@ const OrdersScreen: React.FC = () => {
 
         {/* Stripe Payment Data */}
         {order.stripePaymentData && (
-          <Box sx={{ backgroundColor: '#f8f9fa', borderRadius: 1.5, p: 1.5 }}>
+          <Box sx={{ backgroundColor: '#f8f9fa', borderRadius: 1.5, p: 1.5, mb: 1.5 }}>
             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: '#1976d2', mb: 1, fontSize: 11 }}>
               {t('orders.stripePayment')}:
             </Typography>
@@ -244,6 +286,149 @@ const OrdersScreen: React.FC = () => {
                   }}
                 />
               </Box>
+            </Box>
+          </Box>
+        )}
+
+        {/* Apple Payment Data */}
+        {order.applePaymentData && (
+          <Box sx={{ backgroundColor: '#fafafa', borderRadius: 1.5, p: 1.5, mb: 1.5 }}>
+            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: '#000', mb: 1, fontSize: 11, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <AppleIcon sx={{ fontSize: 14 }} />
+              {t('orders.applePayment', 'Apple Payment')}:
+            </Typography>
+            <Box display="grid" gridTemplateColumns="1fr" gap={0.5}>
+              <Box>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                  {t('orders.transactionId', 'Transaction ID')}:
+                </Typography>
+                <Typography variant="body2" sx={{ fontSize: 9, fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                  {order.applePaymentData.applePaymentId}
+                </Typography>
+              </Box>
+              {order.applePaymentData.decodedTransaction && (
+                <>
+                  <Box mt={0.5}>
+                    <Typography variant="body2" sx={{ fontSize: 10 }}>
+                      <Typography component="span" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                        {t('orders.productId', 'Product ID')}:
+                      </Typography>{' '}
+                      {order.applePaymentData.decodedTransaction.productId || 'N/A'}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" sx={{ fontSize: 10 }}>
+                      <Typography component="span" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                        {t('orders.quantity', 'Quantity')}:
+                      </Typography>{' '}
+                      {order.applePaymentData.decodedTransaction.quantity || 'N/A'}
+                    </Typography>
+                  </Box>
+                  {order.applePaymentData.decodedTransaction.price && (
+                    <Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                        {t('orders.price', 'Price')}:
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontSize: 11, fontWeight: 600, color: '#2e7d32' }}>
+                        {(order.applePaymentData.decodedTransaction.price / 1000).toFixed(2)} {order.applePaymentData.decodedTransaction.currency}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                      {t('orders.environment', 'Environment')}:
+                    </Typography>
+                    <Chip 
+                      label={order.applePaymentData.decodedTransaction.environment || 'N/A'}
+                      size="small"
+                      color={order.applePaymentData.decodedTransaction.environment === 'Production' ? 'success' : 'warning'}
+                      sx={{ fontSize: 9, height: 20, mt: 0.5 }}
+                    />
+                  </Box>
+                  {order.applePaymentData.decodedTransaction.purchaseDate && (
+                    <Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                        {t('orders.purchaseDate', 'Purchase Date')}:
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: 10 }}>
+                        {formatDate(new Date(order.applePaymentData.decodedTransaction.purchaseDate).toISOString())}
+                      </Typography>
+                    </Box>
+                  )}
+                </>
+              )}
+            </Box>
+          </Box>
+        )}
+
+        {/* Android Payment Data */}
+        {order.androidPaymentData && (
+          <Box sx={{ backgroundColor: '#f1f8f4', borderRadius: 1.5, p: 1.5, mb: 1.5 }}>
+            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: '#3ddc84', mb: 1, fontSize: 11, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <AndroidIcon sx={{ fontSize: 14 }} />
+              {t('orders.androidPayment', 'Android Payment')}:
+            </Typography>
+            <Box display="grid" gridTemplateColumns="1fr" gap={0.5}>
+              <Box>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                  {t('orders.orderId', 'Order ID')}:
+                </Typography>
+                <Typography variant="body2" sx={{ fontSize: 9, fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                  {order.androidPaymentData.androidPaymentId}
+                </Typography>
+              </Box>
+              {order.androidPaymentData.latestPurchaseData && (
+                <>
+                  <Box mt={0.5}>
+                    <Typography variant="body2" sx={{ fontSize: 10 }}>
+                      <Typography component="span" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                        {t('orders.productId', 'Product ID')}:
+                      </Typography>{' '}
+                      {order.androidPaymentData.latestPurchaseData.productId || 'N/A'}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" sx={{ fontSize: 10 }}>
+                      <Typography component="span" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                        {t('orders.quantity', 'Quantity')}:
+                      </Typography>{' '}
+                      {order.androidPaymentData.latestPurchaseData.quantity || 'N/A'}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                      {t('orders.purchaseState', 'Purchase State')}:
+                    </Typography>
+                    <Chip 
+                      label={order.androidPaymentData.latestPurchaseData.purchaseState === 0 ? 'Purchased' : 'Other'}
+                      size="small"
+                      color={order.androidPaymentData.latestPurchaseData.purchaseState === 0 ? 'success' : 'default'}
+                      sx={{ fontSize: 9, height: 20, mt: 0.5 }}
+                    />
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                      {t('orders.verificationStatus', 'Verification Status')}:
+                    </Typography>
+                    <Chip 
+                      label={order.androidPaymentData.latestPurchaseData.verificationStatus || 'N/A'}
+                      size="small"
+                      color={order.androidPaymentData.latestPurchaseData.verificationStatus === 'verified' ? 'success' : 'warning'}
+                      sx={{ fontSize: 9, height: 20, mt: 0.5 }}
+                    />
+                  </Box>
+                  {order.androidPaymentData.latestPurchaseData.purchaseTime && (
+                    <Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: 10, fontWeight: 500 }}>
+                        {t('orders.purchaseTime', 'Purchase Time')}:
+                      </Typography>
+                      <Typography variant="body2" sx={{ fontSize: 10 }}>
+                        {formatDate(new Date(order.androidPaymentData.latestPurchaseData.purchaseTime).toISOString())}
+                      </Typography>
+                    </Box>
+                  )}
+                </>
+              )}
             </Box>
           </Box>
         )}
@@ -353,6 +538,13 @@ const OrdersScreen: React.FC = () => {
           )}
         </Box>
       )}
+      
+      {/* Client Sections Modal */}
+      <ClientSectionsModal
+        open={clientModalOpen}
+        client={selectedClient}
+        onClose={handleCloseClientModal}
+      />
     </Box>
   );
 };

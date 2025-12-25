@@ -50,6 +50,110 @@ export interface OrderItem {
   };
 }
 
+// Apple Payment Data structure
+export interface ApplePaymentData {
+  id: number;
+  applePaymentId: string;
+  userId: number;
+  latestReceiptData: unknown | null;
+  latestReceiptInfo: {
+    price?: string;
+    currency?: string;
+    [key: string]: unknown;
+  } | null;
+  pendingRenewalInfo: unknown | null;
+  decodedTransaction: {
+    type?: string;
+    price?: number;
+    bundleId?: string;
+    currency?: string;
+    quantity?: number;
+    productId?: string;
+    signedDate?: number;
+    storefront?: string;
+    environment?: string;
+    purchaseDate?: number;
+    storefrontId?: string;
+    transactionId?: string;
+    transactionReason?: string;
+    deviceVerification?: string;
+    inAppOwnershipType?: string;
+    originalPurchaseDate?: number;
+    originalTransactionId?: string;
+    deviceVerificationNonce?: string;
+    fullPayload?: Record<string, unknown>;
+    [key: string]: unknown;
+  };
+  metadata: {
+    productId?: string;
+    quantityIOS?: number;
+    purchaseToken?: string;
+    transactionId?: string;
+    appAccountToken?: string;
+    transactionDate?: number;
+    transactionReceipt?: string;
+    transactionReasonIOS?: string;
+    verificationResultIOS?: string;
+    originalTransactionDateIOS?: number;
+    originalTransactionIdentifierIOS?: number;
+    [key: string]: unknown;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Android Payment Data structure
+export interface AndroidPaymentData {
+  id: number;
+  androidPaymentId: string;
+  userId: number;
+  latestPurchaseData: {
+    orderId?: string;
+    quantity?: number;
+    productId?: string;
+    verifiedAt?: string;
+    packageName?: string;
+    acknowledged?: boolean;
+    purchaseTime?: number;
+    purchaseState?: number;
+    purchaseToken?: string;
+    verificationStatus?: string;
+    [key: string]: unknown;
+  };
+  metadata: {
+    productId?: string;
+    productIds?: string[];
+    dataAndroid?: string;
+    verifiedData?: {
+      kind?: string;
+      orderId?: string;
+      regionCode?: string;
+      purchaseType?: number;
+      purchaseState?: number;
+      consumptionState?: number;
+      developerPayload?: string;
+      purchaseTimeMillis?: string;
+      acknowledgementState?: number;
+      [key: string]: unknown;
+    };
+    purchaseToken?: string;
+    transactionId?: string;
+    transactionDate?: number;
+    signatureAndroid?: string;
+    packageNameAndroid?: string;
+    transactionReceipt?: string;
+    autoRenewingAndroid?: boolean;
+    purchaseStateAndroid?: number;
+    isAcknowledgedAndroid?: boolean;
+    developerPayloadAndroid?: string;
+    obfuscatedAccountIdAndroid?: string;
+    obfuscatedProfileIdAndroid?: string;
+    [key: string]: unknown;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Define the structure of an order
 export interface Order {
   id: number;
@@ -59,6 +163,10 @@ export interface Order {
   totalAmount: number;
   createdAt: string;
   paidAt: string | null;
+  apple_payment_id: string | null;
+  android_payment_id: string | null;
+  currency: string;
+  updatedAt: string;
   items: OrderItem[];
   user: {
     id: number;
@@ -71,7 +179,9 @@ export interface Order {
     amount: number;
     currency: string;
     status: string;
-  };
+  } | null;
+  applePaymentData?: ApplePaymentData | null;
+  androidPaymentData?: AndroidPaymentData | null;
 }
 
 // Pagination interface
