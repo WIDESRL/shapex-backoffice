@@ -21,6 +21,7 @@ import DublicateIcon from '../../../icons/DublicateIcon';
 import { TrainingProgram } from '../../../types/trainingProgram.types';
 import { useTraining } from '../../../Context/TrainingContext';
 import { useTranslation } from 'react-i18next';
+import { useSnackbar } from '../../../Context/SnackbarContext';
 import DeleteDialog from '../DeleteDialog';
 import OutlinedTextIconButton from '../../../components/OutlinedTextIconButton';
 import TrainingProgramDialog from './TrainingProgramDialog';
@@ -104,6 +105,7 @@ interface TrainingProgramPageProps {
 const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = true, rowLimit }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
   const { 
     trainingPrograms, 
     trainingProgramsResponse,
@@ -201,8 +203,20 @@ const TrainingProgramPage: React.FC<TrainingProgramPageProps> = ({ showHeader = 
     if (deleteTarget) {
       try {
         await deleteTrainingProgram(deleteTarget.id);
+        showSnackbar(t('training.deleteProgramSuccess', 'Programma eliminato con successo'), 'success');
       } catch (err) {
         console.error(err);
+        // Extract error message from response
+        let errorMessage = t('training.deleteProgramError', 'Errore durante l\'eliminazione del programma');
+        
+        if (err && typeof err === 'object' && 'response' in err) {
+          const axiosError = err as { response?: { data?: { error?: string } } };
+          errorMessage = axiosError.response?.data?.error || errorMessage;
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        }
+        
+        showSnackbar(errorMessage, 'error');
       }
     }
     setDeleteDialogOpen(false);
