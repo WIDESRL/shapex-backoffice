@@ -18,6 +18,7 @@ import {
   CircularProgress,
   Autocomplete,
   TextField,
+  Tooltip,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -984,12 +985,25 @@ const SystemNotificationsPage: React.FC = () => {
                         <Typography sx={isRead ? styles.notificationTitle : styles.unreadNotificationTitle}>
                           {title}
                         </Typography>
-                        <Typography 
-                          sx={isClickable ? styles.notificationDescClickable : styles.notificationDesc}
-                          onClick={isClickable ? () => handleDescriptionClick(notification) : undefined}
-                        >
-                          {description}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                          <Typography 
+                            sx={isClickable ? styles.notificationDescClickable : styles.notificationDesc}
+                            onClick={isClickable ? () => handleDescriptionClick(notification) : undefined}
+                          >
+                            {description}
+                          </Typography>
+                          {notification.type === 'subscription_cancelled' && (
+                            <Tooltip 
+                              title={t('systemNotifications.tooltips.subscriptionCancelled')}
+                              arrow
+                              placement="top"
+                            >
+                              <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.2 }}>
+                                <InfoIcon style={{ fontSize: 16, color: '#E6BB4A', cursor: 'pointer' }} />
+                              </Box>
+                            </Tooltip>
+                          )}
+                        </Box>
                         <Typography 
                           sx={styles.clientName}
                           onClick={() => handleClientNameClick(notification.user.id)}

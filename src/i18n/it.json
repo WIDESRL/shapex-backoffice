@@ -372,6 +372,9 @@
     "count": {
       "single": "notifica trovata",
       "multiple": "notifiche trovate"
+    },
+    "tooltips": {
+      "subscriptionCancelled": "Si prega di visitare la pagina abbonamenti del cliente per maggiori dettagli. L'abbonamento potrebbe essere attivo fino alla fine del periodo."
     }
   },
   "training": {

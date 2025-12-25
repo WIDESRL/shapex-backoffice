@@ -388,6 +388,9 @@
     "count": {
       "single": "notification found",
       "multiple": "notifications found"
+    },
+    "tooltips": {
+      "subscriptionCancelled": "Please visit client subscription page for more details. Subscription may be active till the end of period."
     }
   },
   "training": {
