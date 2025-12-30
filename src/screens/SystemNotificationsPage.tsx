@@ -808,7 +808,7 @@ const SystemNotificationsPage: React.FC = () => {
             <Badge 
               badgeContent={unreadCount} 
               color="error" 
-              sx={{ ml: 2 }}
+              sx={{ ml: 3 }}
             />
           )}
         </Typography>

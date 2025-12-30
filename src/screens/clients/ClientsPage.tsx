@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip, Autocomplete, Pagination } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip, Autocomplete, Pagination, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import MagnifierIcon from '../../icons/MagnifierIcon';
 import UserIcon from '../../icons/UserIcon';
 import { Client, useClientContext } from '../../Context/ClientContext';
@@ -245,6 +245,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   const [hasInitialFetch, setHasInitialFetch] = useState(false);
   const [confirmProgramOpen, setConfirmProgramOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<{ id: number; title: string } | null>(null);
+  const [profileCompletedFilter, setProfileCompletedFilter] = useState<'all' | 'completed' | 'incomplete'>('all');
 
   // Add suffix to duplicate subscription titles for unique display
   const processedSubscriptions = useMemo(() => {
@@ -275,13 +276,23 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
       const subscriptionIds = subscriptionFilter.length > 0 
         ? subscriptionFilter.map(sub => sub.id) 
         : undefined;
-      fetchClients({ page, pageSize, search, subscriptionIds, append: false });
+      const profileInformationCompleted = profileCompletedFilter === 'all' 
+        ? undefined 
+        : profileCompletedFilter === 'completed' ? true : false;
+      fetchClients({ 
+        page, 
+        pageSize, 
+        search, 
+        subscriptionIds, 
+        profileInformationCompleted,
+        append: false 
+      });
     }, 500);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, search, subscriptionFilter]);
+  }, [page, search, subscriptionFilter, profileCompletedFilter]);
 
   // Fetch subscriptions on mount with debounce
   useEffect(() => {
@@ -307,6 +318,14 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
   const handleSubscriptionFilterChange = (_event: React.SyntheticEvent, value: Subscription[]) => {
     setSubscriptionFilter(value);
     setPage(1);
+  };
+
+  // Profile completion toggle handler
+  const handleProfileCompletedChange = (_event: React.MouseEvent<HTMLElement>, newValue: 'all' | 'completed' | 'incomplete') => {
+    if (newValue !== null) {
+      setProfileCompletedFilter(newValue);
+      setPage(1);
+    }
   };
 
   // Pagination handler
@@ -352,15 +371,16 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
           {t('client.main.title')}
         </Typography>
         {!dashboard && (
-          <Box sx={styles.searchContainer}>
-            <TextField
-              size="small"
-              placeholder={t('client.main.searchPlaceholder')}
-              value={localSearch}
-              onChange={handleSearchChange}
-              InputProps={styles.searchInputProps}
-              sx={styles.searchInput}
-            />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={styles.searchContainer}>
+              <TextField
+                size="small"
+                placeholder={t('client.main.searchPlaceholder')}
+                value={localSearch}
+                onChange={handleSearchChange}
+                InputProps={styles.searchInputProps}
+                sx={styles.searchInput}
+              />
             <Autocomplete
               multiple
               size="small"
@@ -467,6 +487,44 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
               clearOnEscape
               openOnFocus
             />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mr: 1, gap: 1 }}>
+              <Typography sx={{ fontSize: 14, color: '#616160', fontWeight: 500 }}>
+                {t('client.main.profileCompleted', 'Profile Completed')}:
+              </Typography>
+              <ToggleButtonGroup
+                value={profileCompletedFilter}
+                exclusive
+                onChange={handleProfileCompletedChange}
+                size="small"
+                sx={{
+                  '& .MuiToggleButton-root': {
+                    px: 2,
+                    py: 0.5,
+                    textTransform: 'none',
+                    fontSize: 13,
+                    borderColor: '#e0e0e0',
+                    '&.Mui-selected': {
+                      backgroundColor: '#E6BB4A',
+                      color: '#fff',
+                      '&:hover': {
+                        backgroundColor: '#d4a537',
+                      },
+                    },
+                  },
+                }}
+              >
+                <ToggleButton value="all">
+                  {t('client.main.profileFilter.all', 'All')}
+                </ToggleButton>
+                <ToggleButton value="completed">
+                  {t('client.main.profileFilter.completed', 'Completed')}
+                </ToggleButton>
+                <ToggleButton value="incomplete">
+                  {t('client.main.profileFilter.incomplete', 'Incomplete')}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
           </Box>
         )}
       </Box>
