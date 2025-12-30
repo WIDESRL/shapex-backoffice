@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -16,8 +16,11 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import DialogCloseIcon from '../../icons/DialogCloseIcon2';
 import { useTraining } from '../../Context/TrainingContext';
+import ClientSectionsModal from '../../components/ClientSectionsModal';
+import { Client } from '../../Context/ClientContext';
 
 interface ExerciseDetailModalProps {
   open: boolean;
@@ -312,6 +315,14 @@ const styles = {
   boldSpan: {
     fontWeight: 600,
   },
+  clickableText: {
+    fontWeight: 600,
+    cursor: 'pointer',
+    '&:hover': {
+      textDecoration: 'underline',
+      color: '#E6BB4A',
+    },
+  },
   loadingBox: {
     display: 'flex',
     justifyContent: 'center',
@@ -331,7 +342,10 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
   exerciseId,
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { assignmentLogs, loadingAssignmentLogs, fetchAssignmentLogs, fetchExerciseLog } = useTraining();
+  const [clientModalOpen, setClientModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   // Fetch assignment logs when modal opens
   useEffect(() => {
@@ -343,6 +357,37 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
       }
     }
   }, [open, assignmentId, exerciseId, fetchAssignmentLogs, fetchExerciseLog]);
+
+  const handleClientClick = () => {
+    if (!assignmentLogs?.assignment) return;
+    
+    const client: Client = {
+      id: assignmentLogs.assignment.clientId,
+      email: '',
+      username: assignmentLogs.assignment.clientName,
+      firstName: assignmentLogs.assignment.clientName.split(' ')[0] || null,
+      lastName: assignmentLogs.assignment.clientName.split(' ').slice(1).join(' ') || null,
+      phoneNumber: null,
+      dateOfBirth: null,
+      placeOfBirth: null,
+      fiscalCode: null,
+      activeSubscription: null,
+      assignedProgram: null,
+      totalMessages: 0,
+    };
+    setSelectedClient(client);
+    setClientModalOpen(true);
+  };
+
+  const handleCloseClientModal = () => {
+    setClientModalOpen(false);
+    setSelectedClient(null);
+  };
+
+  const handleTrainingProgramClick = () => {
+    if (!assignmentLogs?.trainingProgram?.id) return;
+    navigate(`/training/training-program/${assignmentLogs.trainingProgram.id}`);
+  };
 
   // Format date helper function
   const formatDate = (dateString: string) => {
@@ -443,10 +488,10 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
           <Box sx={styles.header}>
             <Box sx={styles.headerRow}>
               <Typography sx={styles.subtitle}>
-                {t('exerciseDetailModal.program')}: <Box component="span" sx={styles.boldSpan}>{assignmentLogs.trainingProgram?.title || '___'}</Box>
+                {t('exerciseDetailModal.program')}: <Box component="span" sx={styles.clickableText} onClick={handleTrainingProgramClick}>{assignmentLogs.trainingProgram?.title || '___'}</Box>
               </Typography>
               <Typography sx={styles.subtitle}>
-                {t('exerciseDetailModal.client')}: <Box component="span" sx={styles.boldSpan}>{assignmentLogs.assignment?.clientName || '___'}</Box>
+                {t('exerciseDetailModal.client')}: <Box component="span" sx={styles.clickableText} onClick={handleClientClick}>{assignmentLogs.assignment?.clientName || '___'}</Box>
               </Typography>
             </Box>
             <Box sx={styles.headerRow}>
@@ -505,10 +550,10 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
         <Box sx={styles.header}>
           <Box sx={styles.headerRow}>
             <Typography sx={styles.subtitle}>
-              {t('exerciseDetailModal.program')}: <Box component="span" sx={styles.boldSpan}>{assignmentLogs.trainingProgram.title}</Box>
+              {t('exerciseDetailModal.program')}: <Box component="span" sx={styles.clickableText} onClick={handleTrainingProgramClick}>{assignmentLogs.trainingProgram.title}</Box>
             </Typography>
             <Typography sx={styles.subtitle}>
-              {t('exerciseDetailModal.client')}: <Box component="span" sx={styles.boldSpan}>{assignmentLogs.assignment.clientName}</Box>
+              {t('exerciseDetailModal.client')}: <Box component="span" sx={styles.clickableText} onClick={handleClientClick}>{assignmentLogs.assignment.clientName}</Box>
             </Typography>
           </Box>
           <Box sx={styles.headerRow}>
@@ -575,6 +620,13 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
           ))}
         </Box>
       </DialogContent>
+
+      {/* Client Sections Modal */}
+      <ClientSectionsModal
+        open={clientModalOpen}
+        client={selectedClient}
+        onClose={handleCloseClientModal}
+      />
     </Dialog>
   );
 };

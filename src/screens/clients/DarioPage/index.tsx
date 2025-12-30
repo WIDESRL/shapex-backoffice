@@ -8,6 +8,7 @@ import BackButton from '../../../components/BackButton';
 import AnamnesiInizialeTab from './tabs/AnamnesiInizialeTab';
 import MisurazioniTab from './tabs/MisurazioniTab';
 import AlbumFotograficoTab from './tabs/AlbumFotograficoTab';
+import AlbumVideoTab from './tabs/AlbumVideoTab';
 
 const styles = {
   container: {
@@ -58,6 +59,8 @@ const DiarioPage: React.FC = () => {
         return 1;
       case 'photos':
         return 2;
+      case 'videos':
+        return 3;
       default:
         return 0;
     }
@@ -72,6 +75,8 @@ const DiarioPage: React.FC = () => {
         return 'measurements';
       case 2:
         return 'photos';
+      case 3:
+        return 'videos';
       default:
         return 'anamnesi';
     }
@@ -95,7 +100,7 @@ const DiarioPage: React.FC = () => {
   useEffect(() => {
     if (tabName) {
       const tabIndex = getTabIndexFromName(tabName);
-      if (tabName === 'anamnesi' || tabName === 'measurements' || tabName === 'photos') {
+      if (tabName === 'anamnesi' || tabName === 'measurements' || tabName === 'photos' || tabName === 'videos') {
         setTabValue(tabIndex);
       } else {
         // Invalid tab name, redirect to first tab
@@ -174,11 +179,17 @@ const DiarioPage: React.FC = () => {
           onClick={() => handleTabChange(2)}
           active={tabValue === 2}
         />
+        <TabButton
+          title={t('client.diario.tabs.videos')}
+          onClick={() => handleTabChange(3)}
+          active={tabValue === 3}
+        />
       </Box>
 
       {tabValue === 0 && <AnamnesiInizialeTab />}
       {tabValue === 1 && <MisurazioniTab />}
       {tabValue === 2 && <AlbumFotograficoTab />}
+      {tabValue === 3 && <AlbumVideoTab />}
     </Box>
   );
 };

@@ -169,6 +169,7 @@ export interface CompletedTraining {
   id: number;
   clientId: number;
   clientName: string;
+  trainingProgramId: number;
   trainingProgramName: string;
   trainingProgramType: string;
   weekCount: number;

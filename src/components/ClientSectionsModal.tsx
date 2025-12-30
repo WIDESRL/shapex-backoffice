@@ -193,6 +193,7 @@ const ClientSectionsModal: React.FC<ClientSectionsModalProps> = ({ open, client,
               <li style={styles.modalSectionListItem}>{t('client.main.modalSections.diario.items.anamnesis')}</li>
               <li style={styles.modalSectionListItem}>{t('client.main.modalSections.diario.items.measurements')}</li>
               <li style={styles.modalSectionListItem}>{t('client.main.modalSections.diario.items.photos')}</li>
+              <li style={styles.modalSectionListItem}>{t('client.main.modalSections.diario.items.videos')}</li>
             </ul>
           </Box>
           <Box sx={styles.modalSectionBox} onClick={() => handleSectionClick('alimentazione', client?.id || '')}>

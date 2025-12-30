@@ -22,12 +22,15 @@ import {
   TextField,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useTraining } from '../../Context/TrainingContext';
 import { CompletedTraining } from '../../types/trainingProgram.types';
 import FilterIcon from '../../icons/FilterIcon';
 import InfoIcon from '../../icons/InfoIcon';
 import DateRangePicker from '../../components/DateRangePicker';
 import ExerciseDetailModal from './ExerciseDetailModal';
+import ClientSectionsModal from '../../components/ClientSectionsModal';
+import { Client } from '../../Context/ClientContext';
 
 interface FilterState {
   status: string;
@@ -186,6 +189,30 @@ const styles = {
     border: 0,
     backgroundColor: '#fff',
   },
+  clientNameCell: {
+    fontSize: 18,
+    color: '#616160',
+    fontFamily: 'Montserrat, sans-serif',
+    border: 0,
+    backgroundColor: '#fff',
+    cursor: 'pointer',
+    '&:hover': {
+      textDecoration: 'underline',
+      color: '#E6BB4A',
+    },
+  },
+  trainingProgramNameCell: {
+    fontSize: 18,
+    color: '#616160',
+    fontFamily: 'Montserrat, sans-serif',
+    border: 0,
+    backgroundColor: '#fff',
+    cursor: 'pointer',
+    '&:hover': {
+      textDecoration: 'underline',
+      color: '#E6BB4A',
+    },
+  },
   detailButton: {
     background: 'transparent',
     border: 'none',
@@ -263,6 +290,7 @@ interface CompletedTrainingPageProps {
 
 const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeader = true, rowLimit, compact = false }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { 
     availableUsers, 
     loadingAvailableUsers, 
@@ -275,6 +303,8 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
   const [showFilters, setShowFilters] = useState(false);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [clientModalOpen, setClientModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [dateRange, setDateRange] = useState<{ startDate: Date | null; endDate: Date | null }>({ 
     startDate: null, 
     endDate: null 
@@ -475,6 +505,35 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
     setSelectedAssignmentId(null);
   };
 
+  const handleClientClick = (training: CompletedTraining) => {
+    // Create a Client object from the training data
+    const client: Client = {
+      id: training.clientId,
+      email: '',
+      username: training.clientName,
+      firstName: training.clientName.split(' ')[0] || null,
+      lastName: training.clientName.split(' ').slice(1).join(' ') || null,
+      phoneNumber: null,
+      dateOfBirth: null,
+      placeOfBirth: null,
+      fiscalCode: null,
+      activeSubscription: null,
+      assignedProgram: null,
+      totalMessages: 0,
+    };
+    setSelectedClient(client);
+    setClientModalOpen(true);
+  };
+
+  const handleCloseClientModal = () => {
+    setClientModalOpen(false);
+    setSelectedClient(null);
+  };
+
+  const handleTrainingProgramClick = (training: CompletedTraining) => {
+    navigate(`/training/training-program/${training.trainingProgramId}`);
+  };
+
   // Get dynamic styles based on compact mode
   const containerStyles = compact ? {
     p: 3,
@@ -640,8 +699,18 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
                 displayedTrainings.map((training) => (
                   <TableRow key={training.id} hover sx={styles.tableRow}>
                     <TableCell sx={styles.tableCell}>{getDateValue(training)}</TableCell>
-                    <TableCell sx={styles.tableCell}>{training.clientName}</TableCell>
-                    <TableCell sx={styles.tableCell}>{training.trainingProgramName}</TableCell>
+                    <TableCell 
+                      sx={styles.clientNameCell}
+                      onClick={() => handleClientClick(training)}
+                    >
+                      {training.clientName}
+                    </TableCell>
+                    <TableCell 
+                      sx={styles.trainingProgramNameCell}
+                      onClick={() => handleTrainingProgramClick(training)}
+                    >
+                      {training.trainingProgramName}
+                    </TableCell>
                     <TableCell sx={styles.tableCell}>{formatTrainingType(training.trainingProgramType)}</TableCell>
                     <TableCell sx={styles.tableCell} align="center">
                       <IconButton 
@@ -731,6 +800,13 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
           assignmentId={selectedAssignmentId}
         />
       )}
+
+      {/* Client Sections Modal */}
+      <ClientSectionsModal
+        open={clientModalOpen}
+        client={selectedClient}
+        onClose={handleCloseClientModal}
+      />
     </Box>
   );
 };

@@ -481,6 +481,7 @@ export type ClientContextType = {
   initialHistory: InitialHistory | null;
   userChecks: UserCheck[];
   userImagesAlbum: UserAlbumImage[];
+  userVideosAlbum: UserAlbumImage[];
   userNotifications: UserNotification[];
   userConsents: UserConsent[];
   userCalls: UserCall[];
@@ -489,6 +490,7 @@ export type ClientContextType = {
   userSubscriptionDetails: UserSubscriptionDetails | null;
   notificationsPagination: Pagination | null;
   userImagesAlbumPagination: Pagination | null;
+  userVideosAlbumPagination: Pagination | null;
   userCallsPagination: Pagination | null;
   selectedCheckDetailed: UserCheckDetailed | null;
   userNextCheckDate: UserNextCheckDate | null;
@@ -502,6 +504,7 @@ export type ClientContextType = {
   loadingInitialHistory: boolean;
   loadingUserChecks: boolean;
   loadingUserImagesAlbum: boolean;
+  loadingUserVideosAlbum: boolean;
   loadingUserNotifications: boolean;
   loadingUserConsents: boolean;
   loadingUserCalls: boolean;
@@ -528,6 +531,7 @@ export type ClientContextType = {
   fetchInitialHistory: (userId: string) => Promise<void>;
   fetchUserChecks: (userId: string, startDate?: string, endDate?: string) => Promise<void>;
   fetchUserImagesAlbum: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, append?: boolean) => Promise<void>;
+  fetchUserVideosAlbum: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, append?: boolean) => Promise<void>;
   fetchUserNotifications: (userId: string, page?: number, pageLimit?: number, startDate?: string, endDate?: string, type?: string, append?: boolean) => Promise<void>;
   fetchUserConsents: (userId: string) => Promise<void>;
   fetchUserCalls: (userId: string, page?: number, pageLimit?: number, append?: boolean, used?: boolean, type?: 'Extra' | 'Supplementary') => Promise<void>;
@@ -553,6 +557,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [initialHistory, setInitialHistory] = useState<InitialHistory | null>(null);
   const [userChecks, setUserChecks] = useState<UserCheck[]>([]);
   const [userImagesAlbum, setUserImagesAlbum] = useState<UserAlbumImage[]>([]);
+  const [userVideosAlbum, setUserVideosAlbum] = useState<UserAlbumImage[]>([]);
   const [userNotifications, setUserNotifications] = useState<UserNotification[]>([]);
   const [userConsents, setUserConsents] = useState<UserConsent[]>([]);
   const [userCalls, setUserCalls] = useState<UserCall[]>([]);
@@ -561,6 +566,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [userSubscriptionDetails, setUserSubscriptionDetails] = useState<UserSubscriptionDetails | null>(null);
   const [notificationsPagination, setNotificationsPagination] = useState<Pagination | null>(null);
   const [userImagesAlbumPagination, setUserImagesAlbumPagination] = useState<Pagination | null>(null);
+  const [userVideosAlbumPagination, setUserVideosAlbumPagination] = useState<Pagination | null>(null);
   const [userCallsPagination, setUserCallsPagination] = useState<Pagination | null>(null);
   const [selectedCheckDetailed, setSelectedCheckDetailed] = useState<UserCheckDetailed | null>(null);
   const [userNextCheckDate, setUserNextCheckDate] = useState<UserNextCheckDate | null>(null);
@@ -574,6 +580,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingInitialHistory, setLoadingInitialHistory] = useState(false);
   const [loadingUserChecks, setLoadingUserChecks] = useState(false);
   const [loadingUserImagesAlbum, setLoadingUserImagesAlbum] = useState(false);
+  const [loadingUserVideosAlbum, setLoadingUserVideosAlbum] = useState(false);
   const [loadingUserNotifications, setLoadingUserNotifications] = useState(false);
   const [loadingUserConsents, setLoadingUserConsents] = useState(false);
   const [loadingUserCalls, setLoadingUserCalls] = useState(false);
@@ -814,6 +821,48 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, []);
 
+  const fetchUserVideosAlbum = useCallback(async (
+    userId: string, 
+    page: number = 1, 
+    pageLimit: number = 20, 
+    startDate?: string, 
+    endDate?: string,
+    append: boolean = false
+  ): Promise<void> => {
+    try {
+      setLoadingUserVideosAlbum(true);
+      
+      const params = new URLSearchParams();
+      params.append('page', page.toString());
+      params.append('pageLimit', pageLimit.toString());
+      if (startDate) params.append('startDate', startDate);
+      if (endDate) params.append('endDate', endDate);
+      
+      const queryString = params.toString();
+      const url = `/storage/videos/${userId}?${queryString}`;
+      
+      const response = await axiosInstance.get(url);
+      const data = response.data;
+      
+      // Check if response has pagination structure
+      if (data.videos && data.pagination) {
+        setUserVideosAlbum(prev => append ? [...prev, ...data.videos] : data.videos);
+        setUserVideosAlbumPagination(data.pagination);
+      } else {
+        // Fallback for legacy response format
+        setUserVideosAlbum(prev => append ? [...prev, ...(data || [])] : (data || []));
+        setUserVideosAlbumPagination(null);
+      }
+    } catch (error) {
+      console.error('Error fetching user videos album:', error);
+      setUserVideosAlbum([]);
+      setUserVideosAlbumPagination(null);
+      throw error;
+    } finally {
+      setLoadingUserVideosAlbum(false);
+    }
+  }, []);
+
   const fetchUserNotifications = useCallback(async (
     userId: string, 
     page: number = 1, 
@@ -1010,6 +1059,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         initialHistory,
         userChecks,
         userImagesAlbum,
+        userVideosAlbum,
         userNotifications,
         userConsents,
         userCalls,
@@ -1018,6 +1068,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         userSubscriptionDetails,
         notificationsPagination,
         userImagesAlbumPagination,
+        userVideosAlbumPagination,
         userCallsPagination,
         selectedCheckDetailed,
         userNextCheckDate,
@@ -1031,6 +1082,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingInitialHistory,
         loadingUserChecks,
         loadingUserImagesAlbum,
+        loadingUserVideosAlbum,
         loadingUserNotifications,
         loadingUserConsents,
         loadingUserCalls,
@@ -1057,6 +1109,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchInitialHistory,
         fetchUserChecks,
         fetchUserImagesAlbum,
+        fetchUserVideosAlbum,
         fetchUserNotifications,
         fetchUserConsents,
         fetchUserCalls,

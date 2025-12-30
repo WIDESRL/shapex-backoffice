@@ -652,7 +652,8 @@
           "items": {
             "anamnesis": "Initial anamnesis",
             "measurements": "Measurements",
-            "photos": "Photo album"
+            "photos": "Photo album",
+            "videos": "Video album"
           }
         },
         "alimentazione": {
@@ -829,7 +830,8 @@
       "tabs": {
         "anamnesis": "Initial anamnesis",
         "measurements": "Measurements",
-        "photos": "Photo album"
+        "photos": "Photo album",
+        "videos": "Video album"
       },
       "anamnesiIniziale": {
         "loading": "Loading initial anamnesis...",
@@ -941,6 +943,42 @@
           "title": "No photos in the album",
           "description": "No progress photos have been uploaded yet. Photos will appear here as they are taken to track physical transformation.",
           "subtitle": "Visual progress tracking through photos"
+        }
+      },
+      "albumVideo": {
+        "loading": "Loading videos...",
+        "loadMore": "Load More",
+        "loadingMore": "Loading more...",
+        "uploadDate": "Upload date",
+        "filters": {
+          "title": "Filters",
+          "startDate": "Start date",
+          "endDate": "End date",
+          "apply": "Apply",
+          "clear": "Clear"
+        },
+        "emptyState": {
+          "title": "No videos in the album",
+          "description": "No progress videos have been uploaded yet. Videos will appear here as they are recorded to track physical transformation.",
+          "subtitle": "Visual progress tracking through videos"
+        }
+      },
+      "albumVideo": {
+        "loading": "Loading videos...",
+        "loadMore": "Load More",
+        "loadingMore": "Loading more...",
+        "uploadDate": "Upload date",
+        "filters": {
+          "title": "Filters",
+          "startDate": "Start date",
+          "endDate": "End date",
+          "apply": "Apply",
+          "clear": "Clear"
+        },
+        "emptyState": {
+          "title": "No videos in the album",
+          "description": "No progress videos have been uploaded yet. Videos will appear here as they are recorded to track physical transformation.",
+          "subtitle": "Visual progress tracking through videos"
         }
       }
     },

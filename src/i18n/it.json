@@ -635,7 +635,8 @@
           "items": {
             "anamnesis": "Anamnesi iniziale",
             "measurements": "Misurazioni",
-            "photos": "Album fotografico"
+            "photos": "Album fotografico",
+            "videos": "Album video"
           }
         },
         "alimentazione": {
@@ -812,7 +813,8 @@
       "tabs": {
         "anamnesis": "Anamnesi iniziale",
         "measurements": "Misurazioni",
-        "photos": "Album fotografico"
+        "photos": "Album fotografico",
+        "videos": "Album video"
       },
       "anamnesiIniziale": {
         "loading": "Caricamento anamnesi iniziale...",
@@ -925,6 +927,24 @@
           "title": "Nessuna foto nell'album",
           "description": "Non sono ancora state caricate foto di progresso. Le foto appariranno qui man mano che vengono scattate per tracciare la trasformazione fisica.",
           "subtitle": "Monitoraggio visivo dei progressi attraverso le foto"
+        }
+      },
+      "albumVideo": {
+        "loading": "Caricamento video...",
+        "loadMore": "Carica Altri",
+        "loadingMore": "Caricamento altri...",
+        "uploadDate": "Data di upload",
+        "filters": {
+          "title": "Filtri",
+          "startDate": "Data inizio",
+          "endDate": "Data fine",
+          "apply": "Applica",
+          "clear": "Pulisci"
+        },
+        "emptyState": {
+          "title": "Nessun video nell'album",
+          "description": "Non sono ancora stati caricati video di progresso. I video appariranno qui man mano che vengono registrati per tracciare la trasformazione fisica.",
+          "subtitle": "Monitoraggio visivo dei progressi attraverso i video"
         }
       }
     },
