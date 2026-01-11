@@ -252,6 +252,13 @@ const AnamnesiInizialeTab: React.FC = () => {
     }
   };
 
+  const formatMeasurement = (value: string | number | null | undefined): string => {
+    if (value === null || value === undefined || value === '' || value === '--') {
+      return '--';
+    }
+    return `${value} cm`;
+  };
+
   // Loading component
   const LoadingState = () => (
     <Box sx={styles.container}>
@@ -375,40 +382,60 @@ const AnamnesiInizialeTab: React.FC = () => {
       </Typography>
       <Box sx={styles.fieldsGrid}>
         <Box sx={styles.infoRow}>
-          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.neck')}</Typography>
-          <Typography sx={styles.value}>{initialHistory?.collo} cm</Typography>
-        </Box>
-        <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.chest')}</Typography>
-          <Typography sx={styles.value}>{initialHistory?.addome} cm</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.addome)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
-          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightArm')}</Typography>
-          <Typography sx={styles.value}>{initialHistory?.braccioDx} cm</Typography>
-        </Box>
-        <Box sx={styles.infoRow}>
-          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftArm')}</Typography>
-          <Typography sx={styles.value}>{initialHistory?.braccioSx} cm</Typography>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.altezza')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.altezza)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightForearm')}</Typography>
-          <Typography sx={styles.value}>{initialHistory?.avambraccioDx} cm</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.avambraccioDx)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftForearm')}</Typography>
-          <Typography sx={styles.value}>{initialHistory?.avambraccioSx} cm</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.avambraccioSx)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
-          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightLeg')}</Typography>
-          <Typography sx={styles.value}>{initialHistory?.gambaDx} cm</Typography>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightArm')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.braccioDx)}</Typography>
+        </Box>
+        <Box sx={styles.infoRow}>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightContractedArm')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.braccioContrattoDx)}</Typography>
+        </Box>
+        <Box sx={styles.infoRow}>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftArm')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.braccioSx)}</Typography>
+        </Box>
+        <Box sx={styles.infoRow}>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftContractedArm')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.braccioContrattoSx)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightAnkle')}</Typography>
-          <Typography sx={styles.value}>{initialHistory?.cavigliaDx} cm</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.cavigliaDx)}</Typography>
         </Box>
         <Box sx={styles.infoRow}>
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftAnkle')}</Typography>
-          <Typography sx={styles.value}>{initialHistory?.cavigliaSx} cm</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.cavigliaSx)}</Typography>
+        </Box>
+        <Box sx={styles.infoRow}>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.neck')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.collo)}</Typography>
+        </Box>
+        <Box sx={styles.infoRow}>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightLeg')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.gambaDx)}</Typography>
+        </Box>
+        <Box sx={styles.infoRow}>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftLeg')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.gambaSx)}</Typography>
+        </Box>
+        <Box sx={styles.infoRow}>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightMedialLeg')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.gambaMedialeDx)}</Typography>
         </Box>
       </Box>
 

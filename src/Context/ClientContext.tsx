@@ -94,6 +94,7 @@ export type InitialHistory = {
   cavigliaSx: string;
   collo: string;
   gambaDx: string;
+  gambaSx: string;
   gambaMedialeDx: string;
   trainingExperience: string;
   sessionsPerWeek: number;
