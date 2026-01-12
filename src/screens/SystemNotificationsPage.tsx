@@ -651,12 +651,16 @@ const SystemNotificationsPage: React.FC = () => {
       id: user.id,
       name: user.firstName && user.lastName 
         ? `${user.firstName} ${user.lastName}` 
-        : user.username
+        : user.username,
+      email: user.email,
+      displayLabel: user.firstName && user.lastName
+        ? `${user.firstName} ${user.lastName} (${user.email})`
+        : user.email
     }));
   }, [availableUsers]);
 
   // Handler for client selection change
-  const handleClientChange = (_: React.SyntheticEvent, newValue: { id: number; name: string } | null) => {
+  const handleClientChange = (_: React.SyntheticEvent, newValue: { id: number; name: string; email: string; displayLabel: string } | null) => {
     updateFilterState({ filterUserId: newValue ? newValue.id : null });
   };
 
@@ -844,7 +848,7 @@ const SystemNotificationsPage: React.FC = () => {
         {/* Collapsible Filter Section */}
         <Collapse in={showFilters}>
           <Paper sx={styles.filterContainer} elevation={0}>
-            {/* First Row - Type, Status, and User Filters */}
+            {/* First Row - Type and Status Filters */}
             <Box sx={styles.filterRow}>
               <FormControl sx={styles.filterControl} size="small">
                 <InputLabel>{t('systemNotifications.filterType')}</InputLabel>
@@ -875,15 +879,25 @@ const SystemNotificationsPage: React.FC = () => {
                   <MenuItem value="read">{t('systemNotifications.filters.read')}</MenuItem>
                 </Select>
               </FormControl>
+            </Box>
 
+            {/* Second Row - User Filter */}
+            <Box sx={styles.filterRow}>
               <Autocomplete
                 size="small"
                 sx={styles.filterControl}
                 options={clientOptions}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={(option) => option.displayLabel}
                 value={clientOptions.find(client => client.id === filterUserId) || null}
                 onChange={handleClientChange}
                 loading={loadingAvailableUsers}
+                filterOptions={(options, { inputValue }) => {
+                  const searchTerm = inputValue.toLowerCase();
+                  return options.filter(option => 
+                    option.name.toLowerCase().includes(searchTerm) ||
+                    option.email.toLowerCase().includes(searchTerm)
+                  );
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -898,7 +912,7 @@ const SystemNotificationsPage: React.FC = () => {
               />
             </Box>
 
-            {/* Second Row - Date Range */}
+            {/* Third Row - Date Range */}
             <Box sx={styles.filterRow}>
               <Typography sx={{ minWidth: 120, color: '#616160', fontWeight: 500 }}>
                 {t('systemNotifications.filters.dateRange')}

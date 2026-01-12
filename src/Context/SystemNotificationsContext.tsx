@@ -135,7 +135,7 @@ export const SystemNotificationsProvider: React.FC<{ children: React.ReactNode }
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
-  const [limit] = useState<number>(5); // Hardcoded as requested
+  const [limit] = useState<number>(50); // Hardcoded as requested
   const [totalPages, setTotalPages] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingUnreadCount, setLoadingUnreadCount] = useState<boolean>(false);
