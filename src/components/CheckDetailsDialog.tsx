@@ -300,7 +300,7 @@ const CheckDetailsDialog: React.FC<CheckDetailsDialogProps> = ({
     const measurementFields = [
       'addome', 'altezza', 'peso', 'avambraccioDx', 'avambraccioSx',
       'braccioDx', 'braccioContrattoDx', 'braccioSx', 'braccioContrattoSx',
-      'cavigliaDx', 'cavigliaSx', 'collo', 'gambaDx', 'gambaMedialeDx', 'gambaSx'
+      'cavigliaDx', 'cavigliaSx', 'collo', 'gambaDx', 'gambaSx', 'gambaMedialeDx', 'gambaMedialeSx'
     ];
 
     return measurementFields

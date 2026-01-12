@@ -437,6 +437,10 @@ const AnamnesiInizialeTab: React.FC = () => {
           <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.rightMedialLeg')}</Typography>
           <Typography sx={styles.value}>{formatMeasurement(initialHistory?.gambaMedialeDx)}</Typography>
         </Box>
+        <Box sx={styles.infoRow}>
+          <Typography sx={styles.label}>{t('client.diario.anamnesiIniziale.fields.leftMedialLeg')}</Typography>
+          <Typography sx={styles.value}>{formatMeasurement(initialHistory?.gambaMedialeSx)}</Typography>
+        </Box>
       </Box>
 
       {/* Medical Information */}

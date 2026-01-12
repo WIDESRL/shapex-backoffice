@@ -854,6 +854,7 @@
           "rightLeg": "Gamba destra:",
           "leftLeg": "Gamba sinistra:",
           "rightMedialLeg": "Gamba mediale destra:",
+          "leftMedialLeg": "Gamba mediale sinistra:",
           "rightAnkle": "Caviglia destra:",
           "leftAnkle": "Caviglia sinistra:",
           "trainingHistory": "Storico allenamenti:",
@@ -1420,7 +1421,8 @@
       "collo": "Collo",
       "gambaDx": "Gamba Destra",
       "gambaMedialeDx": "Gamba Mediale Destra",
-      "gambaSx": "Gamba Sinistra"
+      "gambaSx": "Gamba Sinistra",
+      "gambaMedialeSx": "Gamba Mediale Sinistra"
     },
     "images": {
       "frontImage": "Vista Frontale",

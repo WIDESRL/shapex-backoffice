@@ -96,6 +96,7 @@ export type InitialHistory = {
   gambaDx: string;
   gambaSx: string;
   gambaMedialeDx: string;
+  gambaMedialeSx: string;
   trainingExperience: string;
   sessionsPerWeek: number;
   desiredSessions: number;
@@ -136,6 +137,7 @@ export type UserCheck = {
   collo?: string;
   gambaDx?: string;
   gambaMedialeDx?: string;
+  gambaMedialeSx?: string;
   gambaSx?: string;
   peso?: string;
   [key: string]: string | number | undefined | null; // For any additional measurement fields

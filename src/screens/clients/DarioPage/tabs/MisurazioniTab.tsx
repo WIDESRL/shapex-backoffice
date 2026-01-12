@@ -514,7 +514,7 @@ const MisurazioniTab: React.FC = () => {
     const measurementFields = [
       'addome', 'altezza', 'avambraccioDx', 'avambraccioSx',
       'braccioDx', 'braccioContrattoDx', 'braccioSx', 'braccioContrattoSx',
-      'cavigliaDx', 'cavigliaSx', 'collo', 'gambaDx', 'gambaMedialeDx', 'gambaSx', 'peso'
+      'cavigliaDx', 'cavigliaSx', 'collo', 'gambaDx', 'gambaMedialeDx', 'gambaSx', 'gambaMedialeSx', 'peso'
     ];
 
     const data = measurementFields.map((apiField) => {

@@ -871,6 +871,7 @@
           "rightLeg": "Right leg:",
           "leftLeg": "Left leg:",
           "rightMedialLeg": "Right medial leg:",
+          "leftMedialLeg": "Left medial leg:",
           "rightAnkle": "Right ankle:",
           "leftAnkle": "Left ankle:",
           "trainingHistory": "Training history:",
@@ -1454,7 +1455,8 @@
       "collo": "Neck",
       "gambaDx": "Right Leg",
       "gambaMedialeDx": "Right Medial Leg",
-      "gambaSx": "Left Leg"
+      "gambaSx": "Left Leg",
+      "gambaMedialeSx": "Left Medial Leg"
     },
     "images": {
       "frontImage": "Front View",
