@@ -298,6 +298,7 @@
       "subscriptionExpired": "Subscription Expired",
       "subscriptionRefunded": "Subscription Refunded",
       "subscriptionPaymentIssue": "Subscription Payment Issue",
+      "subscriptionTransferred": "Subscription Transferred",
       "all": "All",
       "unread": "Unread",
       "read": "Read",
@@ -322,7 +323,8 @@
       "subscriptionCancelled": "Subscription Cancelled",
       "subscriptionExpired": "Subscription Expired",
       "subscriptionRefunded": "Subscription Refunded",
-      "subscriptionPaymentIssue": "Subscription Payment Issue"
+      "subscriptionPaymentIssue": "Subscription Payment Issue",
+      "subscriptionTransferred": "Subscription Transferred"
     },
     "descriptions": {
       "trainingCompletedWithTitle": "Completed \"{{title}}\" training program",
@@ -352,6 +354,12 @@
       "subscriptionRefundedWithTitle": "User's \"{{title}}\" subscription has been refunded",
       "subscriptionPaymentIssue": "Payment issue detected for user's subscription",
       "subscriptionPaymentIssueWithTitle": "Payment issue detected for \"{{title}}\" subscription",
+      "subscriptionTransferred": "Transferred subscription from {{previousUser}}",
+      "subscriptionTransferredWithTitle": "Transferred subscription \"{{title}}\" from {{previousUser}}",
+      "subscriptionTransferredOnly": "Transferred subscription",
+      "subscriptionTransferredWithTitleOnly": "Transferred subscription \"{{title}}\"",
+      "from": "from",
+      "unknownUser": "unknown user",
       "systemNotificationGeneric": "System notification"
     },
     "timeLabels": {
@@ -1382,6 +1390,10 @@
       "subscriptionPaymentIssue": {
         "title": "Subscription Payment Issue",
         "description": "Receive notifications when there are payment problems with subscriptions"
+      },
+      "subscriptionTransferred": {
+        "title": "Subscription Transferred",
+        "description": "Get notified when a user restores their subscription to their account"
       }
     },
     "globalConfig": {

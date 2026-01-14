@@ -123,6 +123,11 @@ const PushNotificationSettings: React.FC<PushNotificationSettingsProps> = ({ sty
       titleKey: 'settings.pushNotifications.subscriptionPaymentIssue.title',
       descriptionKey: 'settings.pushNotifications.subscriptionPaymentIssue.description',
     },
+    {
+      key: 'SUBSCRIPTION_TRANSFERRED' as const,
+      titleKey: 'settings.pushNotifications.subscriptionTransferred.title',
+      descriptionKey: 'settings.pushNotifications.subscriptionTransferred.description',
+    },
   ];
 
   return (

@@ -345,7 +345,7 @@ const SystemNotificationsPage: React.FC = () => {
     const filters: SystemNotificationFilters = {};
     
     if (filterType !== 'all') {
-      filters.type = filterType as 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call' | 'subscription_renewed' | 'subscription_tier_changed' | 'subscription_cancelled' | 'subscription_expired' | 'subscription_refunded' | 'subscription_payment_issue';
+      filters.type = filterType as 'training_completed' | 'check_created' | 'check_updated' | 'exercise_completed' | 'program_assigned' | 'user_completed_profile' | 'user_purchased_subscription' | 'user_booked_extra_call' | 'user_booked_supplementary_call' | 'subscription_renewed' | 'subscription_tier_changed' | 'subscription_cancelled' | 'subscription_expired' | 'subscription_refunded' | 'subscription_payment_issue' | 'subscription_transferred';
     }
     
     if (filterStatus !== 'all') {
@@ -451,6 +451,8 @@ const SystemNotificationsPage: React.FC = () => {
         return t('systemNotifications.types.subscriptionRefunded');
       case 'subscription_payment_issue':
         return t('systemNotifications.types.subscriptionPaymentIssue');
+      case 'subscription_transferred':
+        return t('systemNotifications.types.subscriptionTransferred');
       default:
         return 'System Notification';
     }
@@ -513,6 +515,12 @@ const SystemNotificationsPage: React.FC = () => {
         return notification.relatedData?.subscription?.title 
           ? t('systemNotifications.descriptions.subscriptionPaymentIssueWithTitle', { title: notification.relatedData.subscription.title })
           : t('systemNotifications.descriptions.subscriptionPaymentIssue');
+      case 'subscription_transferred': {
+        // Return description without previousUser name - will be rendered separately as clickable
+        return notification.relatedData?.subscription?.title 
+          ? t('systemNotifications.descriptions.subscriptionTransferredWithTitleOnly', { title: notification.relatedData.subscription.title })
+          : t('systemNotifications.descriptions.subscriptionTransferredOnly');
+      }
       default:
         return t('systemNotifications.descriptions.systemNotificationGeneric');
     }
@@ -546,6 +554,8 @@ const SystemNotificationsPage: React.FC = () => {
       notification.type === 'subscription_refunded'
     ) || (
       notification.type === 'subscription_payment_issue'
+    ) || (
+      notification.type === 'subscription_transferred'
     );
   };
 
@@ -604,6 +614,7 @@ const SystemNotificationsPage: React.FC = () => {
       case 'subscription_expired':
       case 'subscription_refunded':
       case 'subscription_payment_issue':
+      case 'subscription_transferred':
         return <ShoppingCartIcon sx={styles.typeIcon} />;
       default:
         return <InfoIcon style={styles.typeIcon} />;
@@ -769,6 +780,10 @@ const SystemNotificationsPage: React.FC = () => {
         navigate(`/clients/${notification.user.id}/altro/subscription`);
         break;
       }
+      case 'subscription_transferred': {
+        navigate(`/clients/${notification.user.id}/altro/subscription`);
+        break;
+      }
       default:
         // Do nothing for other types
         break;
@@ -868,6 +883,7 @@ const SystemNotificationsPage: React.FC = () => {
                   <MenuItem value="subscription_expired">{t('systemNotifications.filters.subscriptionExpired')}</MenuItem>
                   {/* <MenuItem value="subscription_refunded">{t('systemNotifications.filters.subscriptionRefunded')}</MenuItem> */}
                   <MenuItem value="subscription_payment_issue">{t('systemNotifications.filters.subscriptionPaymentIssue')}</MenuItem>
+                  <MenuItem value="subscription_transferred">{t('systemNotifications.filters.subscriptionTransferred')}</MenuItem>
                 </Select>
               </FormControl>
               
@@ -1000,12 +1016,61 @@ const SystemNotificationsPage: React.FC = () => {
                           {title}
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                          <Typography 
-                            sx={isClickable ? styles.notificationDescClickable : styles.notificationDesc}
-                            onClick={isClickable ? () => handleDescriptionClick(notification) : undefined}
-                          >
-                            {description}
-                          </Typography>
+                          {notification.type === 'subscription_transferred' ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 0.5 }}>
+                              <Typography 
+                                sx={isClickable ? styles.notificationDescClickable : styles.notificationDesc}
+                                onClick={isClickable ? () => handleDescriptionClick(notification) : undefined}
+                                component="span"
+                              >
+                                {description}
+                              </Typography>
+                              <Typography component="span" sx={{ ...styles.notificationDesc, display: 'inline' }}>
+                                {t('systemNotifications.descriptions.from')}
+                              </Typography>
+                              <Typography 
+                                component="span"
+                                sx={styles.clientName}
+                                onClick={() => {
+                                  if (notification.relatedData?.previousUser?.id) {
+                                    handleClientNameClick(notification.relatedData.previousUser.id);
+                                  }
+                                }}
+                              >
+                                {notification.relatedData?.previousUser 
+                                  ? `${notification.relatedData.previousUser.firstName || ''} ${notification.relatedData.previousUser.lastName || ''}`.trim() || notification.relatedData.previousUser.email
+                                  : t('systemNotifications.descriptions.unknownUser')}
+                              </Typography>
+                              {notification.metadata.platform && (
+                                <Box 
+                                  component="span"
+                                  sx={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    px: 1,
+                                    py: 0.25,
+                                    borderRadius: 1,
+                                    backgroundColor: '#f5f5f5',
+                                    border: '1px solid #e0e0e0',
+                                    fontSize: 12,
+                                    fontWeight: 500,
+                                    color: '#666',
+                                    textTransform: 'capitalize',
+                                    fontFamily: 'Montserrat, sans-serif',
+                                  }}
+                                >
+                                  {notification.metadata.platform}
+                                </Box>
+                              )}
+                            </Box>
+                          ) : (
+                            <Typography 
+                              sx={isClickable ? styles.notificationDescClickable : styles.notificationDesc}
+                              onClick={isClickable ? () => handleDescriptionClick(notification) : undefined}
+                            >
+                              {description}
+                            </Typography>
+                          )}
                           {notification.type === 'subscription_cancelled' && (
                             <Tooltip 
                               title={t('systemNotifications.tooltips.subscriptionCancelled')}

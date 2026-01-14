@@ -282,6 +282,7 @@
       "subscriptionExpired": "Abbonamento Scaduto",
       "subscriptionRefunded": "Abbonamento Rimborsato",
       "subscriptionPaymentIssue": "Problema Pagamento Abbonamento",
+      "subscriptionTransferred": "Abbonamento Trasferito",
       "all": "Tutti",
       "unread": "Non Letti",
       "read": "Letti",
@@ -306,7 +307,8 @@
       "subscriptionCancelled": "Abbonamento Annullato",
       "subscriptionExpired": "Abbonamento Scaduto",
       "subscriptionRefunded": "Abbonamento Rimborsato",
-      "subscriptionPaymentIssue": "Problema Pagamento Abbonamento"
+      "subscriptionPaymentIssue": "Problema Pagamento Abbonamento",
+      "subscriptionTransferred": "Abbonamento Trasferito"
     },
     "descriptions": {
       "trainingCompletedWithTitle": "Completato il programma di allenamento \"{{title}}\"",
@@ -336,6 +338,12 @@
       "subscriptionRefundedWithTitle": "L'abbonamento \"{{title}}\" dell'utente è stato rimborsato",
       "subscriptionPaymentIssue": "Rilevato problema di pagamento per l'abbonamento dell'utente",
       "subscriptionPaymentIssueWithTitle": "Rilevato problema di pagamento per l'abbonamento \"{{title}}\"",
+      "subscriptionTransferred": "Abbonamento trasferito da {{previousUser}}",
+      "subscriptionTransferredWithTitle": "Abbonamento \"{{title}}\" trasferito da {{previousUser}}",
+      "subscriptionTransferredOnly": "Abbonamento trasferito",
+      "subscriptionTransferredWithTitleOnly": "Abbonamento \"{{title}}\" trasferito",
+      "from": "da",
+      "unknownUser": "utente sconosciuto",
       "systemNotificationGeneric": "Notifica di sistema"
     },
     "timeLabels": {
@@ -1348,6 +1356,10 @@
       "subscriptionPaymentIssue": {
         "title": "Problema Pagamento Abbonamento",
         "description": "Ricevi notifiche quando ci sono problemi di pagamento con gli abbonamenti"
+      },
+      "subscriptionTransferred": {
+        "title": "Abbonamento Trasferito",
+        "description": "Ricevi notifiche quando un utente ripristina il proprio abbonamento sul proprio account"
       }
     },
     "globalConfig": {
