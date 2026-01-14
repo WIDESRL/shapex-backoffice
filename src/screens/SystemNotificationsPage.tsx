@@ -32,6 +32,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import DateRangePicker from '../components/DateRangePicker';
 import DeleteConfirmationDialog from './Subscription/DeleteConfirmationDialog';
 import CheckDetailsDialog from '../components/CheckDetailsDialog';
@@ -614,8 +615,9 @@ const SystemNotificationsPage: React.FC = () => {
       case 'subscription_expired':
       case 'subscription_refunded':
       case 'subscription_payment_issue':
-      case 'subscription_transferred':
         return <ShoppingCartIcon sx={styles.typeIcon} />;
+      case 'subscription_transferred':
+        return <SwapHorizIcon sx={styles.typeIcon} />;
       default:
         return <InfoIcon style={styles.typeIcon} />;
     }
