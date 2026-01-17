@@ -150,6 +150,7 @@ const AssignUsersModal: React.FC<AssignUsersModalProps> = ({ open, onClose }) =>
     const clientData: Client = {
       id: user.id,
       email: user.email || '',
+      emailVerified: false,
       username: user.username || '',
       firstName: user.firstName || '',
       lastName: user.lastName || '',

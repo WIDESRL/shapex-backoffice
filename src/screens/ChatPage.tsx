@@ -683,6 +683,7 @@ const ChatPageContent: React.FC = () => {
 		const clientData: Client = {
 			id: conv.user.id,
 			email: '',
+			emailVerified: false,
 			username: '',
 			firstName: conv.user.firstName,
 			lastName: conv.user.lastName,

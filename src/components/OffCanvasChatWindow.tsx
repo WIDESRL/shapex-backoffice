@@ -413,6 +413,7 @@ const OffCanvasChatWindow: React.FC<OffCanvasChatWindowProps> = ({ chat }) => {
     const clientData: Client = {
       id: chat.conversation.user.id,
       email: '',
+      emailVerified: false,
       username: '',
       firstName: chat.conversation.user.firstName,
       lastName: chat.conversation.user.lastName,

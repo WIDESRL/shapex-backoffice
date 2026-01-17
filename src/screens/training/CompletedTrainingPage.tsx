@@ -510,6 +510,7 @@ const CompletedTrainingPage: React.FC<CompletedTrainingPageProps> = ({ showHeade
     const client: Client = {
       id: training.clientId,
       email: '',
+      emailVerified: false,
       username: training.clientName,
       firstName: training.clientName.split(' ')[0] || null,
       lastName: training.clientName.split(' ').slice(1).join(' ') || null,

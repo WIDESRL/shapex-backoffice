@@ -106,6 +106,7 @@ const OrdersScreen: React.FC = () => {
     const clientData: Client = {
       id: order.user.id,
       email: order.user.email,
+      emailVerified: false,
       username: '',
       firstName: order.user.firstName,
       lastName: order.user.lastName,

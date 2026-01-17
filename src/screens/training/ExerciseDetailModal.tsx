@@ -364,6 +364,7 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
     const client: Client = {
       id: assignmentLogs.assignment.clientId,
       email: '',
+      emailVerified: false,
       username: assignmentLogs.assignment.clientName,
       firstName: assignmentLogs.assignment.clientName.split(' ')[0] || null,
       lastName: assignmentLogs.assignment.clientName.split(' ').slice(1).join(' ') || null,
