@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, InputAdornment, Typography, Box, Chip, CircularProgress, Tooltip, Autocomplete, Pagination, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { CheckCircle, Cancel } from '@mui/icons-material';
 import MagnifierIcon from '../../icons/MagnifierIcon';
 import UserIcon from '../../icons/UserIcon';
 import { Client, useClientContext } from '../../Context/ClientContext';
@@ -624,7 +625,22 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                       {!client.activeSubscription?.mealPlan && !client.activeSubscription?.integrationPlan && '--'}
                     </Box>
                   </TableCell>
-                  {!dashboard && <TableCell sx={styles.tableCell}>{client.email || '--'}</TableCell>}
+                  {!dashboard && (
+                    <TableCell sx={styles.tableCell}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {client.email && client.emailVerified !== undefined && (
+                          <Tooltip title={client.emailVerified ? 'Email verified' : 'Email not verified'} arrow>
+                            {client.emailVerified ? (
+                              <CheckCircle sx={{ fontSize: 16, color: '#4caf50' }} />
+                            ) : (
+                              <Cancel sx={{ fontSize: 16, color: '#f44336' }} />
+                            )}
+                          </Tooltip>
+                        )}
+                        <span>{client.email || '--'}</span>
+                      </Box>
+                    </TableCell>
+                  )}
                   {!dashboard && <TableCell sx={styles.tableCell}>{client.phoneNumber || '--'}</TableCell>}
                   {!dashboard && (
                     <TableCell sx={styles.tableCell}>

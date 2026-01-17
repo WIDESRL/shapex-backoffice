@@ -183,6 +183,7 @@ export type TrainingProgramOfUser = {
 export type Client = {
   id: number;
   email: string;
+  emailVerified: boolean;
   username: string;
   firstName: string | null;
   lastName: string | null;
@@ -214,6 +215,7 @@ export type ClientAnagrafica = {
   lastName: string | null;
   phoneNumber: string | null;
   email: string;
+  emailVerified: boolean;
   dateOfBirth: string | null;
   placeOfBirth: string | null;
   fiscalCode: string | null;
