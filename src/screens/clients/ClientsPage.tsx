@@ -629,7 +629,7 @@ const ClientsPage: React.FC<{ dashboard?: boolean }> = ({ dashboard = false }) =
                     <TableCell sx={styles.tableCell}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {client.email && client.emailVerified !== undefined && (
-                          <Tooltip title={client.emailVerified ? 'Email verified' : 'Email not verified'} arrow>
+                          <Tooltip title={client.emailVerified ? t('client.anagrafica.emailVerified') : t('client.anagrafica.emailNotVerified')} arrow>
                             {client.emailVerified ? (
                               <CheckCircle sx={{ fontSize: 16, color: '#4caf50' }} />
                             ) : (

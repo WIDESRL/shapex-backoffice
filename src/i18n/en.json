@@ -696,6 +696,8 @@
       "lastName": "Last Name",
       "subscription": "Subscription",
       "email": "E-mail",
+      "emailVerified": "Email verified",
+      "emailNotVerified": "Email not verified",
       "phone": "Phone",
       "dateOfBirth": "Date of Birth",
       "placeOfBirth": "Place",

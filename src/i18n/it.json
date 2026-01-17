@@ -705,6 +705,8 @@
         "fiscalCode": "Codice Fiscale:",
         "phone": "Telefono:",
         "email": "Email:",
+        "emailVerified": "Email verificata",
+        "emailNotVerified": "Email non verificata",
         "online": "Online:",
         "lastLogin": "Ultimo Accesso:",
         "lastOnline": "Ultima Online:",
