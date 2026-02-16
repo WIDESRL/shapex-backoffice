@@ -166,6 +166,10 @@
       "tooltip": {
         "historicalPrice": "This may not be the current subscription price but this is the amount paid by Stripe when this subscription was purchased"
       }
+    },
+    "technicalLogs": {
+      "period": "period",
+      "orderIdTooltip": "Visit Google Play Console to see order details and historical payments for this user"
     }
   },
   "banners": {

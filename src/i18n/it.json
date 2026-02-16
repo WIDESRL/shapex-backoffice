@@ -150,6 +150,10 @@
       "tooltip": {
         "historicalPrice": "Questo potrebbe non essere il prezzo attuale dell'abbonamento ma è l'importo pagato tramite Stripe quando questo abbonamento è stato acquistato"
       }
+    },
+    "technicalLogs": {
+      "period": "periodo",
+      "orderIdTooltip": "Visita Google Play Console per visualizzare i dettagli dell'ordine e lo storico dei pagamenti per questo utente"
     }
   },
   "banners": {

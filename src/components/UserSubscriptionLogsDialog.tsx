@@ -119,6 +119,11 @@ const formatDateTime = (dateString: string | null | undefined) => {
   }
 };
 
+const getGooglePlayConsoleOrderUrl = (orderId: string) => {
+  const developerId = '4876556006974207410';
+  return `https://play.google.com/console/u/0/developers/${developerId}/orders/${encodeURIComponent(orderId)}`;
+};
+
 const PlatformBadge: React.FC<{ platform: string }> = ({ platform }) => {
   if (platform === 'android') {
     return (
@@ -1062,20 +1067,34 @@ export const UserSubscriptionLogsDialog: React.FC<UserSubscriptionLogsDialogProp
                                   {(() => {
                                     const priceMicros = (payment.latestPurchaseData as LatestPurchaseData).priceAmountMicros;
                                     const currency = (payment.latestPurchaseData as LatestPurchaseData).priceCurrencyCode;
-                                    return `${(parseFloat(priceMicros || '0') / 1000000).toFixed(2)} ${currency?.toUpperCase() || ''}`;
+                                    return `${(parseFloat(priceMicros || '0') / 1000000).toFixed(2)} ${currency?.toUpperCase() || ''} / ${t('subscriptions.technicalLogs.period', 'period')}`;
                                   })()}
                                 </Typography>
                               </Box>
                             )}
                             {(payment.latestPurchaseData as LatestPurchaseData | null)?.orderId && (
-                              <Box>
-                                <Typography variant="caption" color="text.secondary">
-                                  {t('subscriptions.technicalLogs.fields.orderId', 'Order ID')}
-                                </Typography>
-                                <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
-                                  {(payment.latestPurchaseData as LatestPurchaseData).orderId}
-                                </Typography>
-                              </Box>
+                              <Tooltip title={t('subscriptions.technicalLogs.orderIdTooltip', 'Please visit Google Play Console to show order info and detailed payments for this user')} arrow>
+                                <Box>
+                                  <Typography variant="caption" color="text.secondary" display="block">
+                                    {t('subscriptions.technicalLogs.fields.orderId', 'Order ID')}
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    component="a"
+                                    href={getGooglePlayConsoleOrderUrl((payment.latestPurchaseData as LatestPurchaseData).orderId || '')}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    sx={{
+                                      display: 'block',
+                                      wordBreak: 'break-all',
+                                      color: 'primary.main',
+                                      textDecoration: 'underline',
+                                    }}
+                                  >
+                                    {(payment.latestPurchaseData as LatestPurchaseData).orderId}
+                                  </Typography>
+                                </Box>
+                              </Tooltip>
                             )}
                             {(payment.metadata as AndroidPaymentMetadata | null)?.transactionDate && (
                               <Box>
