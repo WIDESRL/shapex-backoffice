@@ -352,7 +352,7 @@
     },
     "timeLabels": {
       "justNow": "Proprio ora",
-      "hoursAgo": "ore fa"
+      "hoursAgo": " ore fa"
     },
     "actions": {
       "markAsRead": "Segna come letto",
