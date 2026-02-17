@@ -809,20 +809,49 @@
       },
       "storicoEsercizi": {
         "loading": "Loading exercise history...",
+        "loadingInProgress": "Loading exercises in progress...",
+        "deletedAssignment": "The training program assignment for this exercise has been deleted for this user",
+        "tabs": {
+          "completed": "Completed Exercises",
+          "inProgress": "Exercises in progress..."
+        },
         "tableHeaders": {
           "exercise": "Exercises Performed",
           "date": "Date",
+          "startDate": "Start Date",
           "category": "Category",
           "weeks": "Weeks",
           "type": "Type",
           "level": "Level",
           "duration": "Duration",
-          "exerciseDetail": "Exercise Detail"
+          "exerciseDetail": "Exercise Detail",
+          "trainingProgram": "Training Program",
+          "programType": "Program Type",
+          "exerciseType": "Exercise Type",
+          "lastCompleted": "Last Completed"
         },
         "emptyState": {
           "title": "No exercises in the record",
           "description": "The client has not performed any exercises yet. Exercise history will appear here as they are recorded.",
           "subtitle": "Exercises will accumulate during various workouts"
+        },
+        "inProgressEmpty": {
+          "title": "No exercises in progress",
+          "description": "The client has no exercises currently in progress.",
+          "subtitle": "Exercises will appear here when started"
+        },
+        "inProgressInfo": "These are exercises that the user still has in progress or forgot to complete (to press complete exercise in the app).",
+        "seriesDetails": "Series Details",
+        "seriesHeaders": {
+          "seriesNumber": "Series #",
+          "type": "Type",
+          "reps": "Reps",
+          "weight": "Weight (kg)",
+          "duration": "Duration (s)",
+          "distance": "Distance (m)",
+          "rest": "Rest (s)",
+          "notes": "Notes",
+          "completedAt": "Completed At"
         }
       },
       "confirmAssignDialog": {
@@ -962,24 +991,6 @@
           "title": "No photos in the album",
           "description": "No progress photos have been uploaded yet. Photos will appear here as they are taken to track physical transformation.",
           "subtitle": "Visual progress tracking through photos"
-        }
-      },
-      "albumVideo": {
-        "loading": "Loading videos...",
-        "loadMore": "Load More",
-        "loadingMore": "Loading more...",
-        "uploadDate": "Upload date",
-        "filters": {
-          "title": "Filters",
-          "startDate": "Start date",
-          "endDate": "End date",
-          "apply": "Apply",
-          "clear": "Clear"
-        },
-        "emptyState": {
-          "title": "No videos in the album",
-          "description": "No progress videos have been uploaded yet. Videos will appear here as they are recorded to track physical transformation.",
-          "subtitle": "Visual progress tracking through videos"
         }
       },
       "albumVideo": {

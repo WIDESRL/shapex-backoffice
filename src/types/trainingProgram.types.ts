@@ -347,4 +347,5 @@ export interface TrainingContextType {
   loadingAssignmentLogs: boolean;
   fetchAssignmentLogs: (assignmentId: number) => Promise<void>;
   fetchExerciseLog: (exerciseId: number, assignmentId: number) => Promise<void>;
+  fetchExerciseCompletionLog: (workoutExerciseCompletionId: number) => Promise<void>;
 }

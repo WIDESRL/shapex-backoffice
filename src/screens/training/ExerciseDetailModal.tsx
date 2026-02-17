@@ -26,7 +26,8 @@ interface ExerciseDetailModalProps {
   open: boolean;
   onClose: () => void;
   assignmentId?: number;
-  exerciseId?: number
+  exerciseId?: number;
+  workoutExerciseCompletionId?: number;
 }
 
 const styles = {
@@ -340,23 +341,26 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
   onClose,
   assignmentId,
   exerciseId,
+  workoutExerciseCompletionId,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { assignmentLogs, loadingAssignmentLogs, fetchAssignmentLogs, fetchExerciseLog } = useTraining();
+  const { assignmentLogs, loadingAssignmentLogs, fetchAssignmentLogs, fetchExerciseLog, fetchExerciseCompletionLog } = useTraining();
   const [clientModalOpen, setClientModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   // Fetch assignment logs when modal opens
   useEffect(() => {
     if (open) {
-      if (exerciseId && assignmentId) {
+      if (exerciseId && assignmentId ) {
         fetchExerciseLog(exerciseId, assignmentId);
+      } else if (workoutExerciseCompletionId) {
+        fetchExerciseCompletionLog(workoutExerciseCompletionId);
       } else if (assignmentId) {
         fetchAssignmentLogs(assignmentId);
       }
     }
-  }, [open, assignmentId, exerciseId, fetchAssignmentLogs, fetchExerciseLog]);
+  }, [open, assignmentId, exerciseId, workoutExerciseCompletionId, fetchAssignmentLogs, fetchExerciseLog, fetchExerciseCompletionLog]);
 
   const handleClientClick = () => {
     if (!assignmentLogs?.assignment) return;

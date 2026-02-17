@@ -792,20 +792,49 @@
       },
       "storicoEsercizi": {
         "loading": "Caricamento storico esercizi...",
+        "loadingInProgress": "Caricamento esercizi in corso...",
+        "deletedAssignment": "L'assegnazione del programma di allenamento per questo esercizio è stata eliminata per questo utente",
+        "tabs": {
+          "completed": "Esercizi Completati",
+          "inProgress": "Esercizi in corso..."
+        },
         "tableHeaders": {
           "exercise": "Esercizi eseguiti",
           "date": "Data",
+          "startDate": "Data Inizio",
           "category": "Tipologia",
           "weeks": "Settimane",
           "type": "Tipo",
           "level": "Livello",
           "duration": "Durata",
-          "exerciseDetail": "Dettaglio Esercizio"
+          "exerciseDetail": "Dettaglio Esercizio",
+          "trainingProgram": "Programma di Allenamento",
+          "programType": "Tipo di Programma",
+          "exerciseType": "Tipo di Esercizio",
+          "lastCompleted": "Ultimo Completamento"
         },
         "emptyState": {
           "title": "Nessun esercizio nel registro",
           "description": "Il cliente non ha ancora eseguito alcun esercizio. Lo storico degli esercizi completati apparirà qui man mano che vengono registrati.",
           "subtitle": "Gli esercizi si accumuleranno durante i vari allenamenti"
+        },
+        "inProgressEmpty": {
+          "title": "Nessun esercizio in corso",
+          "description": "Il cliente non ha esercizi attualmente in corso.",
+          "subtitle": "Gli esercizi appariranno qui quando iniziati"
+        },
+        "inProgressInfo": "Questi sono esercizi che l'utente ha ancora in corso o ha dimenticato di completare (premere completa esercizio nell'app).",
+        "seriesDetails": "Dettagli Serie",
+        "seriesHeaders": {
+          "seriesNumber": "Serie N°",
+          "type": "Tipo",
+          "reps": "Ripetizioni",
+          "weight": "Peso (kg)",
+          "duration": "Durata (s)",
+          "distance": "Distanza (m)",
+          "rest": "Riposo (s)",
+          "notes": "Note",
+          "completedAt": "Completato il"
         }
       },
       "confirmAssignDialog": {

@@ -515,6 +515,22 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, []);
 
+  // Fetch exercise completion logs
+  const fetchExerciseCompletionLog = React.useCallback(async (workoutExerciseCompletionId: number) => {
+    setLoadingAssignmentLogs(true);
+    try {
+      const url = `/trainning/exercise/completion/${workoutExerciseCompletionId}/logs`;
+      const res = await api.get(url);
+      console.log('fetchExerciseCompletionLog response:', res);
+      setAssignmentLogs(res);
+    } catch (error) {
+      console.error('Error fetching exercise completion logs:', error);
+      setAssignmentLogs(null);
+    } finally {
+      setLoadingAssignmentLogs(false);
+    }
+  }, []);
+
   return (
     <TrainingContext.Provider value={{
       exercises,
@@ -566,7 +582,8 @@ export const TrainingProvider: React.FC<{ children: ReactNode }> = ({ children }
       assignmentLogs,
       loadingAssignmentLogs,
       fetchAssignmentLogs,
-      fetchExerciseLog
+      fetchExerciseLog,
+      fetchExerciseCompletionLog
     }}>
       {children}
     </TrainingContext.Provider>

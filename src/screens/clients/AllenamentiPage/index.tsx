@@ -45,7 +45,7 @@ const AllenamentiPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { clientId, tabName } = useParams<{ clientId: string; tabName?: string }>();
-  const { clientAnagrafica, loadingClientAnagrafica, fetchClientAnagrafica, fetchTrainingProgramOfUser, fetchHistoricalExercises } = useClientContext();
+  const { clientAnagrafica, loadingClientAnagrafica, fetchClientAnagrafica, fetchTrainingProgramOfUser, fetchHistoricalExercises, fetchInProgressExercises } = useClientContext();
   const [tabValue, setTabValue] = useState(0);
 
   // Map tab names to tab indices
@@ -100,7 +100,10 @@ const AllenamentiPage: React.FC = () => {
   }, [clientId]);
 
   useEffect(() => {
-    if (clientId && tabValue === 2) fetchHistoricalExercises(clientId);
+    if (clientId && tabValue === 2) {
+      fetchHistoricalExercises(clientId);
+      fetchInProgressExercises(clientId);
+    }
   }, [tabValue, clientId]);
 
   const handleBackClick = () => {

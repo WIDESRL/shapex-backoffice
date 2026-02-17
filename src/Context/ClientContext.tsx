@@ -25,6 +25,28 @@ export type HistoricalExercise = {
   week: number;
   workoutExerciseId: number;
   assignmentId: number;
+  workoutExerciseCompletionId: number;
+};
+
+// Type for in-progress exercise data
+export type InProgressExercise = {
+  name: string;
+  repetitions: number;
+  type: string;
+  trainingProgram: {
+    id: number;
+    title: string;
+    type: string;
+  };
+  series: Array<{
+    serie: number;
+    logs: Array<{
+      weight: number | null;
+      reps: number | null;
+      rest: number | null;
+      completedAt: string;
+    }>;
+  }>;
 };
 
 // Type for diet data
@@ -481,6 +503,7 @@ export type ClientContextType = {
   clientAnagrafica: ClientAnagrafica | null;
   trainingProgramOfUser: TrainingProgramOfUser[];
   historicalExercises: HistoricalExercise[];
+  inProgressExercises: InProgressExercise[];
   diet: Diet | null;
   dietHistory: DietHistory[];
   initialHistory: InitialHistory | null;
@@ -504,6 +527,7 @@ export type ClientContextType = {
   loadingClientAnagrafica: boolean;
   loadingTrainingPrograms: boolean;
   loadingHistoricalExercises: boolean;
+  loadingInProgressExercises: boolean;
   loadingDiet: boolean;
   loadingDietHistory: boolean;
   loadingInitialHistory: boolean;
@@ -530,6 +554,7 @@ export type ClientContextType = {
   fetchClientAnagrafica: (clientId: string) => Promise<void>;
   fetchTrainingProgramOfUser: (userId: string) => Promise<void>;
   fetchHistoricalExercises: (userId: string) => Promise<void>;
+  fetchInProgressExercises: (userId: string) => Promise<void>;
   fetchDiet: (userId: string) => Promise<void>;
   fetchDietHistory: (userId: string) => Promise<void>;
   createOrUpdateDiet: (userId: string, mealPlan?: string, foodSupplements?: string) => Promise<void>;
@@ -557,6 +582,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [clientAnagrafica, setClientAnagrafica] = useState<ClientAnagrafica | null>(null);
   const [trainingProgramOfUser, setTrainingProgramOfUser] = useState<TrainingProgramOfUser[]>([]);
   const [historicalExercises, setHistoricalExercises] = useState<HistoricalExercise[]>([]);
+  const [inProgressExercises, setInProgressExercises] = useState<InProgressExercise[]>([]);
   const [diet, setDiet] = useState<Diet | null>(null);
   const [dietHistory, setDietHistory] = useState<DietHistory[]>([]);
   const [initialHistory, setInitialHistory] = useState<InitialHistory | null>(null);
@@ -580,6 +606,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [loadingClientAnagrafica, setLoadingClientAnagrafica] = useState(false);
   const [loadingTrainingPrograms, setLoadingTrainingPrograms] = useState(false);
   const [loadingHistoricalExercises, setLoadingHistoricalExercises] = useState(false);
+  const [loadingInProgressExercises, setLoadingInProgressExercises] = useState(false);
   const [loadingDiet, setLoadingDiet] = useState(false);
   const [loadingDietHistory, setLoadingDietHistory] = useState(false);
   const [loadingInitialHistory, setLoadingInitialHistory] = useState(false);
@@ -695,6 +722,21 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       throw error;
     } finally {
       setLoadingHistoricalExercises(false);
+    }
+  };
+
+  const fetchInProgressExercises = async (userId: string): Promise<void> => {
+    try {
+      setLoadingInProgressExercises(true);
+      const response = await axiosInstance.get(`/trainning/exercises/in-progress/user/${userId}`);
+      
+      setInProgressExercises(response.data || []);
+    } catch (error) {
+      console.error('Error fetching in-progress exercises:', error);
+      setInProgressExercises([]);
+      throw error;
+    } finally {
+      setLoadingInProgressExercises(false);
     }
   };
 
@@ -1060,6 +1102,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         clientAnagrafica, 
         trainingProgramOfUser,
         historicalExercises,
+        inProgressExercises,
         diet,
         dietHistory,
         initialHistory,
@@ -1083,6 +1126,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         loadingClientAnagrafica,
         loadingTrainingPrograms,
         loadingHistoricalExercises,
+        loadingInProgressExercises,
         loadingDiet,
         loadingDietHistory,
         loadingInitialHistory,
@@ -1109,6 +1153,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         fetchClientAnagrafica,
         fetchTrainingProgramOfUser,
         fetchHistoricalExercises,
+        fetchInProgressExercises,
         fetchDiet,
         fetchDietHistory,
         createOrUpdateDiet,
