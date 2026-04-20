@@ -288,7 +288,7 @@ const CheckDetailsDialog: React.FC<CheckDetailsDialogProps> = ({
 
   // Helper function to get measurement value with unit
   const getMeasurementValue = (field: string, value: string) => {
-    if (field === 'peso') return `${value} kg`;
+    if (field === 'weight') return `${value} kg`;
     if (field === 'altezza') return `${value} cm`;
     return `${value} cm`;
   };
@@ -298,7 +298,7 @@ const CheckDetailsDialog: React.FC<CheckDetailsDialogProps> = ({
     if (!selectedCheckDetailed) return [];
     
     const measurementFields = [
-      'addome', 'altezza', 'peso', 'avambraccioDx', 'avambraccioSx',
+      'weight', 'addome', 'altezza', 'avambraccioDx', 'avambraccioSx',
       'braccioDx', 'braccioContrattoDx', 'braccioSx', 'braccioContrattoSx',
       'cavigliaDx', 'cavigliaSx', 'collo', 'gambaDx', 'gambaSx', 'gambaMedialeDx', 'gambaMedialeSx'
     ];

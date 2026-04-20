@@ -512,9 +512,9 @@ const MisurazioniTab: React.FC = () => {
     };
 
     const measurementFields = [
-      'addome', 'altezza', 'avambraccioDx', 'avambraccioSx',
+      'weight', 'addome', 'altezza', 'avambraccioDx', 'avambraccioSx',
       'braccioDx', 'braccioContrattoDx', 'braccioSx', 'braccioContrattoSx',
-      'cavigliaDx', 'cavigliaSx', 'collo', 'gambaDx', 'gambaMedialeDx', 'gambaSx', 'gambaMedialeSx', 'peso'
+      'cavigliaDx', 'cavigliaSx', 'collo', 'gambaDx', 'gambaMedialeDx', 'gambaSx', 'gambaMedialeSx'
     ];
 
     const data = measurementFields.map((apiField) => {
@@ -524,7 +524,7 @@ const MisurazioniTab: React.FC = () => {
         if (!value) return '-';
         
         // Add appropriate unit
-        if (apiField === 'peso') {
+        if (apiField === 'weight') {
           return `${value} kg`;
         } else if (apiField === 'altezza') {
           return `${value} cm`;

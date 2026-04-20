@@ -161,7 +161,7 @@ export type UserCheck = {
   gambaMedialeDx?: string;
   gambaMedialeSx?: string;
   gambaSx?: string;
-  peso?: string;
+  weight?: string;
   [key: string]: string | number | undefined | null; // For any additional measurement fields
 };
 

@@ -1472,7 +1472,7 @@
     "measurements": {
       "addome": "Abdomen",
       "altezza": "Height",
-      "peso": "Weight",
+      "weight": "Weight",
       "avambraccioDx": "Right Forearm",
       "avambraccioSx": "Left Forearm",
       "braccioDx": "Right Arm",
